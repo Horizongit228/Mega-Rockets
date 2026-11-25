@@ -11,5 +11,10 @@
   "message.megarockets.countdown": "Старт через %s…",
   "message.megarockets.liftoff": "Старт!",
   "message.megarockets.altitude": "Высота: Y=%s / %s | Скорость: %s бл/с",
-  "message.megarockets.target_reached": "Целевая высота Y=%s достигнута! Переход на орбиту."
+  "message.megarockets.target_reached": "Целевая высота Y=%s достигнута! Переход на орбиту.",
+  "message.megarockets.moon_departure": "Курс на Луну! До цели 6000 блоков.",
+  "message.megarockets.moon_distance": "До Луны: %s бл. | Скорость: %s бл/с",
+  "message.megarockets.moon_descent": "Луна достигнута. Начинаем посадку!",
+  "message.megarockets.moon_landing": "Высота над площадкой: %s бл.",
+  "message.megarockets.moon_arrived": "Посадка успешна! Shift — выйти на поверхность. /rocket return — домой."
 }

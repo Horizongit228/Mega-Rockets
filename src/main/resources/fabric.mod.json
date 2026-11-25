@@ -23,6 +23,7 @@
     {
       "config": "megarockets.client.mixins.json",
       "environment": "client"
-    }
+    },
+    "megarockets.mixins.json"
   ]
 }

@@ -2,6 +2,7 @@ package dev.megarockets;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityDimensions;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
@@ -22,6 +23,8 @@ public final class TitanRocket extends Entity {
     public static final int TARGET_ALTITUDE = 10_000;
     private static final TrackedData<Boolean> ENGINES = DataTracker.registerData(TitanRocket.class, TrackedDataHandlerRegistry.BOOLEAN);
     private int countdown;
+    private int moonPhase; // 0=idle, 1=cruise, 2=descent
+    private boolean moonLanded;
     private double flightSpeed;
     private double lerpX, lerpY, lerpZ;
     private int lerpTicks;
@@ -37,9 +40,9 @@ public final class TitanRocket extends Entity {
     @Override protected void initDataTracker(DataTracker.Builder builder) { builder.add(ENGINES, false); }
     public boolean enginesRunning() { return dataTracker.get(ENGINES); }
     @Override protected void readCustomDataFromNbt(NbtCompound nbt) {
-        countdown = 0; flightTicks = 0; flying = false; flightSpeed = 0; dataTracker.set(ENGINES, false); // No unattended flight after reload.
+        countdown = 0; flightTicks = 0; flying = false; flightSpeed = 0; moonPhase=0; moonLanded=nbt.getBoolean("MoonLanded"); dataTracker.set(ENGINES, false); // No unattended flight after reload.
     }
-    @Override protected void writeCustomDataToNbt(NbtCompound nbt) {}
+    @Override protected void writeCustomDataToNbt(NbtCompound nbt) { nbt.putBoolean("MoonLanded",moonLanded); }
     @Override public boolean canHit() { return true; }
     @Override public boolean isPushable() { return false; }
     @Override public boolean damage(DamageSource source, float amount) { return false; }
@@ -47,6 +50,18 @@ public final class TitanRocket extends Entity {
     @Override protected Vec3d getPassengerAttachmentPos(Entity passenger, EntityDimensions dimensions, float scaleFactor) {
         // External observation seat near the upper stage, not a walkable interior.
         return new Vec3d(0, 53, -4.7);
+    }
+
+    public void beginMoonFlight() {
+        moonPhase=1; flightSpeed=0; flightTicks=0;
+        dataTracker.set(ENGINES,true);
+    }
+
+    @Override public Vec3d updatePassengerForDismount(LivingEntity passenger) {
+        if(getWorld().getRegistryKey().equals(MegaRockets.ORBIT) && Math.abs(getX()-MoonWorld.X-.5)<1
+                && Math.abs(getY()-MoonWorld.LAND_Y)<.1 && Math.abs(getZ()-.5)<1)
+            return new Vec3d(MoonWorld.X+16.5,MoonWorld.LAND_Y,.5);
+        return super.updatePassengerForDismount(passenger);
     }
 
     @Override public ActionResult interact(PlayerEntity player, Hand hand) {
@@ -94,7 +109,7 @@ public final class TitanRocket extends Entity {
     }
 
     private void stopEngines() {
-        countdown=0; flightTicks=0; flying=false; flightSpeed=0;
+        countdown=0; flightTicks=0; flying=false; flightSpeed=0; moonPhase=0;
         dataTracker.set(ENGINES,false);
         setVelocity(Vec3d.ZERO);
     }
@@ -103,6 +118,7 @@ public final class TitanRocket extends Entity {
         super.tick();
         if (getWorld().isClient) { interpolateClient(); return; }
         if (!(getWorld() instanceof ServerWorld world)) return;
+        if (moonPhase!=0) { tickMoon(world); return; }
         if (countdown == 0 && !flying) return;
         if (!(getFirstPassenger() instanceof ServerPlayerEntity pilot)) {
             stopEngines(); return;
@@ -128,6 +144,39 @@ public final class TitanRocket extends Entity {
             pilot.sendMessage(Text.translatable("message.megarockets.target_reached", TARGET_ALTITUDE), false);
             stopEngines();
             if (!MegaRockets.arrive(this, pilot)) pilot.sendMessage(Text.translatable("message.megarockets.failed"), false);
+        }
+    }
+    private void tickMoon(ServerWorld world) {
+        if(!(getFirstPassenger() instanceof ServerPlayerEntity pilot)) { stopEngines(); return; }
+        pilot.fallDistance=0;
+        flightTicks++;
+        if(moonPhase==1) {
+            double target=MoonWorld.X+.5;
+            // Keep clearance above the body; stop short until terrain generation finishes.
+            double end=MoonWorld.ready(world)?target:target-160;
+            if(getX()<end) {
+                // Reuse the cruise profile at a high virtual argument solely for speed control;
+                // actual distance is always computed from and applied to world X.
+                flightSpeed=FlightProfile.nextSpeed(getX()+1000,flightSpeed,end+1000);
+                setPosition(Math.min(end,getX()+flightSpeed),MoonWorld.CRUISE_Y,.5);
+            } else flightSpeed=0;
+            if(flightTicks%20==0) pilot.sendMessage(Text.translatable("message.megarockets.moon_distance",
+                (int)Math.ceil(target-getX()),(int)(flightSpeed*20)),true);
+            if(getX()>=target && MoonWorld.ready(world)) {
+                moonPhase=2; flightSpeed=0;
+                pilot.sendMessage(Text.translatable("message.megarockets.moon_descent"),false);
+            }
+        } else {
+            double remaining=getY()-MoonWorld.LAND_Y;
+            if(remaining>0) {
+                flightSpeed=FlightProfile.nextSpeed(0,flightSpeed,remaining);
+                setPosition(MoonWorld.X+.5,Math.max(MoonWorld.LAND_Y,getY()-flightSpeed),.5);
+            }
+            if(flightTicks%20==0) pilot.sendMessage(Text.translatable("message.megarockets.moon_landing",(int)Math.ceil(Math.max(0,getY()-MoonWorld.LAND_Y))),true);
+            if(getY()<=MoonWorld.LAND_Y) {
+                moonLanded=true; stopEngines();
+                pilot.sendMessage(Text.translatable("message.megarockets.moon_arrived"),false);
+            }
         }
     }
 }

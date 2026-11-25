@@ -2,6 +2,7 @@ package dev.megarockets;
 
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
@@ -32,6 +33,7 @@ public final class MegaRockets implements ModInitializer {
     public static Identifier id(String path) { return Identifier.of(ID, path); }
 
     @Override public void onInitialize() {
+        ServerTickEvents.END_WORLD_TICK.register(MoonWorld::tick);
         CommandRegistrationCallback.EVENT.register((dispatcher, access, environment) ->
             dispatcher.register(CommandManager.literal("rocket")
                 .requires(source -> source.hasPermissionLevel(2))
@@ -75,30 +77,24 @@ public final class MegaRockets implements ModInitializer {
     }
 
     static boolean arrive(TitanRocket old, ServerPlayerEntity pilot) {
-        ServerWorld orbit = pilot.getServer().getWorld(ORBIT);
-        if (orbit == null) return false;
-        // Independent small observation deck next to the arriving rocket.
-        int x = (int)Math.floor(old.getX()), z = (int)Math.floor(old.getZ());
-        int floor = 133;
-        for (int dx=-3; dx<=3; dx++) for (int dz=-3; dz<=3; dz++) {
-            BlockPos pos = new BlockPos(x+12+dx, floor, z+dz);
-            if (orbit.getBlockState(pos).isAir()) orbit.setBlockState(pos, Blocks.SMOOTH_STONE.getDefaultState());
-            if (Math.abs(dx)==3 || Math.abs(dz)==3) {
-                BlockPos rail = pos.up();
-                if (orbit.getBlockState(rail).isAir()) orbit.setBlockState(rail, Blocks.IRON_BARS.getDefaultState());
-            }
-        }
-        BlockPos lamp = new BlockPos(x+12, floor, z);
-        if (orbit.getBlockState(lamp).isOf(Blocks.SMOOTH_STONE)) orbit.setBlockState(lamp, Blocks.SEA_LANTERN.getDefaultState());
-        TitanRocket orbitalRocket = new TitanRocket(TITAN, orbit);
-        orbitalRocket.refreshPositionAndAngles(x+.5, 80, z+.5, 0, 0);
-        if (!orbit.spawnEntity(orbitalRocket)) return false;
+        ServerWorld orbit=pilot.getServer().getWorld(ORBIT);
+        if(orbit==null) return false;
+        // Only the transition from the Overworld to space uses a dimension transfer.
+        // The subsequent 6000-block flight and landing occur entirely within space.
+        TitanRocket ship=new TitanRocket(TITAN,orbit);
+        ship.refreshPositionAndAngles(.5,MoonWorld.CRUISE_Y,.5,0,0);
+        if(!orbit.spawnEntity(ship)) return false;
         pilot.stopRiding();
-        if (!pilot.teleport(orbit, x+12.5, floor+1, z+.5, Set.of(), 90, 0)) {
-            orbitalRocket.discard(); return false;
+        if(!pilot.teleport(orbit,.5,MoonWorld.CRUISE_Y+53,-4.2,Set.of(),pilot.getYaw(),0)) {
+            ship.discard(); return false;
+        }
+        if(!pilot.startRiding(ship,true)) {
+            ship.discard(); return false;
         }
         old.discard();
-        pilot.sendMessage(Text.translatable("message.megarockets.orbit"), false);
+        MoonWorld.request(orbit);
+        ship.beginMoonFlight();
+        pilot.sendMessage(Text.translatable("message.megarockets.moon_departure"),false);
         return true;
     }
 

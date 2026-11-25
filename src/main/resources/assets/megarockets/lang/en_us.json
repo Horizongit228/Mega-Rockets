@@ -11,5 +11,10 @@
   "message.megarockets.countdown": "Launch in %s…",
   "message.megarockets.liftoff": "Liftoff!",
   "message.megarockets.altitude": "Altitude: Y=%s / %s | Speed: %s blocks/s",
-  "message.megarockets.target_reached": "Target altitude Y=%s reached! Transferring to orbit."
+  "message.megarockets.target_reached": "Target altitude Y=%s reached! Transferring to orbit.",
+  "message.megarockets.moon_departure": "Moon course set! Distance 6000 blocks.",
+  "message.megarockets.moon_distance": "Moon distance: %s blocks | Speed: %s blocks/s",
+  "message.megarockets.moon_descent": "Moon reached. Beginning descent!",
+  "message.megarockets.moon_landing": "Height above landing pad: %s blocks",
+  "message.megarockets.moon_arrived": "Landed! Shift to exit onto the surface. /rocket return to go home."
 }
