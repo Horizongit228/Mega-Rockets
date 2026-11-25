@@ -50,18 +50,18 @@ public final class MarsChunkGenerator extends ChunkGenerator {
   MarsTerrain t=terrain(config);BlockPos.Mutable pos=new BlockPos.Mutable();
   int x0=chunk.getPos().getStartX(),z0=chunk.getPos().getStartZ();
   for(int x=x0;x<x0+16;x++)for(int z=z0;z<z0+16;z++){
-   int top=t.top(x,z);
+   int top=t.top(x,z);var cave=t.caveColumn(x,z);
    for(int y=chunk.getBottomY();y<=Math.min(top,chunk.getTopY()-1);y++){
-    int type=t.material(x,y,z,top);if(type!=MarsTerrain.AIR)chunk.setBlockState(pos.set(x,y,z),state(type),false);
+    int type=t.material(x,y,z,top,cave);if(type!=MarsTerrain.AIR)chunk.setBlockState(pos.set(x,y,z),state(type),false);
    }
   }
   Heightmap.populateHeightmaps(chunk,Set.of(Heightmap.Type.OCEAN_FLOOR_WG,Heightmap.Type.WORLD_SURFACE_WG));
   return CompletableFuture.completedFuture(chunk);
  }
- @Override public int getHeight(int x,int z,Heightmap.Type type,HeightLimitView world,NoiseConfig config){return Math.min(world.getTopY(),terrain(config).top(x,z)+1);}
+ @Override public int getHeight(int x,int z,Heightmap.Type type,HeightLimitView world,NoiseConfig config){MarsTerrain t=terrain(config);int top=t.top(x,z);var cave=t.caveColumn(x,z);for(int y=Math.min(world.getTopY()-1,top);y>=world.getBottomY();y--)if(t.material(x,y,z,top,cave)!=MarsTerrain.AIR)return y+1;return world.getBottomY();}
  @Override public VerticalBlockSample getColumnSample(int x,int z,HeightLimitView world,NoiseConfig config){
-  MarsTerrain t=terrain(config);int top=t.top(x,z);BlockState[] states=new BlockState[world.getHeight()];
-  for(int i=0;i<states.length;i++)states[i]=state(t.material(x,world.getBottomY()+i,z,top));
+  MarsTerrain t=terrain(config);int top=t.top(x,z);var cave=t.caveColumn(x,z);BlockState[] states=new BlockState[world.getHeight()];
+  for(int i=0;i<states.length;i++)states[i]=state(t.material(x,world.getBottomY()+i,z,top,cave));
   return new VerticalBlockSample(world.getBottomY(),states);
  }
 }

@@ -6,13 +6,14 @@ public final class MoonTerrain {
  public static final int PAD_RADIUS=24,SAFE_RADIUS=192,TREE_CELL=12,PAD_GLOBAL_Y=PAD_Y+NORTH_OFFSET-1;
  public static final int AIR=0,ROCK=1,REGOLITH=2,BASALT=3,ORE=4,PAD=5,WOOD=6,LEAVES=7;
  public enum Region { PLAINS,HIGHLANDS,CRATERS,FOREST }
- public record Column(int bottom,int top,int innerBottom,int innerTop,boolean pad,double tunnelX,double tunnelZ,Region region,long seed){}
+ public record Column(int bottom,int top,int innerBottom,int innerTop,boolean pad,double tunnelX,double tunnelZ,Region region,long seed,PlanetCaves.Column caves){}
  public enum TreeKind { ROUND, SPIRE, ANCIENT }
  public record Tree(int x,int y,int z,int height,TreeKind kind){}
  public record Boulder(int x,int y,int z,int radius,boolean crystal){}
  private final long seed;
+ private final PlanetCaves caveNetwork;
  private final double ox,oy,oz;
- public MoonTerrain(long seed){this.seed=seed;ox=10000*hash(seed,0,0,1);oy=10000*hash(seed,0,0,2);oz=10000*hash(seed,0,0,3);}
+ public MoonTerrain(long seed){this.seed=seed;this.caveNetwork=new PlanetCaves(seed^0x4d4f4f4eL);ox=10000*hash(seed,0,0,1);oy=10000*hash(seed,0,0,2);oz=10000*hash(seed,0,0,3);}
  private static double clamp(double n,double a,double b){return Math.max(a,Math.min(b,n));}
  private static double smooth(double n){n=clamp(n,0,1);return n*n*(3-2*n);}
  private static double mix(double a,double b,double t){return a+(b-a)*t;}
@@ -45,7 +46,7 @@ public final class MoonTerrain {
  }
  public Column column(int x,int z){
   double r=Math.hypot(x,z);Region region=region(x,z);
-  if(r>=RADIUS)return new Column(1,0,1,0,false,0,0,region,seed);
+  if(r>=RADIUS)return new Column(1,0,1,0,false,0,0,region,seed,caveNetwork.column(x,z));
   double h=Math.sqrt((double)RADIUS*RADIUS-r*r),taper=smooth((RADIUS-r)/160);
   double macro=field(x/410.0,z/410.0,51),high=smooth((macro-.12)/.65),basin=smooth((-macro-.18)/.5);
   double reliefWeight=.28+.72*Math.max(high,basin);
@@ -68,12 +69,14 @@ public final class MoonTerrain {
   int bottom=(int)Math.ceil(-h+35*field(x/250.0,z/250.0,131)*taper),t=(int)Math.floor(top);
   double inner=RADIUS-CRUST;int half=r<inner?(int)Math.floor(Math.sqrt(inner*inner-r*r)):-1;
   int ib=half<0?1:Math.max(bottom+8,-half),it=half<0?0:Math.min(t-24,half);
-  return new Column(bottom,t,ib,it,r<=PAD_RADIUS,Math.sin((x+ox)*.078+(z+oz)*.025),Math.cos((z+oz)*.071-(x+ox)*.019),region,seed);
+  return new Column(bottom,t,ib,it,r<=PAD_RADIUS,Math.sin((x+ox)*.078+(z+oz)*.025),Math.cos((z+oz)*.071-(x+ox)*.019),region,seed,caveNetwork.column(x,z));
  }
+ public PlanetCaves.Entrance caveEntrance(int gx,int gz){return caveNetwork.entrance(gx,gz);}
  public int material(Column c,int x,int y,int z){
   if(y<c.bottom()||y>c.top()||(y>=c.innerBottom()&&y<=c.innerTop()))return AIR;
   int depth=Math.min(c.top()-y,y-c.bottom());
-  if(c.pad()&&y>=PAD_GLOBAL_Y-15)return y==PAD_GLOBAL_Y?PAD:ROCK;
+  if(c.pad()&&y>=PAD_GLOBAL_Y-31)return y==PAD_GLOBAL_Y?PAD:ROCK;
+  if(caveNetwork.air(c.caves(),c.top()-y))return AIR;
   if(depth>5){
    double a=c.tunnelX()+Math.sin((y+oy)*.094+(z+oz)*.026),b=c.tunnelZ()+Math.cos((y+oy)*.071-(x+ox)*.019);
    double chamber=Math.sin((x+ox)*.035+(y+oy)*.048)*Math.cos((z+oz)*.043-(y+oy)*.029)*Math.sin((y+oy)*.039);
@@ -98,7 +101,7 @@ public final class MoonTerrain {
   Region region=region(x,z);double chance=region==Region.FOREST?.96:region==Region.PLAINS?.20:region==Region.HIGHLANDS?.08:0;
   if(hash(seed,gx,503,gz)>=chance)return null;
   Column c=column(x,z);int y=c.top()+1;
-  if(y<1||Math.abs(column(x-2,z).top()-c.top())>3||Math.abs(column(x+2,z).top()-c.top())>3||
+  if(material(c,x,c.top(),z)==AIR||y<1||Math.abs(column(x-2,z).top()-c.top())>3||Math.abs(column(x+2,z).top()-c.top())>3||
       Math.abs(column(x,z-2).top()-c.top())>3||Math.abs(column(x,z+2).top()-c.top())>3)return null;
   double kind=hash(seed,gx,505,gz);
   TreeKind type=kind<.48?TreeKind.ROUND:kind<.82?TreeKind.SPIRE:TreeKind.ANCIENT;
@@ -127,6 +130,7 @@ public final class MoonTerrain {
   Region type=region(x,z);
   if(hash(seed,gx,603,gz)>(type==Region.CRATERS?.75:type==Region.HIGHLANDS?.5:.20))return null;
   Column c=column(x,z);
+  if(material(c,x,c.top(),z)==AIR)return null;
   int radius=2+(int)(hash(seed,gx,604,gz)*3);
   return new Boulder(x,c.top()+1,z,radius,hash(seed,gx,605,gz)<.18);
  }

@@ -1,4 +1,4 @@
-# Mega Rockets — 0.8.0 Alpha
+# Mega Rockets — 0.8.1 Alpha
 Minecraft 1.21.1 Fabric, Java 21. Titan-1 is 64 blocks tall.
 
 ## Moon
@@ -44,3 +44,6 @@ Titan-1 is now a creative inventory item in the Mega Rockets tab. Right-click th
 
 ## 0.8.0 Interplanetary flight
 Three rocket items: Titan-1 300, Phantom 600, Hyperion 1000 blocks/s at 20 TPS. New variants have separate entity and item IDs, colored hulls, modified hull contours and longer plumes. All use the same 14x64 collision envelope and observation seat. Select Moon or Mars in clickable chat after boarding or /rocket destination moon|mars, then /rocket launch. Default is Moon. Destination and rocket type persist across dimension transfers and saves. Mars is a continuous seeded terrain dimension, not yet a finite physical sphere, with red plains, canyons, craters, caves, 3 custom blocks using vanilla textures, a protected landing platform and 38% gravity. Distances are game-scale 6000 and 24000 blocks, with separate orbit lanes. Flight starts from Earth only; return command remains an emergency teleport. No fuel or survival crafting for rockets. Existing lunar terrain unchanged; back up saves before updating.
+
+## 0.8.1 Caves & Martian peaks
+Original 32x32 Martian ore texture: rust-red matrix and warm golden mineral clusters instead of vanilla copper ore. Both planets now have seeded continuous shallow cave networks, 6–10 block surface shafts opening into galleries, larger junction chambers, vertical connections and additional deep tunnels. No new cave openings within 216 blocks of the landing center; pad foundation strengthened. Mars has rare mountains: approximately three peaks per four 1024x1024 cells, radius 190–299 blocks and 320–479 blocks of added relief at their centers, with an initial peak near the landing region. Mars build height expanded to 768 blocks (-64 through 703); use a NEW world for compatible dimension settings and terrain. Existing generated chunks are not rewritten. Rocket flight unchanged.

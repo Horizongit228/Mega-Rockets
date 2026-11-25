@@ -36,12 +36,16 @@ jobs:
           java -cp mesh-check LunarFlightCheck
       - name: Check Moon terrain
         run: |
-          javac -d mesh-check src/main/java/dev/megarockets/MoonTerrain.java checks/MoonTerrainCheck.java
+          javac -d mesh-check src/main/java/dev/megarockets/PlanetCaves.java src/main/java/dev/megarockets/MoonTerrain.java checks/MoonTerrainCheck.java
           java -cp mesh-check MoonTerrainCheck
       - name: Check interplanetary missions
         run: |
-          javac -d mesh-check src/main/java/dev/megarockets/LunarFlight.java src/main/java/dev/megarockets/FlightProfile.java src/main/java/dev/megarockets/MarsTerrain.java checks/InterplanetaryCheck.java
+          javac -d mesh-check src/main/java/dev/megarockets/LunarFlight.java src/main/java/dev/megarockets/FlightProfile.java src/main/java/dev/megarockets/PlanetCaves.java src/main/java/dev/megarockets/MarsTerrain.java checks/InterplanetaryCheck.java
           java -cp mesh-check InterplanetaryCheck
+      - name: Check caves and Martian mountains
+        run: |
+          javac -d mesh-check src/main/java/dev/megarockets/PlanetCaves.java src/main/java/dev/megarockets/MoonTerrain.java src/main/java/dev/megarockets/MarsTerrain.java checks/PlanetGeologyCheck.java
+          java -cp mesh-check PlanetGeologyCheck
       - name: Build Fabric mod
         run: gradle build --stacktrace
       - uses: actions/upload-artifact@v4
