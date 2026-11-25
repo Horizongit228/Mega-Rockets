@@ -53,6 +53,7 @@ public final class OxygenSystem {
         var nbt=data.copyNbt();
         return nbt.contains(TANK)?OxygenRules.clamp(nbt.getInt(TANK)):OxygenRules.CAPACITY;
     }
+    public static void refill(ItemStack tank){if(tank.isOf(SpaceSuitItems.CHEST))store(tank,OxygenRules.CAPACITY);}
     private static void store(ItemStack tank,int units){
         NbtComponent.set(DataComponentTypes.CUSTOM_DATA,tank,nbt->nbt.putInt(TANK,OxygenRules.clamp(units)));
     }

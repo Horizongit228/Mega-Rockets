@@ -50,6 +50,7 @@ public final class MegaRockets implements ModInitializer {
         Registry.register(Registries.CHUNK_GENERATOR,id("mars_terrain"),MarsChunkGenerator.CODEC);
         RocketItems.init();
         SpaceSuitItems.init();
+        OxygenStation.init();
         OxygenSystem.init();
         MegaRocketsItemGroup.init();
         Registry.register(Registries.CHUNK_GENERATOR,id("moon_sphere"),MoonChunkGenerator.CODEC);

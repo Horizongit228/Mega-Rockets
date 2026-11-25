@@ -22,6 +22,7 @@ public final class MegaRocketsItemGroup {
                     entries.add(SpaceSuitItems.CHEST);
                     entries.add(SpaceSuitItems.LEGS);
                     entries.add(SpaceSuitItems.BOOTS);
+                    entries.add(OxygenStation.STATION);
                     entries.add(MarsBlocks.REGOLITH);
                     entries.add(MarsBlocks.ROCK);
                     entries.add(MarsBlocks.ORE);

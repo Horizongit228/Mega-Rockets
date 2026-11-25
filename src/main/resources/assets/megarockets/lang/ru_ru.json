@@ -89,5 +89,10 @@
   "oxygen.megarockets.unsealed": "НЕТ ГЕРМЕТИЧНОГО СКАФАНДРА!",
   "death.attack.megarockets.vacuum": "%s задохнулся в вакууме",
   "death.attack.megarockets.vacuum.player": "%s задохнулся в вакууме, спасаясь от %s",
-  "message.megarockets.return_space_only": "Аварийное возвращение доступно только из космоса."
+  "message.megarockets.return_space_only": "Аварийное возвращение доступно только из космоса.",
+  "block.megarockets.oxygen_station": "Кислородная станция",
+  "oxygen.megarockets.station_wear": "Наденьте нагрудник с кислородным баллоном.",
+  "oxygen.megarockets.station_full": "Баллон уже заполнен.",
+  "oxygen.megarockets.station_water": "Для заправки нужно ведро воды в инвентаре.",
+  "oxygen.megarockets.station_done": "Кислород восстановлен до 100%!"
 }

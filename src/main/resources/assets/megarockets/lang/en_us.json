@@ -89,5 +89,10 @@
   "oxygen.megarockets.unsealed": "NO SEALED SPACE SUIT!",
   "death.attack.megarockets.vacuum": "%s suffocated in vacuum",
   "death.attack.megarockets.vacuum.player": "%s suffocated in vacuum while escaping %s",
-  "message.megarockets.return_space_only": "Emergency return is only available from space."
+  "message.megarockets.return_space_only": "Emergency return is only available from space.",
+  "block.megarockets.oxygen_station": "Oxygen station",
+  "oxygen.megarockets.station_wear": "Equip a space chestplate with an oxygen tank.",
+  "oxygen.megarockets.station_full": "Tank already full.",
+  "oxygen.megarockets.station_water": "Refilling requires a water bucket in your inventory.",
+  "oxygen.megarockets.station_done": "Oxygen refilled to 100%!"
 }
