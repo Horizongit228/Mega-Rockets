@@ -131,7 +131,7 @@ public final class TitanRocket extends Entity {
             return;
         }
         lerpX=x; lerpY=y; lerpZ=z; lerpYaw=yaw; lerpPitch=pitch;
-        lerpTicks=3;
+        lerpTicks=2;
     }
 
     @Override public double getLerpTargetX() { return lerpTicks>0 ? lerpX : getX(); }
@@ -174,7 +174,7 @@ public final class TitanRocket extends Entity {
         flightTicks++;
         flightSpeed=FlightProfile.nextSpeed(getY(), flightSpeed, TARGET_ALTITUDE);
         double speed=flightSpeed;
-        // Keep server authoritative and keep per-tick movement below the relative packet limit.
+        // Server-authoritative motion; absolute position packets are interpolated client-side.
         setPosition(getX(), Math.min(TARGET_ALTITUDE, getY()+speed), getZ());
         pilot.fallDistance = 0;
         // Only supplemental ground smoke; the main flames are attached to the client model.

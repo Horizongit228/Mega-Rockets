@@ -15,8 +15,8 @@ public class LunarFlightCheck {
                 seen.add(n.phase());
                 if(n.phase()==LunarFlight.Phase.COAST && !LunarFlight.powered(n)) coastOff=true;
                 if(n.x()<s.x()-1e-6 || n.x()>6000.000001 || n.y()<101-1e-6 || n.y()>216.000001
-                  || Math.abs(n.tilt()-s.tilt())>2.00001 || n.speed()>7.50001 || n.speed()<0
-                  || Math.hypot(n.x()-s.x(),n.y()-s.y())>7.51) throw new AssertionError(n);
+                  || Math.abs(n.tilt()-s.tilt())>2.00001 || n.speed()>15.00001 || n.speed()<0
+                  || Math.hypot(n.x()-s.x(),n.y()-s.y())>15.01) throw new AssertionError(n);
                 if(n.phase()==LunarFlight.Phase.LANDED && s.y()-n.y()>.15) throw new AssertionError("Hard landing");
                 s=n;
             }

@@ -1,0 +1,11 @@
+{
+  "type": "megarockets:moon",
+  "generator": {
+    "type": "megarockets:moon_sphere",
+    "biome_source": {
+      "type": "minecraft:fixed",
+      "biome": "megarockets:lunar_highlands"
+    },
+    "y_offset": -3072
+  }
+}

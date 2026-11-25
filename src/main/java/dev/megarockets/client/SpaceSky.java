@@ -24,7 +24,7 @@ public final class SpaceSky {
         }return out;
     }
     public static double darkness(ClientWorld world,double y){
-        if(world.getRegistryKey().equals(MegaRockets.ORBIT)||world.getRegistryKey().equals(MegaRockets.MOON))return 1;
+        if(world.getRegistryKey().equals(MegaRockets.ORBIT)||MegaRockets.isMoon(world))return 1;
         if(!world.getRegistryKey().equals(World.OVERWORLD))return 0;
         double t=Math.max(0,Math.min(1,(y-180)/1100));return t*t*(3-2*t);
     }
@@ -38,7 +38,7 @@ public final class SpaceSky {
     private static Vec3d polar(double lon,double lat,double radius){double c=Math.cos(lat);return new Vec3d(radius*c*Math.cos(lon),radius*Math.sin(lat),radius*c*Math.sin(lon));}
     public static void render(Matrix4f matrix,Camera camera,ClientWorld world,float delta,Runnable fog){
         Vec3d pos=camera.getPos();double dark=darkness(world,pos.y);
-        boolean orbit=world.getRegistryKey().equals(MegaRockets.ORBIT),moon=world.getRegistryKey().equals(MegaRockets.MOON);
+        boolean orbit=world.getRegistryKey().equals(MegaRockets.ORBIT),moon=MegaRockets.isMoon(world);
         Vec3d sky=world.getSkyColor(pos,delta).multiply(1-dark);
         RenderSystem.depthMask(false);RenderSystem.disableCull();RenderSystem.enableBlend();RenderSystem.defaultBlendFunc();
         RenderSystem.setShader(GameRenderer::getPositionColorProgram);RenderSystem.setShaderColor(1,1,1,1);
@@ -61,8 +61,8 @@ public final class SpaceSky {
             }draw(stars);
             if(orbit){
                 planet(matrix,new Vec3d(-1,-.24,0).normalize(),Math.max(.12,.38-pos.x/30000),true,1);
-                Vec3d toward=new Vec3d(6000.5-pos.x,56-pos.y,.5-pos.z);
-                double radius=Math.min(.78,256/Math.max(330,toward.length()));
+                Vec3d toward=new Vec3d((6000.5+4600)-pos.x,56-pos.y,.5-pos.z);
+                double radius=Math.min(.78,4096/Math.max(4600,toward.length()));
                 planet(matrix,toward.normalize(),radius,false,1);
             }else if(moon){
                 planet(matrix,new Vec3d(-.8,.55,.4).normalize(),.18,true,1);

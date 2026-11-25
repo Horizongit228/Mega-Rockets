@@ -27,6 +27,9 @@ public final class MegaRockets implements ModInitializer {
     public static final String ID = "megarockets";
     public static final RegistryKey<World> ORBIT = RegistryKey.of(RegistryKeys.WORLD, id("orbit"));
     public static final RegistryKey<World> MOON=RegistryKey.of(RegistryKeys.WORLD,id("moon"));
+    public static final RegistryKey<World> MOON_MIDDLE=RegistryKey.of(RegistryKeys.WORLD,id("moon_middle"));
+    public static final RegistryKey<World> MOON_SOUTH=RegistryKey.of(RegistryKeys.WORLD,id("moon_south"));
+    public static boolean isMoon(World world){var key=world.getRegistryKey();return key.equals(MOON)||key.equals(MOON_MIDDLE)||key.equals(MOON_SOUTH);}
     public static final EntityType<TitanRocket> TITAN = Registry.register(Registries.ENTITY_TYPE,
         id("titan_1"), EntityType.Builder.<TitanRocket>create(TitanRocket::new, SpawnGroup.MISC)
             .dimensions(14f, 64f).maxTrackingRange(16).trackingTickInterval(1).build("megarockets:titan_1"));

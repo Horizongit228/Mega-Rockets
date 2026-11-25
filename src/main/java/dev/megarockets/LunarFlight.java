@@ -2,7 +2,7 @@ package dev.megarockets;
 
 /** Deterministic cinematic guidance, independent of Minecraft. Positions are real block coordinates. */
 public final class LunarFlight {
-    public static final double DISTANCE=6000, CRUISE_Y=180, LAND_Y=101, MAX_SPEED=7.5;
+    public static final double DISTANCE=6000, CRUISE_Y=180, LAND_Y=101, MAX_SPEED=15.0;
     public enum Phase { ORBIT, DEPARTURE, COAST, TURN, BRAKE, HOLD, ALIGN, DESCENT, FINAL, LANDED }
     public record State(Phase phase,int ticks,double x,double y,double speed,float tilt) {}
     private LunarFlight() {}
@@ -18,7 +18,7 @@ public final class LunarFlight {
     public static State pause(State s) {
         Phase phase=s.phase();
         if(phase==Phase.DEPARTURE||phase==Phase.COAST||phase==Phase.TURN||phase==Phase.BRAKE)
-            phase=s.x()<DISTANCE-1300?Phase.DEPARTURE:Phase.BRAKE;
+            phase=s.x()<DISTANCE-2600?Phase.DEPARTURE:Phase.BRAKE;
         return new State(phase,s.ticks(),s.x(),s.y(),0,s.tilt());
     }
     public static boolean powered(State s) {
@@ -34,14 +34,14 @@ public final class LunarFlight {
         switch(phase) {
             case ORBIT -> { speed=0; if(ticks>=60){phase=Phase.DEPARTURE;ticks=0;} }
             case DEPARTURE,COAST,TURN,BRAKE -> {
-                if(remaining<=650) phase=Phase.BRAKE;
-                else if(remaining<=1300 && phase!=Phase.BRAKE) phase=Phase.TURN;
+                if(remaining<=1150) phase=Phase.BRAKE;
+                else if(remaining<=2600 && phase!=Phase.BRAKE) phase=Phase.TURN;
                 else if(phase==Phase.DEPARTURE && speed>=MAX_SPEED-.001) phase=Phase.COAST;
-                double goal=phase==Phase.BRAKE?Math.min(MAX_SPEED,Math.sqrt(2*.065*remaining)):MAX_SPEED;
+                double goal=phase==Phase.BRAKE?Math.min(MAX_SPEED,Math.sqrt(2*.18*remaining)):MAX_SPEED;
                 // Coast retains its attained speed; engines are off until braking.
-                speed=phase==Phase.COAST||phase==Phase.TURN?speed:approach(speed,goal,.055,.065);
+                speed=phase==Phase.COAST||phase==Phase.TURN?speed:approach(speed,goal,.14,.18);
                 // A resumed cruise must not stall if the passenger left midflight.
-                if(speed<.001) { phase=remaining<=1300?Phase.BRAKE:Phase.DEPARTURE; speed=Math.min(.035,remaining); }
+                if(speed<.001) { phase=remaining<=2600?Phase.BRAKE:Phase.DEPARTURE; speed=Math.min(.035,remaining); }
                 speed=Math.min(remaining,speed);
                 x+=speed; y=arcY(x);
                 angle=phase==Phase.TURN||phase==Phase.BRAKE?85:-85;
