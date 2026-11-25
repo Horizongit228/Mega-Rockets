@@ -42,5 +42,14 @@
   "biome.megarockets.lunar_highlands": "Лунные нагорья",
   "biome.megarockets.lunar_craters": "Кратерные поля",
   "biome.megarockets.lunar_forest": "Лунный лес",
-  "itemGroup.megarockets.lunar_blocks": "Mega Rockets"
+  "itemGroup.megarockets.lunar_blocks": "Mega Rockets",
+  "block.megarockets.lunar_planks": "Лунные доски",
+  "block.megarockets.lunar_stairs": "Лунные ступеньки",
+  "block.megarockets.lunar_slab": "Лунная плита",
+  "block.megarockets.lunar_fence": "Лунный забор",
+  "block.megarockets.lunar_fence_gate": "Лунная калитка",
+  "block.megarockets.lunar_door": "Лунная дверь",
+  "block.megarockets.lunar_trapdoor": "Лунный люк",
+  "block.megarockets.lunar_button": "Лунная кнопка",
+  "block.megarockets.lunar_pressure_plate": "Лунная нажимная плита"
 }

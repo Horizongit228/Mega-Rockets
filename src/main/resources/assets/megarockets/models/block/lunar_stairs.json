@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/stairs",
+  "textures": {
+    "bottom": "megarockets:block/lunar_planks",
+    "top": "megarockets:block/lunar_planks",
+    "side": "megarockets:block/lunar_planks"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "ingredients": [
+    {
+      "item": "megarockets:lunar_log"
+    }
+  ],
+  "result": {
+    "id": "megarockets:lunar_planks",
+    "count": 4
+  }
+}

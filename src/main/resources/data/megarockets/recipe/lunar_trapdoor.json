@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "redstone",
+  "pattern": [
+    "PPP",
+    "PPP"
+  ],
+  "key": {
+    "P": {
+      "item": "megarockets:lunar_planks"
+    }
+  },
+  "result": {
+    "id": "megarockets:lunar_trapdoor",
+    "count": 2
+  }
+}

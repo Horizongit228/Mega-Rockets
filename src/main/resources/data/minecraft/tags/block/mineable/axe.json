@@ -2,6 +2,15 @@
   "replace": false,
   "values": [
     "megarockets:lunar_log",
-    "megarockets:lunar_leaves"
+    "megarockets:lunar_leaves",
+    "megarockets:lunar_planks",
+    "megarockets:lunar_stairs",
+    "megarockets:lunar_slab",
+    "megarockets:lunar_fence",
+    "megarockets:lunar_fence_gate",
+    "megarockets:lunar_door",
+    "megarockets:lunar_trapdoor",
+    "megarockets:lunar_button",
+    "megarockets:lunar_pressure_plate"
   ]
 }

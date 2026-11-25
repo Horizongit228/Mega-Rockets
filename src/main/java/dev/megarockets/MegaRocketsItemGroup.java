@@ -21,6 +21,15 @@ public final class MegaRocketsItemGroup {
                     entries.add(MoonBlocks.ORE);
                     entries.add(MoonBlocks.WOOD);
                     entries.add(MoonBlocks.LEAVES);
+                    entries.add(MoonBlocks.PLANKS);
+                    entries.add(MoonBlocks.STAIRS);
+                    entries.add(MoonBlocks.SLAB);
+                    entries.add(MoonBlocks.FENCE);
+                    entries.add(MoonBlocks.FENCE_GATE);
+                    entries.add(MoonBlocks.DOOR);
+                    entries.add(MoonBlocks.TRAPDOOR);
+                    entries.add(MoonBlocks.BUTTON);
+                    entries.add(MoonBlocks.PRESSURE_PLATE);
                     entries.add(MoonBlocks.PAD);
                 }).build());
     }

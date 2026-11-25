@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "P  ",
+    "PP ",
+    "PPP"
+  ],
+  "key": {
+    "P": {
+      "item": "megarockets:lunar_planks"
+    }
+  },
+  "result": {
+    "id": "megarockets:lunar_stairs",
+    "count": 4
+  }
+}

@@ -42,5 +42,14 @@
   "biome.megarockets.lunar_highlands": "Lunar highlands",
   "biome.megarockets.lunar_craters": "Crater fields",
   "biome.megarockets.lunar_forest": "Lunar forest",
-  "itemGroup.megarockets.lunar_blocks": "Mega Rockets"
+  "itemGroup.megarockets.lunar_blocks": "Mega Rockets",
+  "block.megarockets.lunar_planks": "Lunar planks",
+  "block.megarockets.lunar_stairs": "Lunar stairs",
+  "block.megarockets.lunar_slab": "Lunar slab",
+  "block.megarockets.lunar_fence": "Lunar fence",
+  "block.megarockets.lunar_fence_gate": "Lunar fence gate",
+  "block.megarockets.lunar_door": "Lunar door",
+  "block.megarockets.lunar_trapdoor": "Lunar trapdoor",
+  "block.megarockets.lunar_button": "Lunar button",
+  "block.megarockets.lunar_pressure_plate": "Lunar pressure plate"
 }
