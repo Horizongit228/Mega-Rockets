@@ -130,7 +130,7 @@ public final class TitanRocket extends Entity {
 
     @Override public ActionResult interact(PlayerEntity player, Hand hand) {
         if (getWorld().isClient) return ActionResult.SUCCESS;
-        if (player instanceof ServerPlayerEntity pilot && (pilot.isCreative()||pilot.hasPermissionLevel(2))) {
+        if (player instanceof ServerPlayerEntity pilot && !pilot.isSpectator()) {
             if(pilot.isCreative()&&pilot.isSneaking()&&!hasPassengers()&&!flying&&countdown==0&&!canResumeMoon()){
                 discard();
                 pilot.sendMessage(Text.translatable("message.megarockets.rocket_removed"),true);

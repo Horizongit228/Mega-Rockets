@@ -77,5 +77,17 @@
   "block.megarockets.lunar_bricks": "Lunar bricks",
   "block.megarockets.lunar_brick_stairs": "Lunar brick stairs",
   "block.megarockets.lunar_brick_slab": "Lunar brick slab",
-  "block.megarockets.lunar_brick_wall": "Lunar brick wall"
+  "block.megarockets.lunar_brick_wall": "Lunar brick wall",
+  "item.megarockets.space_helmet": "Space helmet",
+  "item.megarockets.space_chestplate": "Space chestplate with oxygen tank",
+  "item.megarockets.space_leggings": "Space leggings",
+  "item.megarockets.space_boots": "Space boots",
+  "oxygen.megarockets.atmosphere": "Oxygen: 100% | Atmosphere",
+  "oxygen.megarockets.remaining": "Oxygen: %s%% | %s",
+  "oxygen.megarockets.refilling": "Oxygen: %s%% | %s | Atmosphere",
+  "oxygen.megarockets.empty": "OXYGEN DEPLETED!",
+  "oxygen.megarockets.unsealed": "NO SEALED SPACE SUIT!",
+  "death.attack.megarockets.vacuum": "%s suffocated in vacuum",
+  "death.attack.megarockets.vacuum.player": "%s suffocated in vacuum while escaping %s",
+  "message.megarockets.return_space_only": "Emergency return is only available from space."
 }

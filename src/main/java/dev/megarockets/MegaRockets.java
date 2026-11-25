@@ -49,6 +49,8 @@ public final class MegaRockets implements ModInitializer {
         MarsBlocks.init();
         Registry.register(Registries.CHUNK_GENERATOR,id("mars_terrain"),MarsChunkGenerator.CODEC);
         RocketItems.init();
+        SpaceSuitItems.init();
+        OxygenSystem.init();
         MegaRocketsItemGroup.init();
         Registry.register(Registries.CHUNK_GENERATOR,id("moon_sphere"),MoonChunkGenerator.CODEC);
         Registry.register(Registries.BIOME_SOURCE,id("moon_biomes"),MoonBiomeSource.CODEC);
@@ -58,8 +60,7 @@ public final class MegaRockets implements ModInitializer {
         });
         CommandRegistrationCallback.EVENT.register((dispatcher, access, environment) ->
             dispatcher.register(CommandManager.literal("rocket")
-                .requires(source -> source.hasPermissionLevel(2)||source.getEntity() instanceof ServerPlayerEntity player&&player.isCreative())
-                .then(CommandManager.literal("spawn").executes(ctx -> spawn(ctx.getSource())))
+                .then(CommandManager.literal("spawn").requires(source -> source.hasPermissionLevel(2)||source.getEntity() instanceof ServerPlayerEntity player&&player.isCreative()).executes(ctx -> spawn(ctx.getSource())))
                 .then(CommandManager.literal("launch").executes(ctx -> launch(ctx.getSource())))
                 .then(CommandManager.literal("destination").executes(ctx -> choose(ctx.getSource(),null))
                     .then(CommandManager.literal("moon").executes(ctx -> choose(ctx.getSource(),Destination.MOON)))
@@ -93,6 +94,9 @@ public final class MegaRockets implements ModInitializer {
         ServerPlayerEntity player = source.getPlayerOrThrow();
         TitanRocket rocket;
         if (player.getVehicle() instanceof TitanRocket mounted) rocket = mounted;
+        else if(!source.hasPermissionLevel(2)&&!player.isCreative()){
+            source.sendError(Text.translatable("message.megarockets.destination_seat"));return 0;
+        }
         else rocket = player.getServerWorld().getEntitiesByClass(TitanRocket.class, player.getBoundingBox().expand(22),
                 r -> !r.hasPassengers() && (r.canResumeMoon() || (r.getY() < TitanRocket.TARGET_ALTITUDE && r.getWorld().getRegistryKey().equals(World.OVERWORLD))))
             .stream().min(Comparator.comparingDouble(r -> r.squaredDistanceTo(player))).orElse(null);
@@ -189,6 +193,9 @@ public final class MegaRockets implements ModInitializer {
 
     private static int returnHome(ServerCommandSource source) throws com.mojang.brigadier.exceptions.CommandSyntaxException {
         ServerPlayerEntity player = source.getPlayerOrThrow();
+        if(!source.hasPermissionLevel(2)&&!player.isCreative()&&!OxygenSystem.vacuum(player)){
+            source.sendError(Text.translatable("message.megarockets.return_space_only"));return 0;
+        }
         ServerWorld world = player.getServer().getOverworld();
         BlockPos spawn = world.getSpawnPos();
         int y = world.getTopY(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, spawn.getX(), spawn.getZ());

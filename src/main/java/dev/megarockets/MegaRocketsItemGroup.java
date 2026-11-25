@@ -18,6 +18,10 @@ public final class MegaRocketsItemGroup {
                     entries.add(RocketItems.TITAN);
                     entries.add(RocketItems.PHANTOM);
                     entries.add(RocketItems.HYPERION);
+                    entries.add(SpaceSuitItems.HELMET);
+                    entries.add(SpaceSuitItems.CHEST);
+                    entries.add(SpaceSuitItems.LEGS);
+                    entries.add(SpaceSuitItems.BOOTS);
                     entries.add(MarsBlocks.REGOLITH);
                     entries.add(MarsBlocks.ROCK);
                     entries.add(MarsBlocks.ORE);

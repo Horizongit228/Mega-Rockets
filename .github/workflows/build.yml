@@ -46,6 +46,10 @@ jobs:
         run: |
           javac -d mesh-check src/main/java/dev/megarockets/PlanetCaves.java src/main/java/dev/megarockets/MoonTerrain.java src/main/java/dev/megarockets/MarsTerrain.java checks/PlanetGeologyCheck.java
           java -cp mesh-check PlanetGeologyCheck
+      - name: Check oxygen rules
+        run: |
+          javac -d mesh-check src/main/java/dev/megarockets/OxygenRules.java checks/OxygenCheck.java
+          java -cp mesh-check OxygenCheck
       - name: Build Fabric mod
         run: gradle build --stacktrace
       - uses: actions/upload-artifact@v4
