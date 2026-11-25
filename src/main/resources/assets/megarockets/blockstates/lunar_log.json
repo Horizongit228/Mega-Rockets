@@ -1,7 +1,16 @@
 {
   "variants": {
-    "": {
+    "axis=y": {
       "model": "megarockets:block/lunar_log"
+    },
+    "axis=x": {
+      "model": "megarockets:block/lunar_log",
+      "x": 90,
+      "y": 90
+    },
+    "axis=z": {
+      "model": "megarockets:block/lunar_log",
+      "x": 90
     }
   }
 }

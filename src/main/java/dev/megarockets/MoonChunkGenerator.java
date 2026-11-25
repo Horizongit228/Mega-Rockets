@@ -60,7 +60,7 @@ public final class MoonChunkGenerator extends ChunkGenerator {
             case MoonTerrain.ORE -> MoonBlocks.ORE.getDefaultState();
             case MoonTerrain.PAD -> MoonBlocks.PAD.getDefaultState();
             case MoonTerrain.WOOD -> MoonBlocks.WOOD.getDefaultState();
-            case MoonTerrain.LEAVES -> MoonBlocks.LEAVES.getDefaultState();
+            case MoonTerrain.LEAVES -> MoonBlocks.LEAVES.getDefaultState().with(net.minecraft.block.LeavesBlock.PERSISTENT,true);
             default -> Blocks.AIR.getDefaultState();
         };
     }

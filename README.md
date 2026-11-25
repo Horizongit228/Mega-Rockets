@@ -1,4 +1,4 @@
-# Mega Rockets — 0.7.0 Alpha
+# Mega Rockets — 0.7.1 Alpha
 Minecraft 1.21.1 Fabric, Java 21. Titan-1 is 64 blocks tall.
 
 ## Moon
@@ -26,3 +26,6 @@ Landing site is now a highland at local Y=1280, with a small 24-block-radius pad
 
 ## 0.7.0 Living Moon
 Four registered lunar biomes (plains, highlands, crater fields, luminous forests) with multiscale seed-driven terrain and gradual relief transitions. Seed derived deterministically from the world-generation noise seed, shared across all three slices. New worlds with different seeds get different mountains, craters, caves, ores and trees; identical seeds reproduce terrain. Lunar trees have original bark/end-grain/leaf textures, custom logs and gently glowing leaves. Trees generate in forests and occasionally plains, never near the landing pad. Tree placement is deterministic across chunk borders. These trees are decorative world generation; saplings, recipes and regrowth are not implemented. Use a new world for the new biome source and terrain. The finite sphere, hollow core and existing landing site remain. This is a custom generator inspired by vanilla, not the vanilla Overworld generator.
+
+## 0.7.1 startup hotfix
+Register lunar wood using PillarBlock (axis) and foliage using LeavesBlock (distance, persistence, waterlogging), matching the copied vanilla settings. Generated foliage is persistent. Add log-axis models and vanilla log/leaf tags. Existing 0.7.0 terrain settings and seeds are unchanged.
