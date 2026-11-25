@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_column",
+  "textures": {
+    "side": "megarockets:block/lunar_log",
+    "end": "megarockets:block/lunar_log_top"
+  }
+}

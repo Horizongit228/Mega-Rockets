@@ -35,5 +35,11 @@
   "block.megarockets.lunar_landing_tile": "Лунная посадочная плита",
   "message.megarockets.moon_entry": "Вход в лунное измерение. Продолжаем спуск к поверхности.",
   "message.megarockets.old_moon": "Старая лунная площадка. Для нового рельефа нужен новый мир. /rocket return — обратно.",
-  "message.megarockets.pad_blocked": "Посадочная площадка заблокирована. /rocket return — обратно."
+  "message.megarockets.pad_blocked": "Посадочная площадка заблокирована. /rocket return — обратно.",
+  "block.megarockets.lunar_log": "Лунная древесина",
+  "block.megarockets.lunar_leaves": "Светящаяся лунная листва",
+  "biome.megarockets.lunar_plains": "Лунные равнины",
+  "biome.megarockets.lunar_highlands": "Лунные нагорья",
+  "biome.megarockets.lunar_craters": "Кратерные поля",
+  "biome.megarockets.lunar_forest": "Лунный лес"
 }

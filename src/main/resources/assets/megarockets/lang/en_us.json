@@ -35,5 +35,11 @@
   "block.megarockets.lunar_landing_tile": "Lunar landing tile",
   "message.megarockets.moon_entry": "Entering lunar dimension. Continuing descent to the surface.",
   "message.megarockets.old_moon": "Old lunar terrain. Create a new world for the new landing site. /rocket return to abort.",
-  "message.megarockets.pad_blocked": "Landing site obstructed. /rocket return to abort."
+  "message.megarockets.pad_blocked": "Landing site obstructed. /rocket return to abort.",
+  "block.megarockets.lunar_log": "Lunar log",
+  "block.megarockets.lunar_leaves": "Luminous lunar leaves",
+  "biome.megarockets.lunar_plains": "Lunar plains",
+  "biome.megarockets.lunar_highlands": "Lunar highlands",
+  "biome.megarockets.lunar_craters": "Crater fields",
+  "biome.megarockets.lunar_forest": "Lunar forest"
 }

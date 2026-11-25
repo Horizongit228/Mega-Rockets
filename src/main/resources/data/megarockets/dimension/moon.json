@@ -3,8 +3,11 @@
   "generator": {
     "type": "megarockets:moon_sphere",
     "biome_source": {
-      "type": "minecraft:fixed",
-      "biome": "megarockets:lunar_highlands"
+      "type": "megarockets:moon_biomes",
+      "plains": "megarockets:lunar_plains",
+      "highlands": "megarockets:lunar_highlands",
+      "craters": "megarockets:lunar_craters",
+      "forest": "megarockets:lunar_forest"
     },
     "y_offset": 3072
   }
