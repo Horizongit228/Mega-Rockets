@@ -1,16 +1,19 @@
-# Mega Rockets — 0.5.0 Alpha
+# Mega Rockets — 0.6.0 Alpha
+Minecraft 1.21.1 Fabric, Java 21. Titan-1 is 64 blocks tall.
 
-Minecraft Java 1.21.1, Fabric, Java 21. Titan-1: 64 блока высотой.
+## Moon
+Nominal radius 4096, diameter 8192. Minecraft 1.21.1 permits only 4064 blocks of vertical build height. The spherical terrain is split into three 3072-block-high dimensions with global Y = local Y + offset:
+- megarockets:moon — northern region, offset +3072; landing pad local Y=1024.
+- megarockets:moon_middle — equatorial region, offset 0.
+- megarockets:moon_south — southern region, offset -3072.
+All regions share the same sphere and deterministic terrain, but transitions between the regions are not seamless. Use operator commands to explore other regions. Crust is nominally 192 blocks thick with caves, ores, mountains and craters; the inner core is hollow. Gravity is 16.5% normal and points down, not toward the center. Chunk generation is on demand. Test in a new world; old terrain/height settings are incompatible.
 
-## Новое в 0.5.0
-Луна теперь отдельное измерение megarockets:moon с конечным шаром номинального диаметра 512 блоков, процедурными горами, кратерами, пещерами и пятью собственными блоками. Генерация по чанкам, а не массовое размещение блоков серверным тиком. Посадка на северный полюс (0.5,256,0.5), выход Shift на площадку. Гравитация Луны 16.5%, направление вниз пока обычное. Для визуала далёкая Луна и Земля рисуются отдельно в небе; переход в измерение происходит после физического перелёта 6000 блоков и выравнивания, спуск продолжается до поверхности. Земля имеет процедурную текстуру и голубой атмосферный ореол; у безвоздушной Луны нет атмосферы. Небо темнеет между Y=180 и Y=1280, появляется 2000 звёзд. Двигатели получают удлинённый выхлоп, меняющий цвет в вакууме. Скорость подъёма и перелёта до 150 бл/с. Сохранены автопилот, инерционный полёт, торможение, мягкая посадка и телеметрия. Траектория кинематическая; полноценная орбитальная и радиальная физика, кислород и обратный полёт пока не реализованы.
+Five original 32×32 pixel textures for lunar blocks; separate metal hull texture, 72 radial segments, thermal tiles, panels, windows, navigation lights, engine rings, landing feet and longer exhaust. Max ascent and lunar transfer speed 300 blocks/s at 20 TPS; landing speed stays low. Space path remains 6000 blocks and actual world coordinates; visual planets are separate sky geometry. The Moon is not physically in the orbit dimension; transfer before descent.
 
-## Испытание
-Сделайте резервную копию и используйте новый мир для теста (старая маленькая Луна в orbit не удаляется из старых сохранений). Творческий режим, читы, свободная площадка 14×64×14.
-- /rocket spawn — ракета перед игроком.
-- /rocket launch — запуск / возобновление.
-- /rocket status — этап, скорость, расстояние.
-- /rocket return — аварийное возвращение.
-- F5 — дальняя камера; Shift после посадки.
-- /execute in megarockets:moon run tp @s 16.5 256 0.5 — быстрый тест поверхности без полёта.
-Для сборки: Actions → Build Mega Rockets → Artifacts → Mega-Rockets-jar. Fabric Loader и Fabric API для 1.21.1. Локально Gradle 8.8, JDK 21, gradle build.
+## Test
+- /rocket spawn, /rocket launch, /rocket status, /rocket return.
+- F5 for wide third-person camera; Shift after landing.
+- /execute in megarockets:moon run tp @s 16.5 1024 0.5 (test landing pad).
+- Creative/spectator only for direct tests of other regions, e.g. /execute in megarockets:moon_middle run tp @s 4200 0 0.
+- Use a new world and low render distance initially; larger height and terrain may increase CPU/RAM usage.
+Build: GitHub Actions → Build Mega Rockets → Artifacts → Mega-Rockets-jar. Requires Fabric API and Loader.

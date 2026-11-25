@@ -14,7 +14,8 @@ import net.minecraft.util.math.RotationAxis;
 import net.minecraft.client.render.Frustum;
 
 public final class TitanRenderer extends EntityRenderer<TitanRocket> {
-    private static final Identifier TEXTURE = MegaRockets.id("textures/entity/titan_white.png");
+    private static final Identifier TEXTURE = MegaRockets.id("textures/entity/titan_hull.png");
+    private static final Identifier WHITE = MegaRockets.id("textures/entity/titan_white.png");
     public TitanRenderer(EntityRendererFactory.Context context) { super(context); shadowRadius=0; }
     @Override public boolean shouldRender(TitanRocket rocket,Frustum frustum,double x,double y,double z) {
         // Tilted hull and exhaust can extend outside the original vertical collision box.
@@ -32,20 +33,23 @@ public final class TitanRenderer extends EntityRenderer<TitanRocket> {
         VertexConsumer buffer = consumers.getBuffer(RenderLayer.getEntityCutoutNoCull(TEXTURE));
         MatrixStack.Entry matrix = matrices.peek();
         for (TitanMesh.Quad q : TitanMesh.QUADS) {
-            for (TitanMesh.Point p : q.points()) {
-                buffer.vertex(matrix,p.x(),p.y(),p.z()).color(q.argb()).texture(.5f,.5f)
-                    .overlay(OverlayTexture.DEFAULT_UV).light(light).normal(matrix,q.nx(),q.ny(),q.nz());
+            for (int i=0;i<4;i++) {
+                TitanMesh.Point p=q.points()[i];
+                int c=q.argb();
+                int faceLight=c==0xff59e4ff||c==0xffff7962?0xF000F0:light;
+                buffer.vertex(matrix,p.x(),p.y(),p.z()).color(c).texture(i==0||i==3?.02f:.98f,i<2?.02f:.98f)
+                    .overlay(OverlayTexture.DEFAULT_UV).light(faceLight).normal(matrix,q.nx(),q.ny(),q.nz());
             }
         }
         if (rocket.enginesRunning()) {
             // Full-bright geometry, independent of particle distance and settings.
-            VertexConsumer exhaust=consumers.getBuffer(RenderLayer.getEntityCutoutNoCull(TEXTURE));
+            VertexConsumer exhaust=consumers.getBuffer(RenderLayer.getEntityCutoutNoCull(WHITE));
             float t=rocket.age+tickDelta;
             for(int i=0;i<7;i++) {
                 double a=i*Math.PI/3;
                 float x=i==6?0:2.8f*(float)Math.cos(a), z=i==6?0:2.8f*(float)Math.sin(a);
                 boolean vacuum=!rocket.getWorld().getRegistryKey().equals(net.minecraft.world.World.OVERWORLD)||rocket.getY()>1000;
-                float length=20f+1.1f*(float)Math.sin(t*.7+i*1.3)+.5f*(float)Math.sin(t*1.6+i);
+                float length=28f+1.1f*(float)Math.sin(t*.7+i*1.3)+.5f*(float)Math.sin(t*1.6+i);
                 float spread=vacuum?1.25f:1f;
                 plume(exhaust,matrix,x,z,-.02f,.70f,-2.8f,.86f,0xfff9fcff);
                 plume(exhaust,matrix,x,z,-2.8f,.86f,-7.2f,1.02f*spread,vacuum?0xff8ad8ff:0xffffc24a);
