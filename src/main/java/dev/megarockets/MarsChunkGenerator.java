@@ -37,7 +37,7 @@ public final class MarsChunkGenerator extends ChunkGenerator {
  @Override public void buildSurface(ChunkRegion region,StructureAccessor structures,NoiseConfig config,Chunk chunk){}
  @Override public void carve(ChunkRegion region,long seed,NoiseConfig config,BiomeAccess biomes,StructureAccessor structures,Chunk chunk,GenerationStep.Carver step){}
  @Override public void populateEntities(ChunkRegion region){}
- @Override public void getDebugHudText(List<String> lines,NoiseConfig config,BlockPos pos){lines.add("Mega Rockets: Mars");}
+ @Override public void getDebugHudText(List<String> lines,NoiseConfig config,BlockPos pos){lines.add("Mega Rockets: Mars | diameter 16384 | 10 mountains");}
  private static BlockState state(int type){return switch(type){
   case MarsTerrain.REGOLITH->MarsBlocks.REGOLITH.getDefaultState();
   case MarsTerrain.ROCK->MarsBlocks.ROCK.getDefaultState();

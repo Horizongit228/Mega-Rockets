@@ -70,8 +70,8 @@ public final class SpaceSky {
                 Vec3d toward=new Vec3d((6000.5+4600)-pos.x,56-pos.y,.5-pos.z);
                 double radius=Math.min(.78,4096/Math.max(4600,toward.length()));
                 planet(matrix,toward.normalize(),radius,false,1);
-                Vec3d redPlanet=new Vec3d(28000-pos.x,65-pos.y,4500-pos.z);
-                marsDisk(matrix,redPlanet.normalize(),Math.min(.68,2600/Math.max(3900,redPlanet.length())));
+                Vec3d redPlanet=new Vec3d(36050-pos.x,65-pos.y,4500-pos.z);
+                marsDisk(matrix,redPlanet.normalize(),Math.min(.68,8192/Math.max(12050,redPlanet.length())));
             }else if(mars){
                 planet(matrix,new Vec3d(-.8,.5,.3).normalize(),.035,true,1);
             }else if(moon){

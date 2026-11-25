@@ -15,11 +15,16 @@ public class PlanetGeologyCheck {
      if(h-32>MarsTerrain.MIN_Y+3){for(int depth=0;depth<=32;depth++)if(mars.material(m.x(),h-depth,m.z(),h,cave)!=MarsTerrain.AIR)throw new AssertionError("Blocked Mars entrance");marsEntrances++;}
     }
    }
-   for(int gx=-4;gx<=4;gx++)for(int gz=-4;gz<=4;gz++){
-    var m=mars.mountain(gx,gz);if(m==null)continue;peaks++;
+   var mountains=mars.mountains();
+   if(mountains.size()!=10||!mountains.equals(new MarsTerrain(seed).mountains()))throw new AssertionError("Mountain count or seed");
+   for(var m:mountains){
+    peaks++;
+    if(m.radius()<350||m.radius()>600||m.height()>456||m.height()<300||Math.hypot(m.x(),m.z())+m.radius()>=MarsTerrain.RADIUS)throw new AssertionError("Mountain dimensions");
+    for(var other:mountains)if(other!=m&&Math.hypot(m.x()-other.x(),m.z()-other.z())<=m.radius()+other.radius())throw new AssertionError("Overlapping mountains");
     int h=mars.top(m.x(),m.z());high=Math.max(high,h);
-    if(h<320||h>=MarsTerrain.MIN_Y+MarsTerrain.HEIGHT)throw new AssertionError("Mountain height "+h);
+    if(h<300||h>=MarsTerrain.MIN_Y+MarsTerrain.HEIGHT)throw new AssertionError("Mountain height "+h);
    }
+   if(mars.top(8192,0)!=MarsTerrain.MIN_Y-1||mars.top(0,-8192)!=MarsTerrain.MIN_Y-1||mars.material(8192,MarsTerrain.MIN_Y,0,mars.top(8192,0))!=MarsTerrain.AIR)throw new AssertionError("Mars edge");
    for(int x=-1800;x<=1800;x+=32)for(int z=-1800;z<=1800;z+=32){
     int h=mars.top(x,z);if(h<150)plains++;else if(h>300)rocks++;
     if(Math.hypot(x,z)<192&&Math.hypot(x,z)>24&&h>=127)throw new AssertionError("Landing clearance");
@@ -28,7 +33,7 @@ public class PlanetGeologyCheck {
     if(Math.hypot(x,z)>24)continue;var c=moon.column(x,z);
     for(int d=0;d<32;d++)if(moon.material(c,x,c.top()-d,z)==MoonTerrain.AIR||mars.material(x,127-d,z,127)==MarsTerrain.AIR)throw new AssertionError("Landing foundation");
    }
-   if(lunarEntrances<80||marsEntrances<80||peaks<40||peaks>80||high<450||plains<7000||rocks<30)throw new AssertionError("Insufficient terrain variety "+lunarEntrances+" "+marsEntrances+" "+peaks+" "+high+" "+plains+" "+rocks);
+   if(lunarEntrances<80||marsEntrances<80||peaks!=10||high<450||plains<7000)throw new AssertionError("Insufficient terrain variety "+lunarEntrances+" "+marsEntrances+" "+peaks+" "+high+" "+plains+" "+rocks);
    System.out.println("PASS seed "+seed+": Moon entrances "+lunarEntrances+", Mars entrances "+marsEntrances+", mountains "+peaks+", max Y "+high+", lowlands "+plains+", high mountain samples "+rocks);
   }
  }

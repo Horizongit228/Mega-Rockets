@@ -3,7 +3,9 @@
   "package": "dev.megarockets.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
-    "SpaceGravityMixin"
+    "SpaceGravityMixin",
+    "LunarWeatherMixin",
+    "LunarSnowMixin"
   ],
   "injectors": {
     "defaultRequire": 1
