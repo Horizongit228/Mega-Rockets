@@ -1,4 +1,4 @@
-# Mega Rockets — 0.6.0 Alpha
+# Mega Rockets — 0.6.1 Alpha
 Minecraft 1.21.1 Fabric, Java 21. Titan-1 is 64 blocks tall.
 
 ## Moon
@@ -17,3 +17,6 @@ Five original 32×32 pixel textures for lunar blocks; separate metal hull textur
 - Creative/spectator only for direct tests of other regions, e.g. /execute in megarockets:moon_middle run tp @s 4200 0 0.
 - Use a new world and low render distance initially; larger height and terrain may increase CPU/RAM usage.
 Build: GitHub Actions → Build Mega Rockets → Artifacts → Mega-Rockets-jar. Requires Fabric API and Loader.
+
+## 0.6.1 Visual correction
+Earth and Moon sky disks use real satellite map data, projected and shaded into 1024px PNGs at build time. Earth: NASA GSFC / Reto Stöckli, Robert Simmon and MODIS teams, Blue Marble 2002 (Wikimedia Commons archived 2048px image, public domain). Moon: NASA SVS CGI Moon Kit, Ernie Wright / LRO LROC. See ASSET_CREDITS.md. The Moon has no artificial atmosphere; the Earth limb is narrower, with an altitude-dependent apparent size. Exhaust is white/yellow/orange in all environments; vacuum changes its spread, not its palette. Existing worlds can be reused; terrain is unchanged. The disk images are fixed viewpoints, not live 3D terrain. Building requires internet access to the texture sources.

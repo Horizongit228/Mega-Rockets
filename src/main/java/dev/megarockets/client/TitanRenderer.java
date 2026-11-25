@@ -51,10 +51,10 @@ public final class TitanRenderer extends EntityRenderer<TitanRocket> {
                 boolean vacuum=!rocket.getWorld().getRegistryKey().equals(net.minecraft.world.World.OVERWORLD)||rocket.getY()>1000;
                 float length=28f+1.1f*(float)Math.sin(t*.7+i*1.3)+.5f*(float)Math.sin(t*1.6+i);
                 float spread=vacuum?1.25f:1f;
-                plume(exhaust,matrix,x,z,-.02f,.70f,-2.8f,.86f,0xfff9fcff);
-                plume(exhaust,matrix,x,z,-2.8f,.86f,-7.2f,1.02f*spread,vacuum?0xff8ad8ff:0xffffc24a);
-                plume(exhaust,matrix,x,z,-7.2f,1.02f*spread,-12f,.65f*spread,vacuum?0xff518dff:0xffff781b);
-                plume(exhaust,matrix,x,z,-12f,.65f*spread,-length,.015f,vacuum?0xff7458e8:0xffdc3812);
+                plume(exhaust,matrix,x,z,-.02f,.70f,-2.8f,.86f,0xfffff9e9);
+                plume(exhaust,matrix,x,z,-2.8f,.86f,-7.2f,1.02f*spread,0xffffe5a4);
+                plume(exhaust,matrix,x,z,-7.2f,1.02f*spread,-12f,.65f*spread,0xffffa133);
+                plume(exhaust,matrix,x,z,-12f,.65f*spread,-length,.015f,0xffe64b16);
             }
         }
         matrices.pop();

@@ -20,3 +20,13 @@ tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
 }
 java { sourceCompatibility = JavaVersion.VERSION_21; targetCompatibility = JavaVersion.VERSION_21 }
+
+// NASA satellite mosaics are downloaded and transformed at build time, never in the game.
+def planetResources = layout.buildDirectory.dir('generated/planetResources')
+sourceSets.main.resources.srcDir(planetResources)
+tasks.register('preparePlanetTextures', Exec) {
+    inputs.file('tools/PlanetTextures.java')
+    outputs.dir(planetResources)
+    commandLine 'java', 'tools/PlanetTextures.java', planetResources.get().asFile.absolutePath
+}
+tasks.named('processResources') { dependsOn tasks.named('preparePlanetTextures') }

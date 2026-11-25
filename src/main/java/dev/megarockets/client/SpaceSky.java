@@ -3,6 +3,7 @@ package dev.megarockets.client;
 import com.mojang.blaze3d.systems.RenderSystem;
 import dev.megarockets.MegaRockets;
 import net.minecraft.client.render.*;
+import net.minecraft.util.Identifier;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
@@ -13,6 +14,8 @@ import java.util.Random;
 public final class SpaceSky {
     private record Star(Vec3d dir,double size,int rgb){}
     private static final Star[] STARS=stars();
+    private static final Identifier EARTH= MegaRockets.id("textures/sky/earth.png");
+    private static final Identifier MOON= MegaRockets.id("textures/sky/moon.png");
     private SpaceSky(){}
     private static Star[] stars(){
         Random r=new Random(512041);Star[] out=new Star[2000];
@@ -67,7 +70,7 @@ public final class SpaceSky {
             }else if(moon){
                 planet(matrix,new Vec3d(-.8,.55,.4).normalize(),.18,true,1);
             }else{
-                planet(matrix,new Vec3d(0,-1,0),.80,true,dark);
+                planet(matrix,new Vec3d(0,-1,0),.95-.50*Math.max(0,Math.min(1,(pos.y-1200)/8800)),true,dark);
             }
         }finally{
             RenderSystem.depthMask(true);RenderSystem.enableCull();RenderSystem.disableBlend();RenderSystem.setShaderColor(1,1,1,1);fog.run();
@@ -76,35 +79,32 @@ public final class SpaceSky {
     private static Vec3d point(Vec3d center,Vec3d u,Vec3d w,double radius,double r,double a){
         return center.add(u.multiply(radius*r*Math.cos(a))).add(w.multiply(radius*r*Math.sin(a)));
     }
-    private static int planetColor(double r,double a,boolean earth,int alpha){
-        double x=r*Math.cos(a),y=r*Math.sin(a),z=Math.sqrt(Math.max(0,1-r*r));
-        double light=.22+.78*Math.max(0,.48*x+.45*y+.75*z);
-        double noise=Math.sin(x*9+Math.cos(y*12))*Math.cos(y*11-x*4)+.45*Math.sin(x*24+y*16);
-        if(earth){
-            boolean land=noise>.28;double clouds=Math.sin(x*27+y*14+Math.sin(y*19))*Math.cos(y*26-x*7);
-            double rr=land?73:28,gg=land?133:91,bb=land?65:195;
-            if(clouds>.69||Math.abs(y)>.88){rr=214;gg=224;bb=239;}
-            double rim=Math.pow(r,7)*.65;
-            return color(rr*light+35*rim,gg*light+80*rim,bb*light+115*rim,alpha);
-        }
-        double gray=(145+25*noise)*light;
-        return color(gray,gray*.98,gray*.95,alpha);
-    }
     private static void planet(Matrix4f matrix,Vec3d dir,double angular,boolean earth,double alpha){
         Vec3d center=dir.multiply(45),u=axis(dir),w=dir.crossProduct(u).normalize();double radius=45*angular;
-        BufferBuilder b=begin();int opacity=(int)(alpha*255);
+        int opacity=(int)(alpha*255);
         // Blue atmospheric limb on Earth only; the Moon is airless.
-        if(earth)for(int i=0;i<96;i++){
+        if(earth){
+        BufferBuilder b=begin();
+        for(int i=0;i<96;i++){
             double a=i*Math.PI/48,c=(i+1)*Math.PI/48;
-            Vec3d p=point(center,u,w,radius,1,a),q=point(center,u,w,radius,1,c),s=point(center,u,w,radius,1.12,c),t=point(center,u,w,radius,1.12,a);
-            int inner=((int)(opacity*.72)<<24)|0x5eaaff,outer=0x005eaaff;
+            Vec3d p=point(center,u,w,radius,1,a),q=point(center,u,w,radius,1,c),s=point(center,u,w,radius,1.035,c),t=point(center,u,w,radius,1.035,a);
+            int inner=((int)(opacity*.65)<<24)|0x5eaaff,outer=0x005eaaff;
             v(b,matrix,p,inner);v(b,matrix,q,inner);v(b,matrix,s,outer);v(b,matrix,p,inner);v(b,matrix,s,outer);v(b,matrix,t,outer);
         }
-        for(int ring=0;ring<36;ring++)for(int i=0;i<96;i++){
-            double r=ring/36.0,s=(ring+1)/36.0,a=i*Math.PI/48,c=(i+1)*Math.PI/48;
-            Vec3d p=point(center,u,w,radius,r,a),q=point(center,u,w,radius,r,c),t=point(center,u,w,radius,s,c),vtx=point(center,u,w,radius,s,a);
-            int p1=planetColor(r,a,earth,opacity),p2=planetColor(r,c,earth,opacity),p3=planetColor(s,c,earth,opacity),p4=planetColor(s,a,earth,opacity);
-            v(b,matrix,p,p1);v(b,matrix,q,p2);v(b,matrix,t,p3);v(b,matrix,p,p1);v(b,matrix,t,p3);v(b,matrix,vtx,p4);
-        }draw(b);
+        draw(b);}
+        // A real satellite mosaic projected onto an illuminated globe during the build.
+        RenderSystem.setShader(GameRenderer::getPositionTexColorProgram);
+        RenderSystem.setShaderTexture(0,earth?EARTH:MOON);
+        BufferBuilder disk=Tessellator.getInstance().begin(VertexFormat.DrawMode.QUADS,VertexFormats.POSITION_TEXTURE_COLOR);
+        Vec3d right=u.multiply(radius),down=w.multiply(radius);
+        textured(disk,matrix,center.subtract(right).subtract(down),0,0,opacity);
+        textured(disk,matrix,center.add(right).subtract(down),1,0,opacity);
+        textured(disk,matrix,center.add(right).add(down),1,1,opacity);
+        textured(disk,matrix,center.subtract(right).add(down),0,1,opacity);
+        draw(disk);
+        RenderSystem.setShader(GameRenderer::getPositionColorProgram);
+    }
+    private static void textured(BufferBuilder b,Matrix4f matrix,Vec3d p,float u,float v,int a){
+        b.vertex(matrix,(float)p.x,(float)p.y,(float)p.z).texture(u,v).color(255,255,255,a);
     }
 }
