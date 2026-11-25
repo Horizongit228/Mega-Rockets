@@ -38,6 +38,7 @@ public final class MoonChunkGenerator extends ChunkGenerator {
         }
         return cachedTerrain;
     }
+    public void initializeSeed(NoiseConfig config){terrain(config);}
     @Override public CompletableFuture<Chunk> populateBiomes(NoiseConfig config,Blender blender,StructureAccessor structures,Chunk chunk){
         terrain(config);return super.populateBiomes(config,blender,structures,chunk);
     }

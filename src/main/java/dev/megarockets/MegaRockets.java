@@ -2,7 +2,7 @@ package dev.megarockets;
 
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerWorldEvents;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
@@ -40,6 +40,10 @@ public final class MegaRockets implements ModInitializer {
         MoonBlocks.init();
         Registry.register(Registries.CHUNK_GENERATOR,id("moon_sphere"),MoonChunkGenerator.CODEC);
         Registry.register(Registries.BIOME_SOURCE,id("moon_biomes"),MoonBiomeSource.CODEC);
+        ServerWorldEvents.LOAD.register((server,world)->{
+            if(world.getChunkManager().getChunkGenerator() instanceof MoonChunkGenerator moon)
+                moon.initializeSeed(world.getChunkManager().getNoiseConfig());
+        });
         CommandRegistrationCallback.EVENT.register((dispatcher, access, environment) ->
             dispatcher.register(CommandManager.literal("rocket")
                 .requires(source -> source.hasPermissionLevel(2))
