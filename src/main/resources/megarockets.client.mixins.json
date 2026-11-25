@@ -1,0 +1,11 @@
+{
+  "required": true,
+  "package": "dev.megarockets.client.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "client": [
+    "RocketCameraMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

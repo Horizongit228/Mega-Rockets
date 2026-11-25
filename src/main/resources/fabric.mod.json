@@ -6,8 +6,23 @@
   "description": "Prototype of giant model-based rockets and orbital flights.",
   "environment": "*",
   "entrypoints": {
-    "main": ["dev.megarockets.MegaRockets"],
-    "client": ["dev.megarockets.client.MegaRocketsClient"]
+    "main": [
+      "dev.megarockets.MegaRockets"
+    ],
+    "client": [
+      "dev.megarockets.client.MegaRocketsClient"
+    ]
   },
-  "depends": {"fabricloader": ">=0.16.9", "minecraft": "1.21.1", "java": ">=21", "fabric-api": "*"}
+  "depends": {
+    "fabricloader": ">=0.16.9",
+    "minecraft": "1.21.1",
+    "java": ">=21",
+    "fabric-api": "*"
+  },
+  "mixins": [
+    {
+      "config": "megarockets.client.mixins.json",
+      "environment": "client"
+    }
+  ]
 }

@@ -26,6 +26,10 @@ jobs:
         run: |
           javac -d mesh-check src/main/java/dev/megarockets/client/TitanMesh.java checks/MeshCheck.java
           java -cp mesh-check MeshCheck
+      - name: Check flight profile
+        run: |
+          javac -d mesh-check src/main/java/dev/megarockets/FlightProfile.java checks/FlightCheck.java
+          java -cp mesh-check FlightCheck
       - name: Build Fabric mod
         run: gradle build --stacktrace
       - uses: actions/upload-artifact@v4
