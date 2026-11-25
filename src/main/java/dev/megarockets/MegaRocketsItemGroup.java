@@ -1,0 +1,27 @@
+package dev.megarockets;
+
+import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
+import net.minecraft.item.ItemGroup;
+import net.minecraft.item.ItemStack;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
+import net.minecraft.text.Text;
+
+public final class MegaRocketsItemGroup {
+    private MegaRocketsItemGroup() {}
+    public static void init() {
+        Registry.register(Registries.ITEM_GROUP, MegaRockets.id("lunar_blocks"),
+            FabricItemGroup.builder()
+                .displayName(Text.translatable("itemGroup.megarockets.lunar_blocks"))
+                .icon(() -> new ItemStack(MoonBlocks.ORE))
+                .entries((context, entries) -> {
+                    entries.add(MoonBlocks.ROCK);
+                    entries.add(MoonBlocks.REGOLITH);
+                    entries.add(MoonBlocks.BASALT);
+                    entries.add(MoonBlocks.ORE);
+                    entries.add(MoonBlocks.WOOD);
+                    entries.add(MoonBlocks.LEAVES);
+                    entries.add(MoonBlocks.PAD);
+                }).build());
+    }
+}

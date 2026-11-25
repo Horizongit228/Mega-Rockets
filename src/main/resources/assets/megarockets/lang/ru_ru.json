@@ -41,5 +41,6 @@
   "biome.megarockets.lunar_plains": "Лунные равнины",
   "biome.megarockets.lunar_highlands": "Лунные нагорья",
   "biome.megarockets.lunar_craters": "Кратерные поля",
-  "biome.megarockets.lunar_forest": "Лунный лес"
+  "biome.megarockets.lunar_forest": "Лунный лес",
+  "itemGroup.megarockets.lunar_blocks": "Mega Rockets"
 }

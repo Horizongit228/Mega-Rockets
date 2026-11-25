@@ -39,7 +39,7 @@ public final class MoonTerrain {
    if(hash(seed,a,301,b)>.58)continue;
    double cx=a*256+48+160*hash(seed,a,302,b),cz=b*256+48+160*hash(seed,a,303,b);
    double radius=25+95*hash(seed,a,304,b),d=Math.hypot(x-cx,z-cz)/radius;
-   if(d<1.28)sum+=radius*(-.43*Math.max(0,1-d*d)+.15*Math.exp(-Math.pow((d-1)/.13,2)));
+   if(d<1.28)sum+=radius*(-.32*Math.pow(Math.max(0,1-d*d),2)+.10*Math.exp(-Math.pow((d-1)/.23,2)))*smooth((1.28-d)/.28);
   }
   return sum;
  }
@@ -48,18 +48,22 @@ public final class MoonTerrain {
   if(r>=RADIUS)return new Column(1,0,1,0,false,0,0,region,seed);
   double h=Math.sqrt((double)RADIUS*RADIUS-r*r),taper=smooth((RADIUS-r)/160);
   double macro=field(x/410.0,z/410.0,51),high=smooth((macro+.12)/.65),basin=smooth((-macro-.15)/.5);
-  double broad=field(x/230.0,z/230.0,71)*28;
-  double rolling=field(x/70.0,z/70.0,73)*15+field(x/25.0,z/25.0,77)*7;
-  double ridge=1-Math.abs(field(x/105.0,z/105.0,91));
-  double mountain=high*(105*ridge*ridge+22*field(x/18.0,z/18.0,97)+15*field(x/7.0,z/7.0,101));
-  double detail=3.6*field(x/5.0,z/5.0,113)+1.8*field(x/2.0,z/2.0,127);
+  double broad=field(x/260.0,z/260.0,71)*25;
+  double rolling=field(x/95.0,z/95.0,73)*12+field(x/40.0,z/40.0,77)*5;
+  double ridgeNoise=field(x/145.0,z/145.0,91);
+  double ridge=1-ridgeNoise*ridgeNoise;
+  double mountain=high*(85*ridge*ridge+14*field(x/40.0,z/40.0,97)+5*field(x/18.0,z/18.0,101));
+  double detail=1.4*field(x/12.0,z/12.0,113)+.45*field(x/5.0,z/5.0,127);
   double top=h+(broad+rolling+mountain+detail+crater(x,z)*(.25+.75*basin)-20*basin)*taper;
   if(r<=PAD_RADIUS)top=PAD_GLOBAL_Y;
-  else if(r<SAFE_RADIUS){
-   double fall=5+Math.min(120,(r-PAD_RADIUS)*.72);
-   double apron=PAD_GLOBAL_Y-fall+clamp(rolling+detail,-10,10)*smooth((r-PAD_RADIUS)/20);
-   top=Math.min(PAD_GLOBAL_Y-2,mix(apron,top,smooth((r-85)/107)));
-  }else if(r<320)top=mix(Math.min(top,PAD_GLOBAL_Y-2),top,smooth((r-SAFE_RADIUS)/128));
+  else if(r<720){
+   // A continuous, broad apron around the highland instead of a steep artificial rim.
+   double distance=r-PAD_RADIUS;
+   double fall=Math.min(170,.42*distance);
+   double apron=PAD_GLOBAL_Y-fall+clamp(rolling*.25+detail,-4,4)*smooth(distance/32);
+   top=mix(apron,top,smooth((r-SAFE_RADIUS)/(720-SAFE_RADIUS)));
+   if(r<SAFE_RADIUS)top=Math.min(PAD_GLOBAL_Y-1,top);
+  }
   int bottom=(int)Math.ceil(-h+35*field(x/250.0,z/250.0,131)*taper),t=(int)Math.floor(top);
   double inner=RADIUS-CRUST;int half=r<inner?(int)Math.floor(Math.sqrt(inner*inner-r*r)):-1;
   int ib=half<0?1:Math.max(bottom+8,-half),it=half<0?0:Math.min(t-24,half);

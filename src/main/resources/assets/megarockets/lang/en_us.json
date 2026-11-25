@@ -41,5 +41,6 @@
   "biome.megarockets.lunar_plains": "Lunar plains",
   "biome.megarockets.lunar_highlands": "Lunar highlands",
   "biome.megarockets.lunar_craters": "Crater fields",
-  "biome.megarockets.lunar_forest": "Lunar forest"
+  "biome.megarockets.lunar_forest": "Lunar forest",
+  "itemGroup.megarockets.lunar_blocks": "Mega Rockets"
 }

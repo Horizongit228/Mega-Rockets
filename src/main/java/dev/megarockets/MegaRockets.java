@@ -38,6 +38,7 @@ public final class MegaRockets implements ModInitializer {
 
     @Override public void onInitialize() {
         MoonBlocks.init();
+        MegaRocketsItemGroup.init();
         Registry.register(Registries.CHUNK_GENERATOR,id("moon_sphere"),MoonChunkGenerator.CODEC);
         Registry.register(Registries.BIOME_SOURCE,id("moon_biomes"),MoonBiomeSource.CODEC);
         ServerWorldEvents.LOAD.register((server,world)->{

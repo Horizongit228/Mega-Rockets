@@ -21,6 +21,16 @@ public class MoonTerrainCheck {
     else if(c.top()>=MoonTerrain.PAD_GLOBAL_Y)throw new AssertionError("Crater wall");
    }
   }
+  // Ordinary traversable terrain should have mostly one-block steps.
+  int samples=0,steep=0;long totalDelta=0;
+  for(int x=360;x<1100;x+=3)for(int z=360;z<1100;z+=3){
+   int y=a.column(x,z).top();
+   for(int delta:new int[]{Math.abs(a.column(x+1,z).top()-y),Math.abs(a.column(x,z+1).top()-y)}){
+    samples++;totalDelta+=delta;if(delta>2)steep++;
+   }
+  }
+  if(totalDelta>samples||steep>samples/20)throw new AssertionError("Surface too steep: "+steep+"/"+samples);
+  System.out.println("PASS smoother terrain: mean adjacent height difference "+((double)totalDelta/samples)+", steep steps "+steep+"/"+samples);
   var kinds=EnumSet.noneOf(MoonTerrain.TreeKind.class);
   int rocks=0,crystals=0;
   for(int x=-128;x<=128;x++)for(int z=-128;z<=128;z++){
