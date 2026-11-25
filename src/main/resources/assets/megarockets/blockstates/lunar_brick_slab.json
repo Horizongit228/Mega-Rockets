@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "megarockets:block/lunar_brick_slab"
+    },
+    "type=top": {
+      "model": "megarockets:block/lunar_brick_slab_top"
+    },
+    "type=double": {
+      "model": "megarockets:block/lunar_bricks"
+    }
+  }
+}

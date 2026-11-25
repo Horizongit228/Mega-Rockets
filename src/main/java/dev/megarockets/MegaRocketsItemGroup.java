@@ -37,6 +37,10 @@ public final class MegaRocketsItemGroup {
                     entries.add(MoonBlocks.BUTTON);
                     entries.add(MoonBlocks.PRESSURE_PLATE);
                     entries.add(MoonBlocks.PAD);
+                    entries.add(MoonBlocks.BRICKS);
+                    entries.add(MoonBlocks.BRICK_STAIRS);
+                    entries.add(MoonBlocks.BRICK_SLAB);
+                    entries.add(MoonBlocks.BRICK_WALL);
                 }).build());
     }
 }

@@ -73,5 +73,9 @@
   "message.megarockets.departure_target": "Курс: %s! Дистанция %s блоков.",
   "message.megarockets.entry_target": "Прибытие в измерение: %s. Начинаем спуск.",
   "message.megarockets.target_status": "Цель: %s | %s | Путь %s%% | Осталось %s бл. | %s бл/с | Над площадкой %s бл.",
-  "message.megarockets.target_arrived": "Посадка: %s! Shift — выход. /rocket return — домой."
+  "message.megarockets.target_arrived": "Посадка: %s! Shift — выход. /rocket return — домой.",
+  "block.megarockets.lunar_bricks": "Лунные кирпичи",
+  "block.megarockets.lunar_brick_stairs": "Ступеньки из лунного кирпича",
+  "block.megarockets.lunar_brick_slab": "Плита из лунного кирпича",
+  "block.megarockets.lunar_brick_wall": "Стена из лунного кирпича"
 }

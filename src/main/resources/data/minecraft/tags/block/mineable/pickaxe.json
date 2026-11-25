@@ -8,6 +8,10 @@
     "megarockets:lunar_landing_tile",
     "megarockets:martian_regolith",
     "megarockets:martian_rock",
-    "megarockets:martian_ore"
+    "megarockets:martian_ore",
+    "megarockets:lunar_bricks",
+    "megarockets:lunar_brick_stairs",
+    "megarockets:lunar_brick_slab",
+    "megarockets:lunar_brick_wall"
   ]
 }

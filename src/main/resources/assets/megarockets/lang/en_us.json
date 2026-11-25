@@ -73,5 +73,9 @@
   "message.megarockets.departure_target": "Course: %s! Distance %s blocks.",
   "message.megarockets.entry_target": "Arriving in dimension: %s. Beginning descent.",
   "message.megarockets.target_status": "Target: %s | %s | Transfer %s%% | Remaining %s blocks | %s blocks/s | Above pad %s blocks",
-  "message.megarockets.target_arrived": "Landed: %s! Shift to exit. /rocket return to go home."
+  "message.megarockets.target_arrived": "Landed: %s! Shift to exit. /rocket return to go home.",
+  "block.megarockets.lunar_bricks": "Lunar bricks",
+  "block.megarockets.lunar_brick_stairs": "Lunar brick stairs",
+  "block.megarockets.lunar_brick_slab": "Lunar brick slab",
+  "block.megarockets.lunar_brick_wall": "Lunar brick wall"
 }

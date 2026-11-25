@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "BBB",
+    "BBB"
+  ],
+  "key": {
+    "B": {
+      "item": "megarockets:lunar_bricks"
+    }
+  },
+  "result": {
+    "id": "megarockets:lunar_brick_wall",
+    "count": 6
+  }
+}

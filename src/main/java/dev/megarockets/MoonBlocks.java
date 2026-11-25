@@ -26,6 +26,10 @@ public final class MoonBlocks {
     public static final Block TRAPDOOR=register("lunar_trapdoor",new TrapdoorBlock(BlockSetType.OAK,AbstractBlock.Settings.copy(Blocks.OAK_TRAPDOOR)){});
     public static final Block BUTTON=register("lunar_button",new ButtonBlock(BlockSetType.OAK,30,AbstractBlock.Settings.copy(Blocks.OAK_BUTTON)){});
     public static final Block PRESSURE_PLATE=register("lunar_pressure_plate",new PressurePlateBlock(BlockSetType.OAK,AbstractBlock.Settings.copy(Blocks.OAK_PRESSURE_PLATE)){});
+    public static final Block BRICKS=add("lunar_bricks",Blocks.STONE_BRICKS);
+    public static final Block BRICK_STAIRS=register("lunar_brick_stairs",new StairsBlock(BRICKS.getDefaultState(),AbstractBlock.Settings.copy(Blocks.STONE_BRICK_STAIRS)){});
+    public static final Block BRICK_SLAB=register("lunar_brick_slab",new SlabBlock(AbstractBlock.Settings.copy(Blocks.STONE_BRICK_SLAB)));
+    public static final Block BRICK_WALL=register("lunar_brick_wall",new WallBlock(AbstractBlock.Settings.copy(Blocks.STONE_BRICK_WALL)));
     private static Block register(String name,Block block){
         var id=MegaRockets.id(name);
         Registry.register(Registries.BLOCK,id,block);
