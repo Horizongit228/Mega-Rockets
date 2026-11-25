@@ -26,6 +26,7 @@ import java.util.Set;
 public final class MegaRockets implements ModInitializer {
     public static final String ID = "megarockets";
     public static final RegistryKey<World> ORBIT = RegistryKey.of(RegistryKeys.WORLD, id("orbit"));
+    public static final RegistryKey<World> MOON=RegistryKey.of(RegistryKeys.WORLD,id("moon"));
     public static final EntityType<TitanRocket> TITAN = Registry.register(Registries.ENTITY_TYPE,
         id("titan_1"), EntityType.Builder.<TitanRocket>create(TitanRocket::new, SpawnGroup.MISC)
             .dimensions(14f, 64f).maxTrackingRange(16).trackingTickInterval(1).build("megarockets:titan_1"));
@@ -33,7 +34,8 @@ public final class MegaRockets implements ModInitializer {
     public static Identifier id(String path) { return Identifier.of(ID, path); }
 
     @Override public void onInitialize() {
-        ServerTickEvents.END_WORLD_TICK.register(MoonWorld::tick);
+        MoonBlocks.init();
+        Registry.register(Registries.CHUNK_GENERATOR,id("moon_sphere"),MoonChunkGenerator.CODEC);
         CommandRegistrationCallback.EVENT.register((dispatcher, access, environment) ->
             dispatcher.register(CommandManager.literal("rocket")
                 .requires(source -> source.hasPermissionLevel(2))
@@ -102,9 +104,29 @@ public final class MegaRockets implements ModInitializer {
             ship.discard(); return false;
         }
         old.discard();
-        MoonWorld.request(orbit);
+        // The large Moon is generated on demand in its own dimension.
         ship.beginMoonFlight();
         pilot.sendMessage(Text.translatable("message.megarockets.moon_departure"),false);
+        return true;
+    }
+
+    static boolean enterMoon(TitanRocket old,ServerPlayerEntity pilot,LunarFlight.State state) {
+        ServerWorld moon=pilot.getServer().getWorld(MOON);
+        if(moon==null)return false;
+        // Preload the central landing column before bringing the rider across.
+        moon.getChunk(0,0);
+        TitanRocket ship=new TitanRocket(TITAN,moon);
+        double y=state.y()+MoonTerrain.PAD_Y-LunarFlight.LAND_Y;
+        ship.refreshPositionAndAngles(.5,y,.5,0,0);
+        ship.acceptLunarState(state);
+        if(!moon.spawnEntity(ship))return false;
+        pilot.stopRiding();
+        if(!pilot.teleport(moon,.5,y+53,-4.2,Set.of(),pilot.getYaw(),0)){
+            ship.discard();pilot.startRiding(old,true);return false;
+        }
+        if(!pilot.startRiding(ship,true)){ship.discard();return false;}
+        old.discard();
+        pilot.sendMessage(Text.translatable("message.megarockets.moon_entry"),false);
         return true;
     }
 

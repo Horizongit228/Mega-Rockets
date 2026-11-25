@@ -1,0 +1,10 @@
+{
+  "replace": false,
+  "values": [
+    "megarockets:lunar_rock",
+    "megarockets:lunar_regolith",
+    "megarockets:lunar_basalt",
+    "megarockets:lunar_crystal_ore",
+    "megarockets:lunar_landing_tile"
+  ]
+}

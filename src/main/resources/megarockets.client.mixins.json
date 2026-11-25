@@ -3,7 +3,9 @@
   "package": "dev.megarockets.client.mixin",
   "compatibilityLevel": "JAVA_21",
   "client": [
-    "RocketCameraMixin"
+    "RocketCameraMixin",
+    "SpaceSkyMixin",
+    "SpaceFogMixin"
   ],
   "injectors": {
     "defaultRequire": 1

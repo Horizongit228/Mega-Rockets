@@ -27,5 +27,11 @@
   "message.megarockets.phase.descent": "Descent",
   "message.megarockets.phase.final": "Final landing",
   "message.megarockets.phase.landed": "Landed",
-  "message.megarockets.mission_status": "%s | Transfer %s%% | Moon %s blocks | %s blocks/s | Above pad %s blocks"
+  "message.megarockets.mission_status": "%s | Transfer %s%% | Moon %s blocks | %s blocks/s | Above pad %s blocks",
+  "block.megarockets.lunar_rock": "Lunar rock",
+  "block.megarockets.lunar_regolith": "Lunar regolith",
+  "block.megarockets.lunar_basalt": "Lunar basalt",
+  "block.megarockets.lunar_crystal_ore": "Lunar crystal ore",
+  "block.megarockets.lunar_landing_tile": "Lunar landing tile",
+  "message.megarockets.moon_entry": "Entering lunar dimension. Continuing descent to the surface."
 }

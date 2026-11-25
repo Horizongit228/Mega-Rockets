@@ -44,11 +44,13 @@ public final class TitanRenderer extends EntityRenderer<TitanRocket> {
             for(int i=0;i<7;i++) {
                 double a=i*Math.PI/3;
                 float x=i==6?0:2.8f*(float)Math.cos(a), z=i==6?0:2.8f*(float)Math.sin(a);
-                float length=12f+.7f*(float)Math.sin(t*.9+i*1.3)+.3f*(float)Math.sin(t*2.1+i);
-                plume(exhaust,matrix,x,z,-.02f,.70f,-2.1f,.88f,0xfffff0bd);
-                plume(exhaust,matrix,x,z,-2.1f,.88f,-5.2f,.60f,0xffffa429);
-                plume(exhaust,matrix,x,z,-5.2f,.60f,-8.2f,.34f,0xffff6518);
-                plume(exhaust,matrix,x,z,-8.2f,.34f,-length,.015f,0xffdc3812);
+                boolean vacuum=!rocket.getWorld().getRegistryKey().equals(net.minecraft.world.World.OVERWORLD)||rocket.getY()>1000;
+                float length=20f+1.1f*(float)Math.sin(t*.7+i*1.3)+.5f*(float)Math.sin(t*1.6+i);
+                float spread=vacuum?1.25f:1f;
+                plume(exhaust,matrix,x,z,-.02f,.70f,-2.8f,.86f,0xfff9fcff);
+                plume(exhaust,matrix,x,z,-2.8f,.86f,-7.2f,1.02f*spread,vacuum?0xff8ad8ff:0xffffc24a);
+                plume(exhaust,matrix,x,z,-7.2f,1.02f*spread,-12f,.65f*spread,vacuum?0xff518dff:0xffff781b);
+                plume(exhaust,matrix,x,z,-12f,.65f*spread,-length,.015f,vacuum?0xff7458e8:0xffdc3812);
             }
         }
         matrices.pop();

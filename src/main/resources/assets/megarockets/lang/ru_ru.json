@@ -27,5 +27,11 @@
   "message.megarockets.phase.descent": "Снижение",
   "message.megarockets.phase.final": "Мягкая посадка",
   "message.megarockets.phase.landed": "Посадка завершена",
-  "message.megarockets.mission_status": "%s | Путь %s%% | До Луны %s бл. | %s бл/с | Над площадкой %s бл."
+  "message.megarockets.mission_status": "%s | Путь %s%% | До Луны %s бл. | %s бл/с | Над площадкой %s бл.",
+  "block.megarockets.lunar_rock": "Лунный камень",
+  "block.megarockets.lunar_regolith": "Реголит",
+  "block.megarockets.lunar_basalt": "Лунный базальт",
+  "block.megarockets.lunar_crystal_ore": "Лунная кристаллическая руда",
+  "block.megarockets.lunar_landing_tile": "Лунная посадочная плита",
+  "message.megarockets.moon_entry": "Вход в лунное измерение. Продолжаем спуск к поверхности."
 }
