@@ -46,6 +46,11 @@ public final class TitanRenderer extends EntityRenderer<TitanRocket> {
                     .overlay(OverlayTexture.DEFAULT_UV).light(faceLight).normal(matrix,q.nx(),q.ny(),q.nz());
             }
         }
+        // Interior has independent emergency lighting; glass is genuinely translucent.
+        VertexConsumer interior=consumers.getBuffer(RenderLayer.getEntityCutoutNoCull(WHITE));
+        for(TitanMesh.Quad q:TitanMesh.CABIN)emit(interior,matrix,q,0xF000F0);
+        VertexConsumer glass=consumers.getBuffer(RenderLayer.getEntityTranslucent(WHITE));
+        for(TitanMesh.Quad q:TitanMesh.GLASS)emit(glass,matrix,q,0xF000F0);
         if (rocket.enginesRunning()) {
             // Full-bright geometry, independent of particle distance and settings.
             VertexConsumer exhaust=consumers.getBuffer(RenderLayer.getEntityCutoutNoCull(WHITE));
@@ -64,6 +69,13 @@ public final class TitanRenderer extends EntityRenderer<TitanRocket> {
         }
         matrices.pop();
         super.render(rocket,yaw,tickDelta,matrices,consumers,light);
+    }
+    private static void emit(VertexConsumer out,MatrixStack.Entry matrix,TitanMesh.Quad q,int light){
+        for(int i=0;i<4;i++){
+            TitanMesh.Point p=q.points()[i];
+            out.vertex(matrix,p.x(),p.y(),p.z()).color(q.argb()).texture(.5f,.5f)
+                .overlay(OverlayTexture.DEFAULT_UV).light(light).normal(matrix,q.nx(),q.ny(),q.nz());
+        }
     }
     private static void plume(VertexConsumer out, MatrixStack.Entry matrix,float x,float z,float y0,float r0,float y1,float r1,int color) {
         for(int i=0;i<16;i++) {

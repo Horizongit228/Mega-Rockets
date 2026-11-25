@@ -10,6 +10,8 @@ public final class TitanMesh {
     public record Point(float x,float y,float z) {}
     public record Quad(Point[] points,float nx,float ny,float nz,int argb) {}
     public static final List<Quad> QUADS=build();
+    public static final List<Quad> GLASS=glass();
+    public static final List<Quad> CABIN=cabin();
     private static List<Quad> build() {
         List<Quad> out=new ArrayList<>();
         ring(out,0,0,3,4.3f,6,4.9f,DARK);
@@ -21,7 +23,11 @@ public final class TitanMesh {
         ring(out,0,0,42,5,44,5,DARK);
         ring(out,0,0,44,5,48,3.8f,GRAY);
         ring(out,0,0,48,3.8f,52,3.8f,WHITE);
-        ring(out,0,0,52,3.8f,54,3.8f,BLUE);
+        // Real transparent panoramic windows are rendered in a separate layer.
+        for(int i=0;i<SIDES;i++)if(i%9==0||i%9==8)
+            quad(out,polar(0,0,52,3.8f,i),polar(0,0,54,3.8f,i),polar(0,0,54,3.8f,i+1),polar(0,0,52,3.8f,i+1),DARK);
+        ring(out,0,0,51.92f,3.82f,52.10f,3.82f,GRAY);
+        ring(out,0,0,53.90f,3.82f,54.08f,3.82f,GRAY);
         ring(out,0,0,54,3.8f,56,3.8f,WHITE);
         ring(out,0,0,56,3.8f,60,2.3f,WHITE);
         ring(out,0,0,60,2.3f,63,0.8f,WHITE);
@@ -39,7 +45,7 @@ public final class TitanMesh {
             panel(out,5.02f,5.16f,30,41,.13f,a,GRAY);
             panel(out,5.02f,5.12f,16,18,.48f,a,DARK);
             panel(out,3.82f,3.95f,49,51,.36f,a,GRAY);
-            panel(out,3.82f,3.97f,52.35f,53.65f,.38f,a,0xff132f49);
+
         }
         ring(out,0,0,47.8f,3.86f,48.1f,3.91f,DARK);
         ring(out,0,0,55.2f,3.83f,55.4f,3.91f,GRAY);
@@ -51,12 +57,7 @@ public final class TitanMesh {
             panel(out,3.82f,3.99f,54.1f,54.85f,.30f,a,0xff476d85);
             if(i%2==0)for(int j=0;j<5;j++)panel(out,5.12f,5.21f,16.15f+j*.31f,16.25f+j*.31f,.34f,a,0xffa8b6c3);
         }
-        for(int i=0;i<8;i++){
-            double a=i*Math.PI/4;
-            panel(out,3.96f,4.02f,52.40f,53.60f,.34f,a,0xff172b44);
-            panel(out,4.025f,4.045f,53.32f,53.53f,.28f,a,0xff90c7e4);
-            panel(out,4.05f,4.10f,53.70f,53.88f,.12f,a,i%2==0?0xff59e4ff:0xffff7962);
-        }
+
         for(float y:new float[]{30.2f,30.5f,31.0f,39.5f,40.0f,40.3f})
             ring(out,0,0,y,5.015f,y+.07f,5.08f,0xff516176);
         for(int i=0;i<4;i++)panel(out,5.02f,5.045f,32,38,.65f,i*Math.PI/2+Math.PI/8,0xff286083);
@@ -87,6 +88,65 @@ public final class TitanMesh {
             quad(out,p,P,Q,q,DARK); quad(out,q,Q,R,r,GRAY); quad(out,r,R,P,p,GRAY);
         }
         return List.copyOf(out);
+    }
+    private static List<Quad> glass(){
+        List<Quad> out=new ArrayList<>();
+        for(int i=0;i<SIDES;i++)if(i%9!=0&&i%9!=8)
+            quad(out,polar(0,0,52,3.795f,i),polar(0,0,54,3.795f,i),polar(0,0,54,3.795f,i+1),polar(0,0,52,3.795f,i+1),0x3879c7ed);
+        return List.copyOf(out);
+    }
+    private static List<Quad> cabin(){
+        List<Quad> out=new ArrayList<>();
+        int floor=0xff526477,wall=0xffb2c3d1,seat=0xff253849,screen=0xff2a667f,lit=0xff66e8f5,amber=0xffe5a958;
+        cap(out,0,0,50.95f,3.72f,true,floor);
+        cap(out,0,0,55.45f,3.72f,false,wall);
+        ring(out,0,0,51,3.68f,52,3.68f,wall);
+        ring(out,0,0,54,3.68f,55.45f,3.68f,wall);
+        ring(out,0,0,54.9f,3.50f,55.02f,3.50f,lit);
+        // Raised pilot seat, back and armrests; player attachment is on its cushion.
+        box(out,-.43f,50.96f,.30f,.43f,51.35f,1.05f,seat);
+        box(out,-.46f,51.35f,1.04f,.46f,52.60f,1.25f,seat);
+        box(out,-.63f,51.32f,.25f,-.47f,51.73f,1.06f,floor);
+        box(out,.47f,51.32f,.25f,.63f,51.73f,1.06f,floor);
+        // Forward instrument desk with three physical displays facing the pilot.
+        box(out,-1.92f,51.00f,-2.65f,1.92f,52.04f,-1.65f,seat);
+        box(out,-1.99f,52.04f,-2.68f,1.99f,52.19f,-1.55f,floor);
+        for(int i=-1;i<=1;i++){
+            float x=i*1.22f;
+            box(out,x-.54f,52.18f,-2.48f,x+.54f,52.84f,-2.24f,seat);
+            box(out,x-.47f,52.26f,-2.24f,x+.47f,52.76f,-2.21f,screen);
+            for(int j=0;j<3;j++)box(out,x-.37f,52.34f+j*.12f,-2.21f,x+.31f-j*.09f,52.39f+j*.12f,-2.20f,lit);
+        }
+        for(int i=0;i<11;i++){
+            float x=-1.65f+i*.32f;
+            box(out,x,52.19f,-1.94f,x+.17f,52.25f,-1.72f,i%4==0?amber:lit);
+        }
+        // Two side consoles and a rear life-support rack.
+        for(int side:new int[]{-1,1}){
+            float x=side*2.55f;
+            box(out,x-.42f,51,-.95f,x+.42f,52.15f,1.2f,seat);
+            box(out,x-.42f,52.15f,-.95f,x+.42f,52.25f,1.2f,floor);
+            for(int j=0;j<5;j++)box(out,x-.28f,52.25f,-.70f+j*.35f,x+.27f,52.30f,-.52f+j*.35f,j%2==0?lit:amber);
+            ring(out,side*1.18f,2.55f,51,.38f,53.2f,.38f,wall);
+            cap(out,side*1.18f,2.55f,53.2f,.38f,true,wall);
+            ring(out,side*1.18f,2.55f,52.55f,.39f,52.68f,.39f,lit);
+        }
+        box(out,-.48f,51,2.65f,.48f,53.2f,3.24f,floor);
+        box(out,-.34f,52.2f,2.63f,.34f,52.85f,2.65f,screen);
+        box(out,-.25f,52.5f,2.61f,.25f,52.62f,2.63f,lit);
+        // Floor ribs and overhead lamps.
+        for(int j=0;j<6;j++){
+            float z=-1.5f+j*.55f;
+            box(out,-1.25f,50.95f,z,1.25f,50.99f,z+.06f,0xff8698aa);
+        }
+        for(int i=0;i<8;i++)panel(out,3.52f,3.59f,54.36f,54.53f,.28f,i*Math.PI/4,lit);
+        return List.copyOf(out);
+    }
+    private static void box(List<Quad> out,float x,float y,float z,float X,float Y,float Z,int color){
+        Point a=new Point(x,y,z),b=new Point(X,y,z),c=new Point(X,Y,z),d=new Point(x,Y,z);
+        Point e=new Point(x,y,Z),f=new Point(X,y,Z),g=new Point(X,Y,Z),h=new Point(x,Y,Z);
+        quad(out,a,b,c,d,color);quad(out,e,h,g,f,color);quad(out,a,d,h,e,color);
+        quad(out,b,f,g,c,color);quad(out,a,e,f,b,color);quad(out,d,c,g,h,color);
     }
     private static void panel(List<Quad> out,float r0,float r1,float y0,float y1,float w,double a,int color) {
         Point p=rot(r0,y0,-w,a),q=rot(r0,y0,w,a),r=rot(r0,y1,w,a),s=rot(r0,y1,-w,a);

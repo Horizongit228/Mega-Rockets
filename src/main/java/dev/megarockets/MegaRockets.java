@@ -138,7 +138,7 @@ public final class MegaRockets implements ModInitializer {
         ship.refreshPositionAndAngles(.5,MoonWorld.CRUISE_Y,lane+.5,0,0);
         if(!orbit.spawnEntity(ship)) return false;
         pilot.stopRiding();
-        if(!pilot.teleport(orbit,.5,MoonWorld.CRUISE_Y+53,lane-4.2,Set.of(),pilot.getYaw(),0)) {
+        if(!pilot.teleport(orbit,.5,MoonWorld.CRUISE_Y+51.35,lane+1.15,Set.of(),pilot.getYaw(),0)) {
             ship.discard(); return false;
         }
         if(!pilot.startRiding(ship,true)) {
@@ -183,7 +183,7 @@ public final class MegaRockets implements ModInitializer {
         ship.acceptLunarState(state);
         if(!moon.spawnEntity(ship))return false;
         pilot.stopRiding();
-        if(!pilot.teleport(moon,.5,y+53,-4.2,Set.of(),pilot.getYaw(),0)){
+        if(!pilot.teleport(moon,.5,y+51.35,1.15,Set.of(),pilot.getYaw(),0)){
             ship.discard();pilot.startRiding(old,true);return false;
         }
         if(!pilot.startRiding(ship,true)){ship.discard();return false;}

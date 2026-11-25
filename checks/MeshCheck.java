@@ -15,6 +15,13 @@ public class MeshCheck {
         }
         if(TitanMesh.QUADS.size()<2500) throw new AssertionError("Expected detailed model");
         if(minY!=0||maxY!=64||maxX>7||maxZ>7) throw new AssertionError("Model does not fit entity bounds");
+        if(TitanMesh.GLASS.size()!=56||TitanMesh.CABIN.size()<250)throw new AssertionError("Cabin mesh missing");
+        for(var list:java.util.List.of(TitanMesh.GLASS,TitanMesh.CABIN))for(var q:list){
+            float n=q.nx()*q.nx()+q.ny()*q.ny()+q.nz()*q.nz();
+            if(!Float.isFinite(n)||Math.abs(n-1)>1e-4)throw new AssertionError("Cabin normal");
+            for(var point:q.points())if(point.y()<50.9||point.y()>55.5||Math.hypot(point.x(),point.z())>3.81)throw new AssertionError("Cabin outside upper stage");
+        }
+        System.out.println("PASS cabin: "+TitanMesh.CABIN.size()+" interior quads, "+TitanMesh.GLASS.size()+" glass panes");
         System.out.printf("PASS: %d quads; height %.1f; extents X=±%.1f, Z=±%.1f; all normals finite and normalized.%n",TitanMesh.QUADS.size(),maxY-minY,maxX,maxZ);
     }
 }
