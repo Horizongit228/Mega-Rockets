@@ -1,0 +1,14 @@
+{
+  "entity.megarockets.titan_1": "Титан-1",
+  "message.megarockets.spawn_world": "Создавайте ракету в обычном мире ниже Y=180.",
+  "message.megarockets.clearance": "Освободите место шириной 14 и высотой 64 блока.",
+  "message.megarockets.failed": "Операция не удалась; при необходимости /rocket return.",
+  "message.megarockets.spawned": "Титан-1 установлен. Подойдите и введите /rocket launch.",
+  "message.megarockets.no_rocket": "Рядом нет готовой ракеты (или запуск уже начался).",
+  "message.megarockets.orbit": "Орбита достигнута! /rocket return — возвращение домой.",
+  "message.megarockets.returned": "Вы вернулись к точке появления обычного мира.",
+  "message.megarockets.seated": "Вы на обзорном месте. Введите /rocket launch.",
+  "message.megarockets.countdown": "Старт через %s…",
+  "message.megarockets.liftoff": "Старт!",
+  "message.megarockets.altitude": "Высота: Y=%s"
+}

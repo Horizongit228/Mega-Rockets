@@ -1,0 +1,14 @@
+{
+  "entity.megarockets.titan_1": "Titan-1",
+  "message.megarockets.spawn_world": "Spawn in the Overworld below Y=180.",
+  "message.megarockets.clearance": "Clear an area 14 blocks wide and 64 blocks high.",
+  "message.megarockets.failed": "Operation failed; use /rocket return if necessary.",
+  "message.megarockets.spawned": "Titan-1 deployed. Use /rocket launch nearby.",
+  "message.megarockets.no_rocket": "No ready rocket nearby (or already launching).",
+  "message.megarockets.orbit": "Orbit reached! Use /rocket return to go home.",
+  "message.megarockets.returned": "Returned to the Overworld spawn.",
+  "message.megarockets.seated": "Observation seat occupied. Use /rocket launch.",
+  "message.megarockets.countdown": "Launch in %s…",
+  "message.megarockets.liftoff": "Liftoff!",
+  "message.megarockets.altitude": "Altitude: Y=%s"
+}
