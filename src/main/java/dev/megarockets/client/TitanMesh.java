@@ -5,7 +5,7 @@ import java.util.List;
 
 /** Precomputed fixed model; all coordinates in Minecraft blocks. */
 public final class TitanMesh {
-    private static final int SIDES=24;
+    private static final int SIDES=48;
     private static final int WHITE=0xffe4e8ee, GRAY=0xff9aa6b4, DARK=0xff303b4b, BLUE=0xff286583, GOLD=0xffbf8136;
     public record Point(float x,float y,float z) {}
     public record Quad(Point[] points,float nx,float ny,float nz,int argb) {}
@@ -26,12 +26,35 @@ public final class TitanMesh {
         ring(out,0,0,56,3.8f,60,2.3f,WHITE);
         ring(out,0,0,60,2.3f,63,0.8f,WHITE);
         ring(out,0,0,63,.8f,64,0,GRAY);
+        // Raised structural bands, separated from the main hull surface.
+        for(float y:new float[]{13.2f,18.0f,23.0f,26.5f,29.2f,34.0f,39.0f,41.5f}) {
+            ring(out,0,0,y,5.005f,y+.07f,5.10f,GRAY);
+            ring(out,0,0,y+.07f,5.10f,y+.22f,5.10f,DARK);
+            ring(out,0,0,y+.22f,5.10f,y+.29f,5.005f,GRAY);
+        }
+        // Long raised silver raceways and dark access panels.
+        for(int i=0;i<8;i++) {
+            double a=i*Math.PI/4;
+            panel(out,5.02f,5.16f,14,26,.13f,a,GRAY);
+            panel(out,5.02f,5.16f,30,41,.13f,a,GRAY);
+            panel(out,5.02f,5.12f,16,18,.48f,a,DARK);
+            panel(out,3.82f,3.95f,49,51,.36f,a,GRAY);
+            panel(out,3.82f,3.97f,52.35f,53.65f,.38f,a,0xff132f49);
+        }
+        ring(out,0,0,47.8f,3.86f,48.1f,3.91f,DARK);
+        ring(out,0,0,55.2f,3.83f,55.4f,3.91f,GRAY);
         cap(out,0,0,3,4.3f,false,DARK);
         for(int i=0;i<7;i++) {
             float a=(float)(i*Math.PI/3),x=i==6?0:2.8f*(float)Math.cos(a),z=i==6?0:2.8f*(float)Math.sin(a);
             ring(out,x,z,0,1.12f,1.2f,.87f,DARK);
             ring(out,x,z,1.2f,.87f,3.5f,.65f,GRAY);
-            cap(out,x,z,0,1.12f,false,GOLD);
+            ring(out,x,z,.08f,1.14f,.24f,1.14f,GRAY);
+            ring(out,x,z,.54f,1.04f,.67f,1.04f,GOLD);
+            ring(out,x,z,1.20f,.91f,1.38f,.91f,DARK);
+            ring(out,x,z,2.2f,.80f,2.38f,.80f,GOLD);
+            ring(out,x,z,0,1.12f,0,.72f,GOLD);
+            ring(out,x,z,0,.72f,.35f,.55f,DARK);
+            cap(out,x,z,.35f,.55f,false,0xff171d25);
         }
         for(int i=0;i<4;i++) {
             double a=i*Math.PI/2;
@@ -41,6 +64,12 @@ public final class TitanMesh {
             quad(out,p,P,Q,q,DARK); quad(out,q,Q,R,r,GRAY); quad(out,r,R,P,p,GRAY);
         }
         return List.copyOf(out);
+    }
+    private static void panel(List<Quad> out,float r0,float r1,float y0,float y1,float w,double a,int color) {
+        Point p=rot(r0,y0,-w,a),q=rot(r0,y0,w,a),r=rot(r0,y1,w,a),s=rot(r0,y1,-w,a);
+        Point P=rot(r1,y0,-w,a),Q=rot(r1,y0,w,a),R=rot(r1,y1,w,a),S=rot(r1,y1,-w,a);
+        quad(out,P,Q,R,S,color); quad(out,p,P,S,s,GRAY); quad(out,Q,q,r,R,GRAY);
+        quad(out,p,q,Q,P,DARK); quad(out,s,S,R,r,GRAY);
     }
     private static Point rot(float x,float y,float z,double a) {
         return new Point((float)(x*Math.cos(a)-z*Math.sin(a)),y,(float)(x*Math.sin(a)+z*Math.cos(a)));

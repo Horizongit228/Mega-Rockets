@@ -10,5 +10,6 @@
   "message.megarockets.seated": "Observation seat occupied. Use /rocket launch.",
   "message.megarockets.countdown": "Launch in %s…",
   "message.megarockets.liftoff": "Liftoff!",
-  "message.megarockets.altitude": "Altitude: Y=%s"
+  "message.megarockets.altitude": "Altitude: Y=%s / %s | Speed: %s blocks/s",
+  "message.megarockets.target_reached": "Target altitude Y=%s reached! Transferring to orbit."
 }

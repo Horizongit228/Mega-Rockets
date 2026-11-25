@@ -17,6 +17,7 @@ public final class TitanRenderer extends EntityRenderer<TitanRocket> {
     @Override public Identifier getTexture(TitanRocket rocket) { return TEXTURE; }
     @Override public void render(TitanRocket rocket, float yaw, float tickDelta, MatrixStack matrices,
                                   VertexConsumerProvider consumers, int light) {
+        if (rocket.getY() >= 320) light = 0xF000F0; // Prevent a dark hull beyond the world lighting sections.
         VertexConsumer buffer = consumers.getBuffer(RenderLayer.getEntityCutoutNoCull(TEXTURE));
         MatrixStack.Entry matrix = matrices.peek();
         for (TitanMesh.Quad q : TitanMesh.QUADS) {

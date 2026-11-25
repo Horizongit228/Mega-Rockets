@@ -10,5 +10,6 @@
   "message.megarockets.seated": "Вы на обзорном месте. Введите /rocket launch.",
   "message.megarockets.countdown": "Старт через %s…",
   "message.megarockets.liftoff": "Старт!",
-  "message.megarockets.altitude": "Высота: Y=%s"
+  "message.megarockets.altitude": "Высота: Y=%s / %s | Скорость: %s бл/с",
+  "message.megarockets.target_reached": "Целевая высота Y=%s достигнута! Переход на орбиту."
 }

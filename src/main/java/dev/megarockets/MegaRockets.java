@@ -66,7 +66,7 @@ public final class MegaRockets implements ModInitializer {
         TitanRocket rocket;
         if (player.getVehicle() instanceof TitanRocket mounted) rocket = mounted;
         else rocket = player.getServerWorld().getEntitiesByClass(TitanRocket.class, player.getBoundingBox().expand(22),
-                r -> !r.hasPassengers() && r.getY() <= 250 && r.getWorld().getRegistryKey().equals(World.OVERWORLD))
+                r -> !r.hasPassengers() && r.getY() < TitanRocket.TARGET_ALTITUDE && r.getWorld().getRegistryKey().equals(World.OVERWORLD))
             .stream().min(Comparator.comparingDouble(r -> r.squaredDistanceTo(player))).orElse(null);
         if (rocket == null || !rocket.beginLaunch(player)) {
             source.sendError(Text.translatable("message.megarockets.no_rocket")); return 0;

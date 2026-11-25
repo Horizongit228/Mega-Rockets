@@ -17,6 +17,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 public final class TitanRocket extends Entity {
+    public static final int TARGET_ALTITUDE = 10_000;
     private int countdown;
     private int flightTicks;
     private boolean flying;
@@ -51,7 +52,7 @@ public final class TitanRocket extends Entity {
     }
 
     public boolean beginLaunch(ServerPlayerEntity pilot) {
-        if (!getWorld().getRegistryKey().equals(World.OVERWORLD) || getY() > 250 || countdown > 0 || flying) return false;
+        if (!getWorld().getRegistryKey().equals(World.OVERWORLD) || getY() >= TARGET_ALTITUDE || countdown > 0 || flying) return false;
         if (pilot.getVehicle() != this && !pilot.startRiding(this)) return false;
         countdown = 100;
         pilot.sendMessage(Text.translatable("message.megarockets.countdown", 5), true);
@@ -73,15 +74,22 @@ public final class TitanRocket extends Entity {
             return;
         }
         flightTicks++;
-        double speed = Math.min(1.8, .06 + flightTicks*.017);
+        // Slow departure in the atmosphere, then faster cruise above the build limit.
+        double speed = Math.min(getY() < 320 ? 1.8 : 8.0, .06 + flightTicks*.017);
+        if (getY() >= 9_950) speed = Math.min(speed, Math.max(.4, (TARGET_ALTITUDE - getY()) * .12));
         // Server-authoritative scripted flight; not a physical thrust simulation.
-        setPosition(getX(), Math.min(250, getY()+speed), getZ());
+        setPosition(getX(), Math.min(TARGET_ALTITUDE, getY()+speed), getZ());
         pilot.fallDistance = 0;
-        world.spawnParticles(ParticleTypes.FLAME, getX(), getY()-.35, getZ(), 28, 2.2, .45, 2.2, .12);
-        if (flightTicks % 3 == 0)
-            world.spawnParticles(ParticleTypes.CAMPFIRE_COSY_SMOKE, getX(), getY()-1, getZ(), 8, 2, .5, 2, .02);
-        if (flightTicks % 20 == 0) pilot.sendMessage(Text.translatable("message.megarockets.altitude", (int)getY()), true);
-        if (getY() >= 250) {
+        for (int i=0; i<7; i++) {
+            double angle=i*Math.PI/3, dx=i==6?0:2.8*Math.cos(angle), dz=i==6?0:2.8*Math.sin(angle);
+            // Send to the pilot explicitly: the seat is 53 blocks above the engines.
+            world.spawnParticles(pilot, ParticleTypes.FLAME, true, getX()+dx, getY()-.6, getZ()+dz, 5, .35, .55, .35, .10);
+            if (getY()<320 && flightTicks%4==0)
+                world.spawnParticles(pilot, ParticleTypes.CAMPFIRE_COSY_SMOKE, true, getX()+dx, getY()-1.2, getZ()+dz, 2, .45, .55, .45, .03);
+        }
+        if (flightTicks % 20 == 0) pilot.sendMessage(Text.translatable("message.megarockets.altitude", (int)getY(), TARGET_ALTITUDE, (int)(speed*20)), true);
+        if (getY() >= TARGET_ALTITUDE) {
+            pilot.sendMessage(Text.translatable("message.megarockets.target_reached", TARGET_ALTITUDE), false);
             flying = false; flightTicks = 0;
             if (!MegaRockets.arrive(this, pilot)) pilot.sendMessage(Text.translatable("message.megarockets.failed"), false);
         }

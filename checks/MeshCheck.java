@@ -13,6 +13,7 @@ public class MeshCheck {
                 maxX=Math.max(maxX,Math.abs(p.x()));maxZ=Math.max(maxZ,Math.abs(p.z()));
             }
         }
+        if(TitanMesh.QUADS.size()<2500) throw new AssertionError("Expected detailed model");
         if(minY!=0||maxY!=64||maxX>7||maxZ>7) throw new AssertionError("Model does not fit entity bounds");
         System.out.printf("PASS: %d quads; height %.1f; extents X=±%.1f, Z=±%.1f; all normals finite and normalized.%n",TitanMesh.QUADS.size(),maxY-minY,maxX,maxZ);
     }
