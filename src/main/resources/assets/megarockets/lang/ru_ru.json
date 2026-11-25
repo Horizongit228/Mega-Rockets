@@ -55,5 +55,9 @@
   "item.megarockets.titan_1": "Ракета Титан-1",
   "message.megarockets.rocket_ground": "Нужна ровная поверхность перед вами для установки ракеты.",
   "message.megarockets.rocket_placed": "Титан-1 установлен. /rocket launch — старт с Земли.",
-  "message.megarockets.rocket_removed": "Ракета убрана."
+  "message.megarockets.rocket_removed": "Ракета убрана.",
+  "block.megarockets.martian_regolith": "Марсианский реголит",
+  "block.megarockets.martian_rock": "Марсианская порода",
+  "block.megarockets.martian_ore": "Марсианская руда",
+  "biome.megarockets.martian_desert": "Марсианская пустыня"
 }

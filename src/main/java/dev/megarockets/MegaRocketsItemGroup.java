@@ -16,6 +16,9 @@ public final class MegaRocketsItemGroup {
                 .icon(() -> new ItemStack(RocketItems.TITAN))
                 .entries((context, entries) -> {
                     entries.add(RocketItems.TITAN);
+                    entries.add(MarsBlocks.REGOLITH);
+                    entries.add(MarsBlocks.ROCK);
+                    entries.add(MarsBlocks.ORE);
                     entries.add(MoonBlocks.ROCK);
                     entries.add(MoonBlocks.REGOLITH);
                     entries.add(MoonBlocks.BASALT);

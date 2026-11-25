@@ -15,6 +15,8 @@ public abstract class SpaceGravityMixin {
         Entity self=(Entity)(Object)this;
         if(MegaRockets.isMoon(self.getWorld()))
             cir.setReturnValue(cir.getReturnValue()*.165);
+        else if(self.getWorld().getRegistryKey().equals(MegaRockets.MARS))
+            cir.setReturnValue(cir.getReturnValue()*.38);
         else if(self.getWorld().getRegistryKey().equals(MegaRockets.ORBIT))
             cir.setReturnValue(0.0);
     }

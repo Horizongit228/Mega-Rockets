@@ -5,6 +5,9 @@
     "megarockets:lunar_regolith",
     "megarockets:lunar_basalt",
     "megarockets:lunar_crystal_ore",
-    "megarockets:lunar_landing_tile"
+    "megarockets:lunar_landing_tile",
+    "megarockets:martian_regolith",
+    "megarockets:martian_rock",
+    "megarockets:martian_ore"
   ]
 }

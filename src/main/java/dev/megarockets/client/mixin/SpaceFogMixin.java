@@ -18,6 +18,7 @@ public abstract class SpaceFogMixin {
     @Shadow private static float blue;
     @Inject(method="render",at=@At("RETURN"))
     private static void megaRockets$darkFog(Camera camera,float delta,ClientWorld world,int distance,float skyDarkness,CallbackInfo ci){
+        if(world.getRegistryKey().equals(dev.megarockets.MegaRockets.MARS)){red=.42f;green=.24f;blue=.14f;RenderSystem.clearColor(red,green,blue,0);return;}
         float f=(float)SpaceSky.darkness(world,camera.getPos().y);
         if(f>0){red=red*(1-f)+.008f*f;green=green*(1-f)+.012f*f;blue=blue*(1-f)+.03f*f;RenderSystem.clearColor(red,green,blue,0);}
     }

@@ -55,5 +55,9 @@
   "item.megarockets.titan_1": "Titan-1 Rocket",
   "message.megarockets.rocket_ground": "A level surface ahead is required to deploy the rocket.",
   "message.megarockets.rocket_placed": "Titan-1 deployed. /rocket launch starts the Earth mission.",
-  "message.megarockets.rocket_removed": "Rocket removed."
+  "message.megarockets.rocket_removed": "Rocket removed.",
+  "block.megarockets.martian_regolith": "Martian regolith",
+  "block.megarockets.martian_rock": "Martian rock",
+  "block.megarockets.martian_ore": "Martian ore",
+  "biome.megarockets.martian_desert": "Martian desert"
 }

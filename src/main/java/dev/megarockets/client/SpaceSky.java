@@ -27,7 +27,7 @@ public final class SpaceSky {
         }return out;
     }
     public static double darkness(ClientWorld world,double y){
-        if(world.getRegistryKey().equals(MegaRockets.ORBIT)||MegaRockets.isMoon(world))return 1;
+        if(world.getRegistryKey().equals(MegaRockets.ORBIT)||MegaRockets.isMoon(world)||world.getRegistryKey().equals(MegaRockets.MARS))return 1;
         if(!world.getRegistryKey().equals(World.OVERWORLD))return 0;
         double t=Math.max(0,Math.min(1,(y-180)/1100));return t*t*(3-2*t);
     }
@@ -42,7 +42,9 @@ public final class SpaceSky {
     public static void render(Matrix4f matrix,Camera camera,ClientWorld world,float delta,Runnable fog){
         Vec3d pos=camera.getPos();double dark=darkness(world,pos.y);
         boolean orbit=world.getRegistryKey().equals(MegaRockets.ORBIT),moon=MegaRockets.isMoon(world);
+        boolean mars=world.getRegistryKey().equals(MegaRockets.MARS);
         Vec3d sky=world.getSkyColor(pos,delta).multiply(1-dark);
+        if(mars)sky=new Vec3d(.42,.24,.14);
         RenderSystem.depthMask(false);RenderSystem.disableCull();RenderSystem.enableBlend();RenderSystem.defaultBlendFunc();
         RenderSystem.setShader(GameRenderer::getPositionColorProgram);RenderSystem.setShaderColor(1,1,1,1);
         BackgroundRenderer.clearFog();
@@ -58,7 +60,7 @@ public final class SpaceSky {
             BufferBuilder stars=begin();
             for(Star star:STARS){
                 Vec3d center=star.dir.multiply(85),a=axis(star.dir).multiply(star.size),b=star.dir.crossProduct(a).normalize().multiply(star.size);
-                int c=((int)(dark*240)<<24)|star.rgb;
+                int c=((int)(dark*(mars?45:240))<<24)|star.rgb;
                 Vec3d q=center.subtract(a).subtract(b),w=center.add(a).subtract(b),e=center.add(a).add(b),r=center.subtract(a).add(b);
                 v(stars,matrix,q,c);v(stars,matrix,w,c);v(stars,matrix,e,c);v(stars,matrix,q,c);v(stars,matrix,e,c);v(stars,matrix,r,c);
             }draw(stars);
@@ -68,6 +70,10 @@ public final class SpaceSky {
                 Vec3d toward=new Vec3d((6000.5+4600)-pos.x,56-pos.y,.5-pos.z);
                 double radius=Math.min(.78,4096/Math.max(4600,toward.length()));
                 planet(matrix,toward.normalize(),radius,false,1);
+                Vec3d redPlanet=new Vec3d(28000-pos.x,65-pos.y,4500-pos.z);
+                marsDisk(matrix,redPlanet.normalize(),Math.min(.68,2600/Math.max(3900,redPlanet.length())));
+            }else if(mars){
+                planet(matrix,new Vec3d(-.8,.5,.3).normalize(),.035,true,1);
             }else if(moon){
                 planet(matrix,new Vec3d(-.8,.55,.4).normalize(),.18,true,1);
             }else{
@@ -124,6 +130,23 @@ public final class SpaceSky {
         double grain=Math.sin(x*43+Math.cos(y*31))*Math.cos(y*37-x*13);
         double limb=Math.pow(r,5);
         return color(255,247-48*limb+4*grain,218-100*limb+8*grain,(int)(255*alpha));
+    }
+    private static void marsDisk(Matrix4f matrix,Vec3d dir,double angular){
+        Vec3d center=dir.multiply(45),u=axis(dir),w=dir.crossProduct(u).normalize();double radius=45*angular;
+        BufferBuilder b=begin();
+        for(int ring=0;ring<32;ring++)for(int i=0;i<96;i++){
+            double r=ring/32.,s=(ring+1)/32.,a=i*Math.PI/48,c=(i+1)*Math.PI/48;
+            Vec3d p=point(center,u,w,radius,r,a),q=point(center,u,w,radius,r,c),t=point(center,u,w,radius,s,c),vtx=point(center,u,w,radius,s,a);
+            int p1=marsColor(r,a),p2=marsColor(r,c),p3=marsColor(s,c),p4=marsColor(s,a);
+            v(b,matrix,p,p1);v(b,matrix,q,p2);v(b,matrix,t,p3);v(b,matrix,p,p1);v(b,matrix,t,p3);v(b,matrix,vtx,p4);
+        }draw(b);
+    }
+    private static int marsColor(double r,double a){
+        double x=r*Math.cos(a),y=r*Math.sin(a),z=Math.sqrt(Math.max(0,1-r*r));
+        double light=.26+.74*Math.max(0,.45*x+.4*y+.79*z);
+        double n=Math.sin(x*9+Math.cos(y*7))*Math.cos(y*11-x*4)+.23*Math.sin(x*29+y*17);
+        if(Math.abs(y)>.88)return color(227*light,214*light,194*light,255);
+        return color((175+34*n)*light,(91+22*n)*light,(57+15*n)*light,255);
     }
     private static void planet(Matrix4f matrix,Vec3d dir,double angular,boolean earth,double alpha){
         Vec3d center=dir.multiply(45),u=axis(dir),w=dir.crossProduct(u).normalize();double radius=45*angular;

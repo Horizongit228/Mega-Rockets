@@ -26,6 +26,7 @@ import java.util.Set;
 public final class MegaRockets implements ModInitializer {
     public static final String ID = "megarockets";
     public static final RegistryKey<World> ORBIT = RegistryKey.of(RegistryKeys.WORLD, id("orbit"));
+    public static final RegistryKey<World> MARS=RegistryKey.of(RegistryKeys.WORLD,id("mars"));
     public static final RegistryKey<World> MOON=RegistryKey.of(RegistryKeys.WORLD,id("moon"));
     public static final RegistryKey<World> MOON_MIDDLE=RegistryKey.of(RegistryKeys.WORLD,id("moon_middle"));
     public static final RegistryKey<World> MOON_SOUTH=RegistryKey.of(RegistryKeys.WORLD,id("moon_south"));
@@ -38,6 +39,8 @@ public final class MegaRockets implements ModInitializer {
 
     @Override public void onInitialize() {
         MoonBlocks.init();
+        MarsBlocks.init();
+        Registry.register(Registries.CHUNK_GENERATOR,id("mars_terrain"),MarsChunkGenerator.CODEC);
         RocketItems.init();
         MegaRocketsItemGroup.init();
         Registry.register(Registries.CHUNK_GENERATOR,id("moon_sphere"),MoonChunkGenerator.CODEC);

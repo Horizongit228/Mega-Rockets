@@ -1,0 +1,10 @@
+{
+  "type": "megarockets:mars",
+  "generator": {
+    "type": "megarockets:mars_terrain",
+    "biome_source": {
+      "type": "minecraft:fixed",
+      "biome": "megarockets:martian_desert"
+    }
+  }
+}
