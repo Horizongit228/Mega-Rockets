@@ -25,7 +25,7 @@ public final class MoonWorld {
         return .165*Math.max(0,1-(d-85)/100);
     }
     public static void request(ServerWorld world) {
-        if(ready.contains(world)||progress.containsKey(world)) return;
+        if(!world.getRegistryKey().equals(MegaRockets.ORBIT)||ready.contains(world)||progress.containsKey(world)) return;
         if(world.getBlockState(MARKER).isOf(Blocks.BEDROCK)) ready.add(world);
         else progress.put(world,0);
     }

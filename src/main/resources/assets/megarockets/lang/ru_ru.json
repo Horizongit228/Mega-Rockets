@@ -16,5 +16,16 @@
   "message.megarockets.moon_distance": "До Луны: %s бл. | Скорость: %s бл/с",
   "message.megarockets.moon_descent": "Луна достигнута. Начинаем посадку!",
   "message.megarockets.moon_landing": "Высота над площадкой: %s бл.",
-  "message.megarockets.moon_arrived": "Посадка успешна! Shift — выйти на поверхность. /rocket return — домой."
+  "message.megarockets.moon_arrived": "Посадка успешна! Shift — выйти на поверхность. /rocket return — домой.",
+  "message.megarockets.phase.orbit": "Подготовка на орбите",
+  "message.megarockets.phase.departure": "Разгон к Луне",
+  "message.megarockets.phase.coast": "Инерционный перелёт",
+  "message.megarockets.phase.turn": "Разворот для торможения",
+  "message.megarockets.phase.brake": "Торможение",
+  "message.megarockets.phase.hold": "Ожидание готовности Луны",
+  "message.megarockets.phase.align": "Выравнивание над площадкой",
+  "message.megarockets.phase.descent": "Снижение",
+  "message.megarockets.phase.final": "Мягкая посадка",
+  "message.megarockets.phase.landed": "Посадка завершена",
+  "message.megarockets.mission_status": "%s | Путь %s%% | До Луны %s бл. | %s бл/с | Над площадкой %s бл."
 }

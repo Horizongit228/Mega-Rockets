@@ -10,14 +10,25 @@ import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.RotationAxis;
+import net.minecraft.client.render.Frustum;
 
 public final class TitanRenderer extends EntityRenderer<TitanRocket> {
     private static final Identifier TEXTURE = MegaRockets.id("textures/entity/titan_white.png");
     public TitanRenderer(EntityRendererFactory.Context context) { super(context); shadowRadius=0; }
+    @Override public boolean shouldRender(TitanRocket rocket,Frustum frustum,double x,double y,double z) {
+        // Tilted hull and exhaust can extend outside the original vertical collision box.
+        if(rocket.hasPassengers() && rocket.squaredDistanceTo(x,y,z)<256*256) return true;
+        return super.shouldRender(rocket,frustum,x,y,z);
+    }
     @Override public Identifier getTexture(TitanRocket rocket) { return TEXTURE; }
     @Override public void render(TitanRocket rocket, float yaw, float tickDelta, MatrixStack matrices,
                                   VertexConsumerProvider consumers, int light) {
         if (rocket.getY() >= 320) light = 0xF000F0; // Prevent a dark hull beyond the world lighting sections.
+        matrices.push();
+        matrices.translate(0,32,0);
+        matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(rocket.getPitch(tickDelta)));
+        matrices.translate(0,-32,0);
         VertexConsumer buffer = consumers.getBuffer(RenderLayer.getEntityCutoutNoCull(TEXTURE));
         MatrixStack.Entry matrix = matrices.peek();
         for (TitanMesh.Quad q : TitanMesh.QUADS) {
@@ -40,6 +51,7 @@ public final class TitanRenderer extends EntityRenderer<TitanRocket> {
                 plume(exhaust,matrix,x,z,-8.2f,.34f,-length,.015f,0xffdc3812);
             }
         }
+        matrices.pop();
         super.render(rocket,yaw,tickDelta,matrices,consumers,light);
     }
     private static void plume(VertexConsumer out, MatrixStack.Entry matrix,float x,float z,float y0,float r0,float y1,float r1,int color) {

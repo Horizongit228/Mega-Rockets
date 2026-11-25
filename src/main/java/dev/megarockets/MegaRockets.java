@@ -39,6 +39,7 @@ public final class MegaRockets implements ModInitializer {
                 .requires(source -> source.hasPermissionLevel(2))
                 .then(CommandManager.literal("spawn").executes(ctx -> spawn(ctx.getSource())))
                 .then(CommandManager.literal("launch").executes(ctx -> launch(ctx.getSource())))
+                .then(CommandManager.literal("status").executes(ctx -> status(ctx.getSource())))
                 .then(CommandManager.literal("return").executes(ctx -> returnHome(ctx.getSource())))));
     }
 
@@ -68,12 +69,21 @@ public final class MegaRockets implements ModInitializer {
         TitanRocket rocket;
         if (player.getVehicle() instanceof TitanRocket mounted) rocket = mounted;
         else rocket = player.getServerWorld().getEntitiesByClass(TitanRocket.class, player.getBoundingBox().expand(22),
-                r -> !r.hasPassengers() && r.getY() < TitanRocket.TARGET_ALTITUDE && r.getWorld().getRegistryKey().equals(World.OVERWORLD))
+                r -> !r.hasPassengers() && (r.canResumeMoon() || (r.getY() < TitanRocket.TARGET_ALTITUDE && r.getWorld().getRegistryKey().equals(World.OVERWORLD))))
             .stream().min(Comparator.comparingDouble(r -> r.squaredDistanceTo(player))).orElse(null);
         if (rocket == null || !rocket.beginLaunch(player)) {
             source.sendError(Text.translatable("message.megarockets.no_rocket")); return 0;
         }
         return 1;
+    }
+
+    private static int status(ServerCommandSource source) throws com.mojang.brigadier.exceptions.CommandSyntaxException {
+        ServerPlayerEntity player=source.getPlayerOrThrow();
+        TitanRocket ship=player.getVehicle() instanceof TitanRocket mounted?mounted:
+            player.getServerWorld().getEntitiesByClass(TitanRocket.class,player.getBoundingBox().expand(100),e->true)
+                .stream().min(Comparator.comparingDouble(e->e.squaredDistanceTo(player))).orElse(null);
+        if(ship==null){source.sendError(Text.translatable("message.megarockets.no_rocket"));return 0;}
+        source.sendFeedback(ship::missionStatus,false);return 1;
     }
 
     static boolean arrive(TitanRocket old, ServerPlayerEntity pilot) {

@@ -16,5 +16,16 @@
   "message.megarockets.moon_distance": "Moon distance: %s blocks | Speed: %s blocks/s",
   "message.megarockets.moon_descent": "Moon reached. Beginning descent!",
   "message.megarockets.moon_landing": "Height above landing pad: %s blocks",
-  "message.megarockets.moon_arrived": "Landed! Shift to exit onto the surface. /rocket return to go home."
+  "message.megarockets.moon_arrived": "Landed! Shift to exit onto the surface. /rocket return to go home.",
+  "message.megarockets.phase.orbit": "Orbital preparation",
+  "message.megarockets.phase.departure": "Trans-lunar burn",
+  "message.megarockets.phase.coast": "Inertial coast",
+  "message.megarockets.phase.turn": "Turn for braking",
+  "message.megarockets.phase.brake": "Braking burn",
+  "message.megarockets.phase.hold": "Waiting for Moon terrain",
+  "message.megarockets.phase.align": "Landing alignment",
+  "message.megarockets.phase.descent": "Descent",
+  "message.megarockets.phase.final": "Final landing",
+  "message.megarockets.phase.landed": "Landed",
+  "message.megarockets.mission_status": "%s | Transfer %s%% | Moon %s blocks | %s blocks/s | Above pad %s blocks"
 }

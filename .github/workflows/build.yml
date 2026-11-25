@@ -30,6 +30,10 @@ jobs:
         run: |
           javac -d mesh-check src/main/java/dev/megarockets/FlightProfile.java checks/FlightCheck.java
           java -cp mesh-check FlightCheck
+      - name: Check lunar mission
+        run: |
+          javac -d mesh-check src/main/java/dev/megarockets/LunarFlight.java checks/LunarFlightCheck.java
+          java -cp mesh-check LunarFlightCheck
       - name: Build Fabric mod
         run: gradle build --stacktrace
       - uses: actions/upload-artifact@v4
