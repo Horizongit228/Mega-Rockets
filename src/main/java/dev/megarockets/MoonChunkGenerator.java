@@ -78,12 +78,25 @@ public final class MoonChunkGenerator extends ChunkGenerator {
                 if(type!=MoonTerrain.AIR)chunk.setBlockState(pos.set(x,y,z),state(type),false);
             }
         }
+        for(int gx=Math.floorDiv(x0-4,32);gx<=Math.floorDiv(x0+19,32);gx++)
+        for(int gz=Math.floorDiv(z0-4,32);gz<=Math.floorDiv(z0+19,32);gz++){
+            var rock=terrain.boulder(gx,gz);if(rock==null)continue;
+            int r=rock.radius();
+            for(int x=Math.max(x0,rock.x()-r);x<=Math.min(x0+15,rock.x()+r);x++)
+            for(int z=Math.max(z0,rock.z()-r);z<=Math.min(z0+15,rock.z()+r);z++)
+            for(int global=rock.y()-2;global<=rock.y()+r;global++){
+                int y=global-yOffset;if(y<chunk.getBottomY()||y>=chunk.getTopY())continue;
+                int mat=terrain.boulderBlock(rock,x,global,z);
+                if(mat!=MoonTerrain.AIR&&chunk.getBlockState(pos.set(x,y,z)).isAir())
+                    chunk.setBlockState(pos,state(mat),false);
+            }
+        }
         // Populate only blocks belonging to this chunk, including canopies rooted across a boundary.
-        for(int gx=Math.floorDiv(x0-3,16);gx<=Math.floorDiv(x0+18,16);gx++)
-        for(int gz=Math.floorDiv(z0-3,16);gz<=Math.floorDiv(z0+18,16);gz++){
+        for(int gx=Math.floorDiv(x0-5,16);gx<=Math.floorDiv(x0+20,16);gx++)
+        for(int gz=Math.floorDiv(z0-5,16);gz<=Math.floorDiv(z0+20,16);gz++){
             var tree=terrain.tree(gx,gz);if(tree==null)continue;
-            for(int x=Math.max(x0,tree.x()-3);x<=Math.min(x0+15,tree.x()+3);x++)
-            for(int z=Math.max(z0,tree.z()-3);z<=Math.min(z0+15,tree.z()+3);z++)
+            for(int x=Math.max(x0,tree.x()-5);x<=Math.min(x0+15,tree.x()+5);x++)
+            for(int z=Math.max(z0,tree.z()-5);z<=Math.min(z0+15,tree.z()+5);z++)
             for(int global=tree.y();global<=tree.y()+tree.height()+2;global++){
                 int y=global-yOffset;if(y<chunk.getBottomY()||y>=chunk.getTopY())continue;
                 int mat=terrain.treeBlock(tree,x,global,z);

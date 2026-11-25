@@ -21,11 +21,17 @@ public class MoonTerrainCheck {
     else if(c.top()>=MoonTerrain.PAD_GLOBAL_Y)throw new AssertionError("Crater wall");
    }
   }
+  var kinds=EnumSet.noneOf(MoonTerrain.TreeKind.class);
+  int rocks=0,crystals=0;
   for(int x=-128;x<=128;x++)for(int z=-128;z<=128;z++){
-   var t=a.tree(x,z);if(t==null)continue;trees++;
+   var rock=a.boulder(x,z);
+   if(rock!=null){rocks++;if(rock.crystal())crystals++;if(!rock.equals(same.boulder(x,z))||Math.hypot(rock.x(),rock.z())<216||a.boulderBlock(rock,rock.x(),rock.y(),rock.z())==MoonTerrain.AIR)throw new AssertionError("Boulder");}
+   var t=a.tree(x,z);if(t==null)continue;trees++;kinds.add(t.kind());
    if(!t.equals(same.tree(x,z))||Math.hypot(t.x(),t.z())<208||a.treeBlock(t,t.x(),t.y(),t.z())!=MoonTerrain.WOOD||
      a.treeBlock(t,t.x(),t.y()+t.height(),t.z())!=MoonTerrain.LEAVES)throw new AssertionError("Tree");
   }
+  if(kinds.size()!=3||rocks<100||crystals<10)throw new AssertionError("Missing forest or rock variety");
+  System.out.println("PASS tree forms "+kinds+", rock formations "+rocks+", crystal formations "+crystals);
   if(caves<100||ore<100||changed<1000||trees<100||biomes.size()!=4||regions!=7||high<=4095||low>=1000)throw new AssertionError("Terrain variation missing");
   System.out.println("PASS seeded Moon: "+changed+" changed columns; "+trees+" trees; "+biomes+"; caves "+caves+"; ore "+ore);
  }

@@ -1,4 +1,4 @@
-# Mega Rockets — 0.7.1 Alpha
+# Mega Rockets — 0.7.2 Alpha
 Minecraft 1.21.1 Fabric, Java 21. Titan-1 is 64 blocks tall.
 
 ## Moon
@@ -29,3 +29,6 @@ Four registered lunar biomes (plains, highlands, crater fields, luminous forests
 
 ## 0.7.1 startup hotfix
 Register lunar wood using PillarBlock (axis) and foliage using LeavesBlock (distance, persistence, waterlogging), matching the copied vanilla settings. Generated foliage is persistent. Add log-axis models and vanilla log/leaf tags. Existing 0.7.0 terrain settings and seeds are unchanged.
+
+## 0.7.2 Solar horizon
+A circular procedural Sun with shaded warm photosphere and softly animated corona appears during ascent and in space/lunar skies. It is a visual sky body, not a flyable destination; its direction is fixed and it does not alter world lighting. Lunar forests now have round, spire-shaped and ancient broad-canopy trees. Added deterministic basalt boulders, exposed crystal-bearing rocks, layered basalt and clustered ore veins, and larger underground galleries. The landing exclusion area, world seed, 4096 radius and flight mechanics remain unchanged. Existing generated chunks are not modified; create a new world for uniform terrain, or explore new chunks in a backed-up save. No new registered block types in this update.

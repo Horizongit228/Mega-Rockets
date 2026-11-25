@@ -7,7 +7,9 @@ public final class MoonTerrain {
  public static final int AIR=0,ROCK=1,REGOLITH=2,BASALT=3,ORE=4,PAD=5,WOOD=6,LEAVES=7;
  public enum Region { PLAINS,HIGHLANDS,CRATERS,FOREST }
  public record Column(int bottom,int top,int innerBottom,int innerTop,boolean pad,double tunnelX,double tunnelZ,Region region,long seed){}
- public record Tree(int x,int y,int z,int height){}
+ public enum TreeKind { ROUND, SPIRE, ANCIENT }
+ public record Tree(int x,int y,int z,int height,TreeKind kind){}
+ public record Boulder(int x,int y,int z,int radius,boolean crystal){}
  private final long seed;
  private final double ox,oy,oz;
  public MoonTerrain(long seed){this.seed=seed;ox=10000*hash(seed,0,0,1);oy=10000*hash(seed,0,0,2);oz=10000*hash(seed,0,0,3);}
@@ -70,11 +72,19 @@ public final class MoonTerrain {
   if(depth>5){
    double a=c.tunnelX()+Math.sin((y+oy)*.094+(z+oz)*.026),b=c.tunnelZ()+Math.cos((y+oy)*.071-(x+ox)*.019);
    double chamber=Math.sin((x+ox)*.035+(y+oy)*.048)*Math.cos((z+oz)*.043-(y+oy)*.029)*Math.sin((y+oy)*.039);
-   if(a*a+b*b<.10||chamber>.85)return AIR;
+   double gallery=Math.sin((x+ox)*.018+(z+oz)*.011)*Math.cos((y+oy)*.026)+Math.sin((z+oz)*.021-(y+oy)*.019);
+   if(a*a+b*b<.10||chamber>.85||(depth>15&&gallery>1.73))return AIR;
   }
   if(depth<=4)return c.region()==Region.HIGHLANDS&&depth>1?ROCK:REGOLITH;
-  double n=hash(c.seed(),x,y,z);if(depth>10&&n<.008)return ORE;
-  return n<(c.region()==Region.CRATERS?.42:.17)?BASALT:ROCK;
+  double n=hash(c.seed(),x,y,z);
+  // Continuous mineral lenses instead of unrelated single-block ore specks.
+  if(depth>10){
+   double vein=Math.sin((x+ox)*.17+(y+oy)*.095)*Math.cos((z+oz)*.14-(y+oy)*.08)
+       +.6*Math.sin((x+ox)*.075-(z+oz)*.063+(y+oy)*.11);
+   if(n<.003||vein>1.23&&n<.47)return ORE;
+  }
+  double strata=Math.sin((y+oy)*.18+Math.sin((x+ox)*.018)*1.7+Math.cos((z+oz)*.017));
+  return strata>(c.region()==Region.CRATERS?.25:.72)||n<.035?BASALT:ROCK;
  }
  /** One candidate per 16x16 cell, jittered; canopy is reconstructed in every intersecting chunk. */
  public Tree tree(int gx,int gz){
@@ -85,14 +95,39 @@ public final class MoonTerrain {
   Column c=column(x,z);int y=c.top()+1;
   if(y<1||Math.abs(column(x-2,z).top()-c.top())>3||Math.abs(column(x+2,z).top()-c.top())>3||
       Math.abs(column(x,z-2).top()-c.top())>3||Math.abs(column(x,z+2).top()-c.top())>3)return null;
-  return new Tree(x,y,z,6+(int)(hash(seed,gx,504,gz)*5));
+  double kind=hash(seed,gx,505,gz);
+  TreeKind type=kind<.48?TreeKind.ROUND:kind<.82?TreeKind.SPIRE:TreeKind.ANCIENT;
+  int h=(type==TreeKind.ANCIENT?12:type==TreeKind.SPIRE?9:6)+(int)(hash(seed,gx,504,gz)*5);
+  return new Tree(x,y,z,h,type);
  }
  public int treeBlock(Tree t,int x,int y,int z){
   int dx=x-t.x(),dz=z-t.z(),dy=y-t.y(),h=t.height();
   if(dx==0&&dz==0&&dy>=0&&dy<h)return WOOD;
+  if(t.kind()==TreeKind.ANCIENT&&dy>=0&&dy<3&&Math.abs(dx)<=1&&Math.abs(dz)<=1)return WOOD;
   int layer=dy-h;
-  int radius=layer==-2?2:layer==-1||layer==0?3:layer==1?2:layer==2?1:-1;
+  int radius=switch(t.kind()){
+   case ROUND -> layer==-2?2:layer==-1||layer==0?3:layer==1?2:layer==2?1:-1;
+   case SPIRE -> layer>=-5&&layer<=2?Math.max(1,3-(layer+5)/3):-1;
+   case ANCIENT -> layer==-3?3:layer==-2||layer==-1||layer==0?5:layer==1?4:layer==2?2:-1;
+  };
+  if(t.kind()==TreeKind.ANCIENT&&dy>=h-4&&dy<=h-3&&
+      ((dx==0&&Math.abs(dz)<=3)||(dz==0&&Math.abs(dx)<=3)))return WOOD;
   if(radius<0||Math.abs(dx)>radius||Math.abs(dz)>radius)return AIR;
   return dx*dx+dz*dz<=radius*radius+1?LEAVES:AIR;
+ }
+ // Scattered stone formations with deterministic placement in 32-block cells.
+ public Boulder boulder(int gx,int gz){
+  int x=gx*32+6+(int)(hash(seed,gx,601,gz)*20),z=gz*32+6+(int)(hash(seed,gx,602,gz)*20);
+  double r=Math.hypot(x,z);if(r<SAFE_RADIUS+24||r>RADIUS-32)return null;
+  Region type=region(x,z);
+  if(hash(seed,gx,603,gz)>(type==Region.CRATERS?.75:type==Region.HIGHLANDS?.5:.20))return null;
+  Column c=column(x,z);
+  int radius=2+(int)(hash(seed,gx,604,gz)*3);
+  return new Boulder(x,c.top()+1,z,radius,hash(seed,gx,605,gz)<.18);
+ }
+ public int boulderBlock(Boulder b,int x,int y,int z){
+  int dx=x-b.x(),dz=z-b.z(),dy=y-b.y();
+  if(dy< -2||dy>b.radius()||dx*dx+dz*dz+2*dy*dy>b.radius()*b.radius()+1)return AIR;
+  return b.crystal()&&dy>=0&&hash(seed,x,y,z)<.30?ORE:BASALT;
  }
 }

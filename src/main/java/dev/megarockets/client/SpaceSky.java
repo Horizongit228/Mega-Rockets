@@ -62,6 +62,7 @@ public final class SpaceSky {
                 Vec3d q=center.subtract(a).subtract(b),w=center.add(a).subtract(b),e=center.add(a).add(b),r=center.subtract(a).add(b);
                 v(stars,matrix,q,c);v(stars,matrix,w,c);v(stars,matrix,e,c);v(stars,matrix,q,c);v(stars,matrix,e,c);v(stars,matrix,r,c);
             }draw(stars);
+            sun(matrix,new Vec3d(.24,.62,-.75).normalize(),dark,world.getTime()+delta);
             if(orbit){
                 planet(matrix,new Vec3d(-1,-.24,0).normalize(),Math.max(.12,.38-pos.x/30000),true,1);
                 Vec3d toward=new Vec3d((6000.5+4600)-pos.x,56-pos.y,.5-pos.z);
@@ -78,6 +79,51 @@ public final class SpaceSky {
     }
     private static Vec3d point(Vec3d center,Vec3d u,Vec3d w,double radius,double r,double a){
         return center.add(u.multiply(radius*r*Math.cos(a))).add(w.multiply(radius*r*Math.sin(a)));
+    }
+    // Render behind the planets so their disks can occult the Sun. All vertices
+    // are camera-centered, so it remains visible independent of render distance.
+    private static void sun(Matrix4f matrix,Vec3d dir,double alpha,double time){
+        Vec3d center=dir.multiply(64),u=axis(dir),w=dir.crossProduct(u).normalize();
+        double radius=2.8; int segments=96;
+        BufferBuilder b=begin();
+        // Soft extended corona, with subtly animated irregular rays.
+        for(int ring=0;ring<7;ring++){
+            double r0=1+ring*.28,r1=r0+.28;
+            for(int i=0;i<segments;i++){
+                double a=i*Math.PI*2/segments,c=(i+1)*Math.PI*2/segments;
+                Vec3d p=point(center,u,w,radius,r0,a),q=point(center,u,w,radius,r0,c),
+                    s=point(center,u,w,radius,r1,c),t=point(center,u,w,radius,r1,a);
+                int p0=corona(r0,a,alpha,time),q0=corona(r0,c,alpha,time),
+                    s0=corona(r1,c,alpha,time),t0=corona(r1,a,alpha,time);
+                v(b,matrix,p,p0);v(b,matrix,q,q0);v(b,matrix,s,s0);
+                v(b,matrix,p,p0);v(b,matrix,s,s0);v(b,matrix,t,t0);
+            }
+        }
+        // Photosphere, with bright core and warmer limb; not a flat square sprite.
+        for(int ring=0;ring<24;ring++){
+            double r0=ring/24.0,r1=(ring+1)/24.0;
+            for(int i=0;i<segments;i++){
+                double a=i*Math.PI*2/segments,c=(i+1)*Math.PI*2/segments;
+                Vec3d p=point(center,u,w,radius,r0,a),q=point(center,u,w,radius,r0,c),
+                    s=point(center,u,w,radius,r1,c),t=point(center,u,w,radius,r1,a);
+                int p0=photosphere(r0,a,alpha),q0=photosphere(r0,c,alpha),
+                    s0=photosphere(r1,c,alpha),t0=photosphere(r1,a,alpha);
+                v(b,matrix,p,p0);v(b,matrix,q,q0);v(b,matrix,s,s0);
+                v(b,matrix,p,p0);v(b,matrix,s,s0);v(b,matrix,t,t0);
+            }
+        }
+        draw(b);
+    }
+    private static int corona(double r,double a,double alpha,double time){
+        double edge=Math.max(0,1-(r-1)/1.96);
+        double rays=.72+.16*Math.sin(a*11+time*.004)+.12*Math.cos(a*23-time*.003);
+        return color(255,155+70*edge,55+125*edge,(int)(alpha*150*edge*edge*rays));
+    }
+    private static int photosphere(double r,double a,double alpha){
+        double x=r*Math.cos(a),y=r*Math.sin(a);
+        double grain=Math.sin(x*43+Math.cos(y*31))*Math.cos(y*37-x*13);
+        double limb=Math.pow(r,5);
+        return color(255,247-48*limb+4*grain,218-100*limb+8*grain,(int)(255*alpha));
     }
     private static void planet(Matrix4f matrix,Vec3d dir,double angular,boolean earth,double alpha){
         Vec3d center=dir.multiply(45),u=axis(dir),w=dir.crossProduct(u).normalize();double radius=45*angular;
