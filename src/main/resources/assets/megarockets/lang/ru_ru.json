@@ -59,5 +59,19 @@
   "block.megarockets.martian_regolith": "Марсианский реголит",
   "block.megarockets.martian_rock": "Марсианская порода",
   "block.megarockets.martian_ore": "Марсианская руда",
-  "biome.megarockets.martian_desert": "Марсианская пустыня"
+  "biome.megarockets.martian_desert": "Марсианская пустыня",
+  "entity.megarockets.phantom": "Фантом",
+  "entity.megarockets.hyperion": "Гиперион",
+  "item.megarockets.phantom": "Фантом (600 бл/с)",
+  "item.megarockets.hyperion": "Гиперион (1000 бл/с)",
+  "destination.megarockets.moon": "Луна",
+  "destination.megarockets.mars": "Марс",
+  "message.megarockets.destination_current": "Цель: %s | Максимальная скорость: %s бл/с. Выберите цель в чате:",
+  "message.megarockets.destination_seat": "Сначала сядьте в ракету.",
+  "message.megarockets.destination_locked": "Цель можно изменить только перед стартом с Земли.",
+  "message.megarockets.launch_button": "[СТАРТ]",
+  "message.megarockets.departure_target": "Курс: %s! Дистанция %s блоков.",
+  "message.megarockets.entry_target": "Прибытие в измерение: %s. Начинаем спуск.",
+  "message.megarockets.target_status": "Цель: %s | %s | Путь %s%% | Осталось %s бл. | %s бл/с | Над площадкой %s бл.",
+  "message.megarockets.target_arrived": "Посадка: %s! Shift — выход. /rocket return — домой."
 }

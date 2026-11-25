@@ -16,7 +16,8 @@ import net.minecraft.world.World;
 
 /** Deploys the real Titan entity without changing any terrain blocks. */
 public final class RocketItem extends Item {
-    public RocketItem(Settings settings){super(settings);}
+    private final net.minecraft.entity.EntityType<TitanRocket> type;
+    public RocketItem(Settings settings,net.minecraft.entity.EntityType<TitanRocket> type){super(settings);this.type=type;}
     @Override public ActionResult useOnBlock(ItemUsageContext context){
         var player=context.getPlayer();
         if(player==null||context.getSide()!=Direction.UP)return ActionResult.PASS;
@@ -38,7 +39,7 @@ public final class RocketItem extends Item {
         return result==ActionResult.CONSUME?TypedActionResult.consume(stack):TypedActionResult.fail(stack);
     }
     private ActionResult deploy(ServerWorld world,PlayerEntity player,ItemStack stack,Vec3d base){
-        TitanRocket ship=new TitanRocket(MegaRockets.TITAN,world);
+        TitanRocket ship=new TitanRocket(type,world);
         ship.refreshPositionAndAngles(base.x,base.y,base.z,0,0);
         BlockPos center=BlockPos.ofFloored(base);
         if(!world.getWorldBorder().contains(ship.getBoundingBox())||

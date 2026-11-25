@@ -32,12 +32,17 @@ public final class TitanRenderer extends EntityRenderer<TitanRocket> {
         matrices.translate(0,-32,0);
         VertexConsumer buffer = consumers.getBuffer(RenderLayer.getEntityCutoutNoCull(TEXTURE));
         MatrixStack.Entry matrix = matrices.peek();
+        boolean phantom=rocket.getType()==MegaRockets.PHANTOM,hyperion=rocket.getType()==MegaRockets.HYPERION;
         for (TitanMesh.Quad q : TitanMesh.QUADS) {
             for (int i=0;i<4;i++) {
                 TitanMesh.Point p=q.points()[i];
                 int c=q.argb();
+                if(c==0xffe4e8ee)c=hyperion?0xffaebed4:phantom?0xffd9e4ec:c;
+                if(c==0xff286583||c==0xff286083)c=hyperion?0xffb47b36:phantom?0xff933d40:c;
+                float taper=(float)Math.max(0,Math.min(1,Math.min((p.y()-5)/8,(48-p.y())/8)));
+                float profile=1-taper*(phantom?.17f:hyperion?.06f:0f);
                 int faceLight=c==0xff59e4ff||c==0xffff7962?0xF000F0:light;
-                buffer.vertex(matrix,p.x(),p.y(),p.z()).color(c).texture(i==0||i==3?.02f:.98f,i<2?.02f:.98f)
+                buffer.vertex(matrix,p.x()*profile,p.y(),p.z()*profile).color(c).texture(i==0||i==3?.02f:.98f,i<2?.02f:.98f)
                     .overlay(OverlayTexture.DEFAULT_UV).light(faceLight).normal(matrix,q.nx(),q.ny(),q.nz());
             }
         }
@@ -49,7 +54,7 @@ public final class TitanRenderer extends EntityRenderer<TitanRocket> {
                 double a=i*Math.PI/3;
                 float x=i==6?0:2.8f*(float)Math.cos(a), z=i==6?0:2.8f*(float)Math.sin(a);
                 boolean vacuum=!rocket.getWorld().getRegistryKey().equals(net.minecraft.world.World.OVERWORLD)||rocket.getY()>1000;
-                float length=28f+1.1f*(float)Math.sin(t*.7+i*1.3)+.5f*(float)Math.sin(t*1.6+i);
+                float length=(hyperion?48f:phantom?38f:28f)+1.1f*(float)Math.sin(t*.7+i*1.3)+.5f*(float)Math.sin(t*1.6+i);
                 float spread=vacuum?1.25f:1f;
                 plume(exhaust,matrix,x,z,-.02f,.70f,-2.8f,.86f,0xfffff9e9);
                 plume(exhaust,matrix,x,z,-2.8f,.86f,-7.2f,1.02f*spread,0xffffe5a4);

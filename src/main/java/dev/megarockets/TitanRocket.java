@@ -22,6 +22,7 @@ import net.minecraft.world.World;
 public final class TitanRocket extends Entity {
     public static final int TARGET_ALTITUDE = 10_000;
     private static final TrackedData<Boolean> ENGINES = DataTracker.registerData(TitanRocket.class, TrackedDataHandlerRegistry.BOOLEAN);
+    private Destination destination=Destination.MOON;
     private int countdown;
     private LunarFlight.State lunar;
     private boolean lunarPaused;
@@ -38,22 +39,45 @@ public final class TitanRocket extends Entity {
         setNoGravity(true);
     }
 
+    public EntityType<TitanRocket> rocketType(){return getType()==MegaRockets.HYPERION?MegaRockets.HYPERION:getType()==MegaRockets.PHANTOM?MegaRockets.PHANTOM:MegaRockets.TITAN;}
+    public double maxSpeed(){return getType()==MegaRockets.HYPERION?50:getType()==MegaRockets.PHANTOM?30:15;}
+    public Destination destination(){return destination;}
+    public void copyDestination(TitanRocket old){destination=old.destination;}
+    public boolean selectDestination(Destination value){
+        if(countdown>0||flying||lunar!=null||!getWorld().getRegistryKey().equals(World.OVERWORLD))return false;
+        destination=value;return true;
+    }
+    public void showDestinations(ServerPlayerEntity pilot){
+        if(!getWorld().getRegistryKey().equals(World.OVERWORLD)||countdown>0||flying||lunar!=null)return;
+        pilot.sendMessage(Text.translatable("message.megarockets.destination_current",Text.translatable("destination.megarockets."+destination.key()),(int)(maxSpeed()*20)),false);
+        var menu=Text.empty();
+        for(Destination d:Destination.values()){
+            menu.append(Text.literal("[ ").append(Text.translatable("destination.megarockets."+d.key())).append(" | "+(int)d.distance+" ] ")
+                .styled(style->style.withColor(d==destination?net.minecraft.util.Formatting.GREEN:net.minecraft.util.Formatting.AQUA)
+                    .withClickEvent(new net.minecraft.text.ClickEvent(net.minecraft.text.ClickEvent.Action.RUN_COMMAND,"/rocket destination "+d.key()))));
+        }
+        menu.append(Text.translatable("message.megarockets.launch_button").styled(style->style.withColor(net.minecraft.util.Formatting.GOLD)
+            .withClickEvent(new net.minecraft.text.ClickEvent(net.minecraft.text.ClickEvent.Action.RUN_COMMAND,"/rocket launch"))));
+        pilot.sendMessage(menu,false);
+    }
     @Override protected void initDataTracker(DataTracker.Builder builder) { builder.add(ENGINES, false); }
     public boolean enginesRunning() { return dataTracker.get(ENGINES); }
     @Override protected void readCustomDataFromNbt(NbtCompound nbt) {
         countdown=0; flightTicks=0; flying=false; flightSpeed=0; dataTracker.set(ENGINES,false);
         moonLanded=nbt.getBoolean("MoonLanded");
+        destination=Destination.read(nbt.getString("Destination"));
         if(nbt.contains("LunarPhase")) {
             try {
                 var phase=LunarFlight.Phase.valueOf(nbt.getString("LunarPhase"));
                 lunar=LunarFlight.pause(new LunarFlight.State(phase,nbt.getInt("LunarTicks"),nbt.getDouble("LunarX"),
-                    nbt.getDouble("LunarY"),0,nbt.getFloat("LunarTilt")));
+                    nbt.getDouble("LunarY"),0,nbt.getFloat("LunarTilt")),destination.distance,maxSpeed());
                 lunarPaused=true;
             } catch(IllegalArgumentException ignored) { lunar=null; }
         }
     }
     @Override protected void writeCustomDataToNbt(NbtCompound nbt) {
         nbt.putBoolean("MoonLanded",moonLanded);
+        nbt.putString("Destination",destination.name());
         if(lunar!=null) {
             nbt.putString("LunarPhase",lunar.phase().name()); nbt.putInt("LunarTicks",lunar.ticks());
             nbt.putDouble("LunarX",lunar.x()); nbt.putDouble("LunarY",lunar.y()); nbt.putFloat("LunarTilt",lunar.tilt());
@@ -76,14 +100,14 @@ public final class TitanRocket extends Entity {
     }
     public void acceptLunarState(LunarFlight.State state) { lunar=state; lunarPaused=false; }
     public boolean canResumeMoon() {
-        return lunar!=null && lunar.phase()!=LunarFlight.Phase.LANDED && (getWorld().getRegistryKey().equals(MegaRockets.ORBIT)||getWorld().getRegistryKey().equals(MegaRockets.MOON));
+        return lunar!=null && lunar.phase()!=LunarFlight.Phase.LANDED && (getWorld().getRegistryKey().equals(MegaRockets.ORBIT)||getWorld().getRegistryKey().equals(MegaRockets.destinationWorld(destination)));
     }
     public Text missionStatus() {
         if(lunar!=null) {
             var phase=Text.translatable("message.megarockets.phase."+lunar.phase().name().toLowerCase(java.util.Locale.ROOT));
-            int percent=(int)Math.floor(100*lunar.x()/LunarFlight.DISTANCE);
-            return Text.translatable("message.megarockets.mission_status",phase,percent,
-                (int)Math.ceil(Math.max(0,LunarFlight.DISTANCE-lunar.x())),(int)Math.round(lunar.speed()*20),
+            int percent=(int)Math.floor(100*lunar.x()/destination.distance);
+            return Text.translatable("message.megarockets.target_status",Text.translatable("destination.megarockets."+destination.key()),phase,percent,
+                (int)Math.ceil(Math.max(0,destination.distance-lunar.x())),(int)Math.round(lunar.speed()*20),
                 (int)Math.ceil(Math.max(0,lunar.y()-LunarFlight.LAND_Y)));
         }
         if(moonLanded) return Text.translatable("message.megarockets.phase.landed");
@@ -96,7 +120,7 @@ public final class TitanRocket extends Entity {
     }
 
     @Override public Vec3d updatePassengerForDismount(LivingEntity passenger) {
-        if(getWorld().getRegistryKey().equals(MegaRockets.MOON)&&moonLanded)
+        if(getWorld().getRegistryKey().equals(MegaRockets.destinationWorld(destination))&&moonLanded)
             return new Vec3d(16.5,getWorld().getTopY(net.minecraft.world.Heightmap.Type.MOTION_BLOCKING,16,0),.5);
         if(getWorld().getRegistryKey().equals(MegaRockets.ORBIT) && Math.abs(getX()-MoonWorld.X-.5)<1
                 && Math.abs(getY()-MoonWorld.LAND_Y)<.1 && Math.abs(getZ()-.5)<1)
@@ -112,14 +136,14 @@ public final class TitanRocket extends Entity {
                 pilot.sendMessage(Text.translatable("message.megarockets.rocket_removed"),true);
                 return ActionResult.CONSUME;
             }
-            if (canResumeMoon() ? resumeMoon(pilot) : pilot.startRiding(this)) pilot.sendMessage(Text.translatable("message.megarockets.seated"), false);
+            if (canResumeMoon() ? resumeMoon(pilot) : pilot.startRiding(this)) {pilot.sendMessage(Text.translatable("message.megarockets.seated"), false);showDestinations(pilot);}
             return ActionResult.CONSUME;
         }
         return ActionResult.PASS;
     }
 
     public boolean beginLaunch(ServerPlayerEntity pilot) {
-        if (getWorld().getRegistryKey().equals(MegaRockets.ORBIT)||getWorld().getRegistryKey().equals(MegaRockets.MOON)) return resumeMoon(pilot);
+        if (getWorld().getRegistryKey().equals(MegaRockets.ORBIT)||getWorld().getRegistryKey().equals(MegaRockets.destinationWorld(destination))) return resumeMoon(pilot);
         if (!getWorld().getRegistryKey().equals(World.OVERWORLD) || getY() >= TARGET_ALTITUDE || countdown > 0 || flying) return false;
         if (pilot.getVehicle() != this && !pilot.startRiding(this)) return false;
         countdown = 100;
@@ -129,7 +153,7 @@ public final class TitanRocket extends Entity {
 
     @Override public void updateTrackedPositionAndAngles(double x, double y, double z, float yaw, float pitch, int steps) {
         // Do not move the entity from the network handler between rendered frames.
-        if (!getWorld().isClient || getPos().squaredDistanceTo(x,y,z)>64*64) {
+        if (!getWorld().isClient || getPos().squaredDistanceTo(x,y,z)>Math.pow(maxSpeed()*4+16,2)) {
             super.updateTrackedPositionAndAngles(x,y,z,yaw,pitch,steps);
             lerpTicks=0;
             return;
@@ -176,7 +200,7 @@ public final class TitanRocket extends Entity {
             return;
         }
         flightTicks++;
-        flightSpeed=FlightProfile.nextSpeed(getY(), flightSpeed, TARGET_ALTITUDE);
+        flightSpeed=FlightProfile.nextSpeed(getY(), flightSpeed, TARGET_ALTITUDE,maxSpeed());
         double speed=flightSpeed;
         // Server-authoritative motion; absolute position packets are interpolated client-side.
         setPosition(getX(), Math.min(TARGET_ALTITUDE, getY()+speed), getZ());
@@ -193,11 +217,11 @@ public final class TitanRocket extends Entity {
     }
     private void tickMoon(ServerWorld world) {
         if(!(getFirstPassenger() instanceof ServerPlayerEntity pilot)) {
-            if(!lunarPaused) { lunar=LunarFlight.pause(lunar); lunarPaused=true; }
+            if(!lunarPaused) { lunar=LunarFlight.pause(lunar,destination.distance,maxSpeed()); lunarPaused=true; }
             dataTracker.set(ENGINES,false); return;
         }
         lunarPaused=false;
-        boolean onMoon=world.getRegistryKey().equals(MegaRockets.MOON);
+        boolean onMoon=world.getRegistryKey().equals(MegaRockets.destinationWorld(destination));
         pilot.fallDistance=0;
         var previous=lunar.phase();
         // Transfer only once the interplanetary path and alignment have finished.
@@ -206,9 +230,9 @@ public final class TitanRocket extends Entity {
             flightTicks++;
             return;
         }
-        lunar=LunarFlight.step(lunar,onMoon||pilot.getServer().getWorld(MegaRockets.MOON)!=null);
-        if(onMoon) setPosition(.5,lunar.y()+MoonTerrain.PAD_Y-LunarFlight.LAND_Y,.5);
-        else setPosition(lunar.x()+.5,lunar.y(),.5);
+        lunar=LunarFlight.step(lunar,onMoon||pilot.getServer().getWorld(MegaRockets.destinationWorld(destination))!=null,destination.distance,maxSpeed());
+        if(onMoon) setPosition(.5,lunar.y()+destination.padY-LunarFlight.LAND_Y,.5);
+        else setPosition(lunar.x()+.5,lunar.y(),destination.lane+.5);
         setPitch(lunar.tilt());
         flightSpeed=lunar.speed();
         dataTracker.set(ENGINES,LunarFlight.powered(lunar));
@@ -217,10 +241,10 @@ public final class TitanRocket extends Entity {
             Text.translatable("message.megarockets.phase."+lunar.phase().name().toLowerCase(java.util.Locale.ROOT)),false);
         if(flightTicks%10==0) pilot.sendMessage(missionStatus(),true);
         if((lunar.phase()==LunarFlight.Phase.DESCENT||lunar.phase()==LunarFlight.Phase.FINAL)&&lunar.y()<MoonWorld.LAND_Y+18&&flightTicks%4==0)
-            world.spawnParticles(ParticleTypes.CAMPFIRE_COSY_SMOKE,onMoon?.5:MoonWorld.X+.5,onMoon?MoonTerrain.PAD_Y+.1:MoonWorld.LAND_Y+.1,.5,20,5,.35,5,.035);
+            world.spawnParticles(ParticleTypes.CAMPFIRE_COSY_SMOKE,onMoon?.5:MoonWorld.X+.5,onMoon?destination.padY+.1:MoonWorld.LAND_Y+.1,.5,20,5,.35,5,.035);
         if(lunar.phase()==LunarFlight.Phase.LANDED) {
             moonLanded=true; stopEngines(); setPitch(0);
-            pilot.sendMessage(Text.translatable("message.megarockets.moon_arrived"),false);
+            pilot.sendMessage(Text.translatable("message.megarockets.target_arrived",Text.translatable("destination.megarockets."+destination.key())),false);
         }
     }
 }

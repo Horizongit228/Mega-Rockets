@@ -1,4 +1,4 @@
-# Mega Rockets — 0.7.5 Alpha
+# Mega Rockets — 0.8.0 Alpha
 Minecraft 1.21.1 Fabric, Java 21. Titan-1 is 64 blocks tall.
 
 ## Moon
@@ -41,3 +41,6 @@ Nine craftable building blocks: planks, stairs, slabs, fences, fence gates, door
 
 ## 0.7.5 Rocket item & lunar plains
 Titan-1 is now a creative inventory item in the Mega Rockets tab. Right-click the top of a block to deploy the real 14x64 rocket ten blocks farther in the direction you face, on the same level; the center must have solid support and the volume must be empty. In orbit, right-click air to deploy 16 blocks ahead. Works in any dimension on a suitable surface, without replacing blocks. Creative sneak-right-click on an empty idle rocket removes it. Launch mission still starts in the Overworld, and the existing lunar flight/return commands are unchanged. Lunar plains occupy larger areas and have reduced relief, and tree spacing is 12 rather than 16 blocks, with higher placement probabilities. Landing clearance remains protected. Use a new world for consistent terrain; new items also work in existing worlds.
+
+## 0.8.0 Interplanetary flight
+Three rocket items: Titan-1 300, Phantom 600, Hyperion 1000 blocks/s at 20 TPS. New variants have separate entity and item IDs, colored hulls, modified hull contours and longer plumes. All use the same 14x64 collision envelope and observation seat. Select Moon or Mars in clickable chat after boarding or /rocket destination moon|mars, then /rocket launch. Default is Moon. Destination and rocket type persist across dimension transfers and saves. Mars is a continuous seeded terrain dimension, not yet a finite physical sphere, with red plains, canyons, craters, caves, 3 custom blocks using vanilla textures, a protected landing platform and 38% gravity. Distances are game-scale 6000 and 24000 blocks, with separate orbit lanes. Flight starts from Earth only; return command remains an emergency teleport. No fuel or survival crafting for rockets. Existing lunar terrain unchanged; back up saves before updating.

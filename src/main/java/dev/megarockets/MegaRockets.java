@@ -35,6 +35,13 @@ public final class MegaRockets implements ModInitializer {
         id("titan_1"), EntityType.Builder.<TitanRocket>create(TitanRocket::new, SpawnGroup.MISC)
             .dimensions(14f, 64f).maxTrackingRange(16).trackingTickInterval(1).build("megarockets:titan_1"));
 
+    public static final EntityType<TitanRocket> PHANTOM=rocketType("phantom");
+    public static final EntityType<TitanRocket> HYPERION=rocketType("hyperion");
+    private static EntityType<TitanRocket> rocketType(String name){
+        return Registry.register(Registries.ENTITY_TYPE,id(name),EntityType.Builder.<TitanRocket>create(TitanRocket::new,SpawnGroup.MISC)
+            .dimensions(14f,64f).maxTrackingRange(16).trackingTickInterval(1).build("megarockets:"+name));
+    }
+    public static RegistryKey<World> destinationWorld(Destination d){return d==Destination.MARS?MARS:MOON;}
     public static Identifier id(String path) { return Identifier.of(ID, path); }
 
     @Override public void onInitialize() {
@@ -51,9 +58,12 @@ public final class MegaRockets implements ModInitializer {
         });
         CommandRegistrationCallback.EVENT.register((dispatcher, access, environment) ->
             dispatcher.register(CommandManager.literal("rocket")
-                .requires(source -> source.hasPermissionLevel(2))
+                .requires(source -> source.hasPermissionLevel(2)||source.getEntity() instanceof ServerPlayerEntity player&&player.isCreative())
                 .then(CommandManager.literal("spawn").executes(ctx -> spawn(ctx.getSource())))
                 .then(CommandManager.literal("launch").executes(ctx -> launch(ctx.getSource())))
+                .then(CommandManager.literal("destination").executes(ctx -> choose(ctx.getSource(),null))
+                    .then(CommandManager.literal("moon").executes(ctx -> choose(ctx.getSource(),Destination.MOON)))
+                    .then(CommandManager.literal("mars").executes(ctx -> choose(ctx.getSource(),Destination.MARS))))
                 .then(CommandManager.literal("status").executes(ctx -> status(ctx.getSource())))
                 .then(CommandManager.literal("return").executes(ctx -> returnHome(ctx.getSource())))));
     }
@@ -92,6 +102,16 @@ public final class MegaRockets implements ModInitializer {
         return 1;
     }
 
+    private static int choose(ServerCommandSource source,Destination destination) throws com.mojang.brigadier.exceptions.CommandSyntaxException {
+        ServerPlayerEntity pilot=source.getPlayerOrThrow();
+        if(!(pilot.getVehicle() instanceof TitanRocket rocket)){
+            source.sendError(Text.translatable("message.megarockets.destination_seat"));return 0;
+        }
+        if(destination==null){rocket.showDestinations(pilot);return 1;}
+        if(!rocket.selectDestination(destination)){source.sendError(Text.translatable("message.megarockets.destination_locked"));return 0;}
+        rocket.showDestinations(pilot);return 1;
+    }
+
     private static int status(ServerCommandSource source) throws com.mojang.brigadier.exceptions.CommandSyntaxException {
         ServerPlayerEntity player=source.getPlayerOrThrow();
         TitanRocket ship=player.getVehicle() instanceof TitanRocket mounted?mounted:
@@ -106,11 +126,14 @@ public final class MegaRockets implements ModInitializer {
         if(orbit==null) return false;
         // Only the transition from the Overworld to space uses a dimension transfer.
         // The subsequent 6000-block flight and landing occur entirely within space.
-        TitanRocket ship=new TitanRocket(TITAN,orbit);
-        ship.refreshPositionAndAngles(.5,MoonWorld.CRUISE_Y,.5,0,0);
+        Destination destination=old.destination();
+        double lane=destination.lane;
+        TitanRocket ship=new TitanRocket(old.rocketType(),orbit);
+        ship.copyDestination(old);
+        ship.refreshPositionAndAngles(.5,MoonWorld.CRUISE_Y,lane+.5,0,0);
         if(!orbit.spawnEntity(ship)) return false;
         pilot.stopRiding();
-        if(!pilot.teleport(orbit,.5,MoonWorld.CRUISE_Y+53,-4.2,Set.of(),pilot.getYaw(),0)) {
+        if(!pilot.teleport(orbit,.5,MoonWorld.CRUISE_Y+53,lane-4.2,Set.of(),pilot.getYaw(),0)) {
             ship.discard(); return false;
         }
         if(!pilot.startRiding(ship,true)) {
@@ -119,17 +142,19 @@ public final class MegaRockets implements ModInitializer {
         old.discard();
         // The large Moon is generated on demand in its own dimension.
         ship.beginMoonFlight();
-        pilot.sendMessage(Text.translatable("message.megarockets.moon_departure"),false);
+        pilot.sendMessage(Text.translatable("message.megarockets.departure_target",Text.translatable("destination.megarockets."+destination.key()),(int)destination.distance),false);
         return true;
     }
 
     static boolean enterMoon(TitanRocket old,ServerPlayerEntity pilot,LunarFlight.State state) {
-        ServerWorld moon=pilot.getServer().getWorld(MOON);
+        Destination destination=old.destination();
+        int pad=destination.padY;
+        ServerWorld moon=pilot.getServer().getWorld(destinationWorld(destination));
         if(moon==null)return false;
         // Check actual blocks, not just theoretical terrain. Old generated chunks must not
         // cause a landing in empty air or rock. Never overwrite a player's existing builds.
         for(int[] point:new int[][]{{0,0},{-7,-7},{-7,7},{7,-7},{7,7},{16,0}}) {
-            BlockPos floor=new BlockPos(point[0],MoonTerrain.PAD_Y-1,point[1]);
+            BlockPos floor=new BlockPos(point[0],pad-1,point[1]);
             if(!moon.getBlockState(floor).isOf(MoonBlocks.PAD)) {
                 if(old.age%40==0)pilot.sendMessage(Text.translatable("message.megarockets.old_moon"),true);
                 return false;
@@ -137,17 +162,18 @@ public final class MegaRockets implements ModInitializer {
         }
         for(int x=-7;x<=7;x++)for(int z=-7;z<=7;z++) {
             // Heightmap checks every column in the rocket footprint for obstructions.
-            if(moon.getTopY(Heightmap.Type.MOTION_BLOCKING,x,z)>MoonTerrain.PAD_Y) {
+            if(moon.getTopY(Heightmap.Type.MOTION_BLOCKING,x,z)>pad) {
                 if(old.age%40==0)pilot.sendMessage(Text.translatable("message.megarockets.pad_blocked"),true);
                 return false;
             }
         }
-        if(moon.getTopY(Heightmap.Type.MOTION_BLOCKING,16,0)>MoonTerrain.PAD_Y) {
+        if(moon.getTopY(Heightmap.Type.MOTION_BLOCKING,16,0)>pad) {
             if(old.age%40==0)pilot.sendMessage(Text.translatable("message.megarockets.pad_blocked"),true);
             return false;
         }
-        TitanRocket ship=new TitanRocket(TITAN,moon);
-        double y=state.y()+MoonTerrain.PAD_Y-LunarFlight.LAND_Y;
+        TitanRocket ship=new TitanRocket(old.rocketType(),moon);
+        ship.copyDestination(old);
+        double y=state.y()+pad-LunarFlight.LAND_Y;
         ship.refreshPositionAndAngles(.5,y,.5,0,0);
         ship.acceptLunarState(state);
         if(!moon.spawnEntity(ship))return false;
@@ -157,7 +183,7 @@ public final class MegaRockets implements ModInitializer {
         }
         if(!pilot.startRiding(ship,true)){ship.discard();return false;}
         old.discard();
-        pilot.sendMessage(Text.translatable("message.megarockets.moon_entry"),false);
+        pilot.sendMessage(Text.translatable("message.megarockets.entry_target",Text.translatable("destination.megarockets."+destination.key())),false);
         return true;
     }
 

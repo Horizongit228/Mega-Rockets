@@ -11,14 +11,20 @@ public final class LunarFlight {
         return current+Math.max(-brake,Math.min(accel,goal-current));
     }
     public static double arcY(double x) {
-        double u=Math.max(0,Math.min(1,x/DISTANCE));
+        return arcY(x,DISTANCE);
+    }
+    public static double arcY(double x,double distance){
+        double u=Math.max(0,Math.min(1,x/distance));
         double a=Math.sin(Math.PI*u);
         return CRUISE_Y+36*a*a;
     }
     public static State pause(State s) {
+        return pause(s,DISTANCE,MAX_SPEED);
+    }
+    public static State pause(State s,double distance,double maxSpeed){
         Phase phase=s.phase();
         if(phase==Phase.DEPARTURE||phase==Phase.COAST||phase==Phase.TURN||phase==Phase.BRAKE)
-            phase=s.x()<DISTANCE-2600?Phase.DEPARTURE:Phase.BRAKE;
+            phase=s.x()<distance-turnDistance(distance,maxSpeed)?Phase.DEPARTURE:Phase.BRAKE;
         return new State(phase,s.ticks(),s.x(),s.y(),0,s.tilt());
     }
     public static boolean powered(State s) {
@@ -27,25 +33,32 @@ public final class LunarFlight {
             default -> false;
         };
     }
-    public static State step(State s,boolean moonReady) {
+    private static double brake(double max){return max<=15?.18:max<=30?.55:.90;}
+    private static double brakeDistance(double max){return max<=15?1150:max*max/(2*brake(max))+max*3+20;}
+    private static double turnDistance(double distance,double max){return max<=15?2600:Math.min(distance*.76,brakeDistance(max)+max*60);}
+    public static State step(State s,boolean moonReady) {return step(s,moonReady,DISTANCE,MAX_SPEED);}
+    public static State step(State s,boolean moonReady,double distance,double maxSpeed) {
+        double braking=brake(maxSpeed),accel=maxSpeed<=15?.14:maxSpeed<=30?.65:1.1;
+        double brakeAt=brakeDistance(maxSpeed),turnAt=turnDistance(distance,maxSpeed);
+        float tiltRate=maxSpeed<=15?2f:3.5f;
         Phase phase=s.phase(); int ticks=s.ticks()+1;
-        double x=s.x(),y=s.y(),speed=s.speed(),remaining=DISTANCE-x;
+        double x=s.x(),y=s.y(),speed=s.speed(),remaining=distance-x;
         float angle=0;
         switch(phase) {
             case ORBIT -> { speed=0; if(ticks>=60){phase=Phase.DEPARTURE;ticks=0;} }
             case DEPARTURE,COAST,TURN,BRAKE -> {
-                if(remaining<=1150) phase=Phase.BRAKE;
-                else if(remaining<=2600 && phase!=Phase.BRAKE) phase=Phase.TURN;
-                else if(phase==Phase.DEPARTURE && speed>=MAX_SPEED-.001) phase=Phase.COAST;
-                double goal=phase==Phase.BRAKE?Math.min(MAX_SPEED,Math.sqrt(2*.18*remaining)):MAX_SPEED;
+                if(remaining<=brakeAt) phase=Phase.BRAKE;
+                else if(remaining<=turnAt && phase!=Phase.BRAKE) phase=Phase.TURN;
+                else if(phase==Phase.DEPARTURE && speed>=maxSpeed-.001) phase=Phase.COAST;
+                double goal=phase==Phase.BRAKE?Math.min(maxSpeed,Math.sqrt(2*braking*remaining)):maxSpeed;
                 // Coast retains its attained speed; engines are off until braking.
-                speed=phase==Phase.COAST||phase==Phase.TURN?speed:approach(speed,goal,.14,.18);
+                speed=phase==Phase.COAST||phase==Phase.TURN?speed:approach(speed,goal,accel,braking);
                 // A resumed cruise must not stall if the passenger left midflight.
-                if(speed<.001) { phase=remaining<=2600?Phase.BRAKE:Phase.DEPARTURE; speed=Math.min(.035,remaining); }
+                if(speed<.001) { phase=remaining<=turnAt?Phase.BRAKE:Phase.DEPARTURE; speed=Math.min(.035,remaining); }
                 speed=Math.min(remaining,speed);
-                x+=speed; y=arcY(x);
+                x+=speed; y=arcY(x,distance);
                 angle=phase==Phase.TURN||phase==Phase.BRAKE?85:-85;
-                if(x>=DISTANCE-1e-8) {x=DISTANCE;y=CRUISE_Y;speed=0;phase=moonReady?Phase.ALIGN:Phase.HOLD;ticks=0;angle=0;}
+                if(x>=distance-1e-8) {x=distance;y=CRUISE_Y;speed=0;phase=moonReady?Phase.ALIGN:Phase.HOLD;ticks=0;angle=0;}
             }
             case HOLD -> { speed=0; if(moonReady){phase=Phase.ALIGN;ticks=0;} }
             case ALIGN -> { speed=0; if(Math.abs(s.tilt())<=.01&&ticks>=20){phase=Phase.DESCENT;ticks=0;} }
@@ -60,7 +73,7 @@ public final class LunarFlight {
             }
             case LANDED -> speed=0;
         }
-        float tilt=s.tilt()+Math.max(-2f,Math.min(2f,angle-s.tilt()));
+        float tilt=s.tilt()+Math.max(-tiltRate,Math.min(tiltRate,angle-s.tilt()));
         return new State(phase,ticks,x,y,speed,tilt);
     }
 }

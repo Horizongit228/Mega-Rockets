@@ -59,5 +59,19 @@
   "block.megarockets.martian_regolith": "Martian regolith",
   "block.megarockets.martian_rock": "Martian rock",
   "block.megarockets.martian_ore": "Martian ore",
-  "biome.megarockets.martian_desert": "Martian desert"
+  "biome.megarockets.martian_desert": "Martian desert",
+  "entity.megarockets.phantom": "Phantom",
+  "entity.megarockets.hyperion": "Hyperion",
+  "item.megarockets.phantom": "Phantom (600 blocks/s)",
+  "item.megarockets.hyperion": "Hyperion (1000 blocks/s)",
+  "destination.megarockets.moon": "Moon",
+  "destination.megarockets.mars": "Mars",
+  "message.megarockets.destination_current": "Target: %s | Max speed: %s blocks/s. Choose a destination in chat:",
+  "message.megarockets.destination_seat": "Board a rocket first.",
+  "message.megarockets.destination_locked": "Destination can only be changed before Earth launch.",
+  "message.megarockets.launch_button": "[LAUNCH]",
+  "message.megarockets.departure_target": "Course: %s! Distance %s blocks.",
+  "message.megarockets.entry_target": "Arriving in dimension: %s. Beginning descent.",
+  "message.megarockets.target_status": "Target: %s | %s | Transfer %s%% | Remaining %s blocks | %s blocks/s | Above pad %s blocks",
+  "message.megarockets.target_arrived": "Landed: %s! Shift to exit. /rocket return to go home."
 }
