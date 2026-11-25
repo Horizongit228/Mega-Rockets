@@ -97,7 +97,7 @@ public final class TitanRocket extends Entity {
 
     @Override public Vec3d updatePassengerForDismount(LivingEntity passenger) {
         if(getWorld().getRegistryKey().equals(MegaRockets.MOON)&&moonLanded)
-            return new Vec3d(16.5,MoonTerrain.PAD_Y,.5);
+            return new Vec3d(16.5,getWorld().getTopY(net.minecraft.world.Heightmap.Type.MOTION_BLOCKING,16,0),.5);
         if(getWorld().getRegistryKey().equals(MegaRockets.ORBIT) && Math.abs(getX()-MoonWorld.X-.5)<1
                 && Math.abs(getY()-MoonWorld.LAND_Y)<.1 && Math.abs(getZ()-.5)<1)
             return new Vec3d(MoonWorld.X+16.5,MoonWorld.LAND_Y,.5);
@@ -198,8 +198,8 @@ public final class TitanRocket extends Entity {
         var previous=lunar.phase();
         // Transfer only once the interplanetary path and alignment have finished.
         if(!onMoon&&(lunar.phase()==LunarFlight.Phase.DESCENT||lunar.phase()==LunarFlight.Phase.FINAL)) {
-            if(!MegaRockets.enterMoon(this,pilot,lunar)&&flightTicks++%40==0)
-                pilot.sendMessage(Text.translatable("message.megarockets.failed"),true);
+            MegaRockets.enterMoon(this,pilot,lunar);
+            flightTicks++;
             return;
         }
         lunar=LunarFlight.step(lunar,onMoon||pilot.getServer().getWorld(MegaRockets.MOON)!=null);

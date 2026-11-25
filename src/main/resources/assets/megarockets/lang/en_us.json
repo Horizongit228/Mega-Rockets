@@ -33,5 +33,7 @@
   "block.megarockets.lunar_basalt": "Lunar basalt",
   "block.megarockets.lunar_crystal_ore": "Lunar crystal ore",
   "block.megarockets.lunar_landing_tile": "Lunar landing tile",
-  "message.megarockets.moon_entry": "Entering lunar dimension. Continuing descent to the surface."
+  "message.megarockets.moon_entry": "Entering lunar dimension. Continuing descent to the surface.",
+  "message.megarockets.old_moon": "Old lunar terrain. Create a new world for the new landing site. /rocket return to abort.",
+  "message.megarockets.pad_blocked": "Landing site obstructed. /rocket return to abort."
 }

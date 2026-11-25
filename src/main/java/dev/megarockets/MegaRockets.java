@@ -116,8 +116,26 @@ public final class MegaRockets implements ModInitializer {
     static boolean enterMoon(TitanRocket old,ServerPlayerEntity pilot,LunarFlight.State state) {
         ServerWorld moon=pilot.getServer().getWorld(MOON);
         if(moon==null)return false;
-        // Preload the central landing column before bringing the rider across.
-        moon.getChunk(0,0);
+        // Check actual blocks, not just theoretical terrain. Old generated chunks must not
+        // cause a landing in empty air or rock. Never overwrite a player's existing builds.
+        for(int[] point:new int[][]{{0,0},{-7,-7},{-7,7},{7,-7},{7,7},{16,0}}) {
+            BlockPos floor=new BlockPos(point[0],MoonTerrain.PAD_Y-1,point[1]);
+            if(!moon.getBlockState(floor).isOf(MoonBlocks.PAD)) {
+                if(old.age%40==0)pilot.sendMessage(Text.translatable("message.megarockets.old_moon"),true);
+                return false;
+            }
+        }
+        for(int x=-7;x<=7;x++)for(int z=-7;z<=7;z++) {
+            // Heightmap checks every column in the rocket footprint for obstructions.
+            if(moon.getTopY(Heightmap.Type.MOTION_BLOCKING,x,z)>MoonTerrain.PAD_Y) {
+                if(old.age%40==0)pilot.sendMessage(Text.translatable("message.megarockets.pad_blocked"),true);
+                return false;
+            }
+        }
+        if(moon.getTopY(Heightmap.Type.MOTION_BLOCKING,16,0)>MoonTerrain.PAD_Y) {
+            if(old.age%40==0)pilot.sendMessage(Text.translatable("message.megarockets.pad_blocked"),true);
+            return false;
+        }
         TitanRocket ship=new TitanRocket(TITAN,moon);
         double y=state.y()+MoonTerrain.PAD_Y-LunarFlight.LAND_Y;
         ship.refreshPositionAndAngles(.5,y,.5,0,0);

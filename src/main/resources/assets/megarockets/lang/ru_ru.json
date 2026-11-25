@@ -33,5 +33,7 @@
   "block.megarockets.lunar_basalt": "Лунный базальт",
   "block.megarockets.lunar_crystal_ore": "Лунная кристаллическая руда",
   "block.megarockets.lunar_landing_tile": "Лунная посадочная плита",
-  "message.megarockets.moon_entry": "Вход в лунное измерение. Продолжаем спуск к поверхности."
+  "message.megarockets.moon_entry": "Вход в лунное измерение. Продолжаем спуск к поверхности.",
+  "message.megarockets.old_moon": "Старая лунная площадка. Для нового рельефа нужен новый мир. /rocket return — обратно.",
+  "message.megarockets.pad_blocked": "Посадочная площадка заблокирована. /rocket return — обратно."
 }
