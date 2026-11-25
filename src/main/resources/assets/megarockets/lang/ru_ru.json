@@ -51,5 +51,9 @@
   "block.megarockets.lunar_door": "Лунная дверь",
   "block.megarockets.lunar_trapdoor": "Лунный люк",
   "block.megarockets.lunar_button": "Лунная кнопка",
-  "block.megarockets.lunar_pressure_plate": "Лунная нажимная плита"
+  "block.megarockets.lunar_pressure_plate": "Лунная нажимная плита",
+  "item.megarockets.titan_1": "Ракета Титан-1",
+  "message.megarockets.rocket_ground": "Нужна ровная поверхность перед вами для установки ракеты.",
+  "message.megarockets.rocket_placed": "Титан-1 установлен. /rocket launch — старт с Земли.",
+  "message.megarockets.rocket_removed": "Ракета убрана."
 }

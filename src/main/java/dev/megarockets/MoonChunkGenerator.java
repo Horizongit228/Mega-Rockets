@@ -92,8 +92,8 @@ public final class MoonChunkGenerator extends ChunkGenerator {
             }
         }
         // Populate only blocks belonging to this chunk, including canopies rooted across a boundary.
-        for(int gx=Math.floorDiv(x0-5,16);gx<=Math.floorDiv(x0+20,16);gx++)
-        for(int gz=Math.floorDiv(z0-5,16);gz<=Math.floorDiv(z0+20,16);gz++){
+        for(int gx=Math.floorDiv(x0-5,MoonTerrain.TREE_CELL);gx<=Math.floorDiv(x0+20,MoonTerrain.TREE_CELL);gx++)
+        for(int gz=Math.floorDiv(z0-5,MoonTerrain.TREE_CELL);gz<=Math.floorDiv(z0+20,MoonTerrain.TREE_CELL);gz++){
             var tree=terrain.tree(gx,gz);if(tree==null)continue;
             for(int x=Math.max(x0,tree.x()-5);x<=Math.min(x0+15,tree.x()+5);x++)
             for(int z=Math.max(z0,tree.z()-5);z<=Math.min(z0+15,tree.z()+5);z++)

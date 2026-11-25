@@ -1,4 +1,4 @@
-# Mega Rockets — 0.7.4 Alpha
+# Mega Rockets — 0.7.5 Alpha
 Minecraft 1.21.1 Fabric, Java 21. Titan-1 is 64 blocks tall.
 
 ## Moon
@@ -38,3 +38,6 @@ All seven lunar blocks appear in the dedicated Mega Rockets creative tab and cre
 
 ## 0.7.4 Lunar wood building set
 Nine craftable building blocks: planks, stairs, slabs, fences, fence gates, doors, trapdoors, buttons, pressure plates. Standard Minecraft shapes, redstone behavior and crafting ratios, own blue-grey plank texture, creative tab, recipe unlocks, loot and vanilla wooden tags. Lunar logs craft four planks; signs, boats, saplings and stripped logs are not part of this release. No terrain changes; existing worlds can be used. Back up saves before updating.
+
+## 0.7.5 Rocket item & lunar plains
+Titan-1 is now a creative inventory item in the Mega Rockets tab. Right-click the top of a block to deploy the real 14x64 rocket ten blocks farther in the direction you face, on the same level; the center must have solid support and the volume must be empty. In orbit, right-click air to deploy 16 blocks ahead. Works in any dimension on a suitable surface, without replacing blocks. Creative sneak-right-click on an empty idle rocket removes it. Launch mission still starts in the Overworld, and the existing lunar flight/return commands are unchanged. Lunar plains occupy larger areas and have reduced relief, and tree spacing is 12 rather than 16 blocks, with higher placement probabilities. Landing clearance remains protected. Use a new world for consistent terrain; new items also work in existing worlds.

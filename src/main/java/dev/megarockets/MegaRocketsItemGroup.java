@@ -13,8 +13,9 @@ public final class MegaRocketsItemGroup {
         Registry.register(Registries.ITEM_GROUP, MegaRockets.id("lunar_blocks"),
             FabricItemGroup.builder()
                 .displayName(Text.translatable("itemGroup.megarockets.lunar_blocks"))
-                .icon(() -> new ItemStack(MoonBlocks.ORE))
+                .icon(() -> new ItemStack(RocketItems.TITAN))
                 .entries((context, entries) -> {
+                    entries.add(RocketItems.TITAN);
                     entries.add(MoonBlocks.ROCK);
                     entries.add(MoonBlocks.REGOLITH);
                     entries.add(MoonBlocks.BASALT);

@@ -3,7 +3,7 @@ package dev.megarockets;
 /** Seeded multi-biome terrain shared by all three slices of the finite Moon. */
 public final class MoonTerrain {
  public static final int RADIUS=4096,MIN_Y=-1536,HEIGHT=3072,NORTH_OFFSET=3072,PAD_Y=1280,CRUST=192;
- public static final int PAD_RADIUS=24,SAFE_RADIUS=192,PAD_GLOBAL_Y=PAD_Y+NORTH_OFFSET-1;
+ public static final int PAD_RADIUS=24,SAFE_RADIUS=192,TREE_CELL=12,PAD_GLOBAL_Y=PAD_Y+NORTH_OFFSET-1;
  public static final int AIR=0,ROCK=1,REGOLITH=2,BASALT=3,ORE=4,PAD=5,WOOD=6,LEAVES=7;
  public enum Region { PLAINS,HIGHLANDS,CRATERS,FOREST }
  public record Column(int bottom,int top,int innerBottom,int innerTop,boolean pad,double tunnelX,double tunnelZ,Region region,long seed){}
@@ -28,9 +28,9 @@ public final class MoonTerrain {
  public Region region(int x,int z){
   if(Math.hypot(x,z)<SAFE_RADIUS)return Region.PLAINS;
   double relief=field(x/410.0,z/410.0,51),forest=field(x/270.0,z/270.0,63);
-  if(relief>.28)return Region.HIGHLANDS;
-  if(relief<-.32)return Region.CRATERS;
-  return forest>.02?Region.FOREST:Region.PLAINS;
+  if(relief>.43)return Region.HIGHLANDS;
+  if(relief<-.43)return Region.CRATERS;
+  return forest>.16?Region.FOREST:Region.PLAINS;
  }
  private double crater(int x,int z){
   int gx=Math.floorDiv(x,256),gz=Math.floorDiv(z,256);double sum=0;
@@ -47,14 +47,15 @@ public final class MoonTerrain {
   double r=Math.hypot(x,z);Region region=region(x,z);
   if(r>=RADIUS)return new Column(1,0,1,0,false,0,0,region,seed);
   double h=Math.sqrt((double)RADIUS*RADIUS-r*r),taper=smooth((RADIUS-r)/160);
-  double macro=field(x/410.0,z/410.0,51),high=smooth((macro+.12)/.65),basin=smooth((-macro-.15)/.5);
-  double broad=field(x/260.0,z/260.0,71)*25;
-  double rolling=field(x/95.0,z/95.0,73)*12+field(x/40.0,z/40.0,77)*5;
+  double macro=field(x/410.0,z/410.0,51),high=smooth((macro-.12)/.65),basin=smooth((-macro-.18)/.5);
+  double reliefWeight=.28+.72*Math.max(high,basin);
+  double broad=field(x/310.0,z/310.0,71)*23*reliefWeight;
+  double rolling=(field(x/120.0,z/120.0,73)*10+field(x/55.0,z/55.0,77)*4)*reliefWeight;
   double ridgeNoise=field(x/145.0,z/145.0,91);
   double ridge=1-ridgeNoise*ridgeNoise;
   double mountain=high*(85*ridge*ridge+14*field(x/40.0,z/40.0,97)+5*field(x/18.0,z/18.0,101));
-  double detail=1.4*field(x/12.0,z/12.0,113)+.45*field(x/5.0,z/5.0,127);
-  double top=h+(broad+rolling+mountain+detail+crater(x,z)*(.25+.75*basin)-20*basin)*taper;
+  double detail=.9*field(x/18.0,z/18.0,113)+.25*field(x/7.0,z/7.0,127);
+  double top=h+(broad+rolling+mountain+detail+crater(x,z)*(.08+.92*basin)-20*basin)*taper;
   if(r<=PAD_RADIUS)top=PAD_GLOBAL_Y;
   else if(r<720){
    // A continuous, broad apron around the highland instead of a steep artificial rim.
@@ -90,11 +91,11 @@ public final class MoonTerrain {
   double strata=Math.sin((y+oy)*.18+Math.sin((x+ox)*.018)*1.7+Math.cos((z+oz)*.017));
   return strata>(c.region()==Region.CRATERS?.25:.72)||n<.035?BASALT:ROCK;
  }
- /** One candidate per 16x16 cell, jittered; canopy is reconstructed in every intersecting chunk. */
+ /** One candidate per 12x12 cell, jittered; canopy is reconstructed in every intersecting chunk. */
  public Tree tree(int gx,int gz){
-  int x=gx*16+4+(int)(hash(seed,gx,501,gz)*8),z=gz*16+4+(int)(hash(seed,gx,502,gz)*8);
+  int x=gx*TREE_CELL+3+(int)(hash(seed,gx,501,gz)*6),z=gz*TREE_CELL+3+(int)(hash(seed,gx,502,gz)*6);
   if(Math.hypot(x,z)<SAFE_RADIUS+16||Math.hypot(x,z)>RADIUS-64)return null;
-  Region region=region(x,z);double chance=region==Region.FOREST?.78:region==Region.PLAINS?.08:0;
+  Region region=region(x,z);double chance=region==Region.FOREST?.96:region==Region.PLAINS?.20:region==Region.HIGHLANDS?.08:0;
   if(hash(seed,gx,503,gz)>=chance)return null;
   Column c=column(x,z);int y=c.top()+1;
   if(y<1||Math.abs(column(x-2,z).top()-c.top())>3||Math.abs(column(x+2,z).top()-c.top())>3||

@@ -51,5 +51,9 @@
   "block.megarockets.lunar_door": "Lunar door",
   "block.megarockets.lunar_trapdoor": "Lunar trapdoor",
   "block.megarockets.lunar_button": "Lunar button",
-  "block.megarockets.lunar_pressure_plate": "Lunar pressure plate"
+  "block.megarockets.lunar_pressure_plate": "Lunar pressure plate",
+  "item.megarockets.titan_1": "Titan-1 Rocket",
+  "message.megarockets.rocket_ground": "A level surface ahead is required to deploy the rocket.",
+  "message.megarockets.rocket_placed": "Titan-1 deployed. /rocket launch starts the Earth mission.",
+  "message.megarockets.rocket_removed": "Rocket removed."
 }
