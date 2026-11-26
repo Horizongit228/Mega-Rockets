@@ -5,7 +5,8 @@
   "client": [
     "RocketCameraMixin",
     "SpaceSkyMixin",
-    "SpaceFogMixin"
+    "SpaceFogMixin",
+    "PlanetLoadingMixin"
   ],
   "injectors": {
     "defaultRequire": 1
