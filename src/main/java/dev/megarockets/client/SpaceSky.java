@@ -5,6 +5,7 @@ import dev.megarockets.MegaRockets;
 import dev.megarockets.Destination;
 import dev.megarockets.ApproachRules;
 import dev.megarockets.SolarScale;
+import dev.megarockets.SolarDynamics;
 import net.minecraft.client.render.*;
 import net.minecraft.util.Identifier;
 import net.minecraft.client.world.ClientWorld;
@@ -47,10 +48,17 @@ public final class SpaceSky {
         boolean orbit=world.getRegistryKey().equals(MegaRockets.ORBIT),moon=MegaRockets.isMoon(world);
         var body=MegaRockets.planet(world);
         boolean atmosphere=body==Destination.MARS||body==Destination.VENUS||body==Destination.TITAN;
+        double ticks=world.getTime()+delta;
+        double local=body==null?world.getTimeOfDay()%24000:SolarDynamics.localTime(body,world.getTime());
+        double sunAngle=2*Math.PI*local/24000;
+        Vec3d sunDir=orbit?new Vec3d(-pos.x,30-pos.y,-pos.z).normalize():new Vec3d(-Math.cos(sunAngle),Math.sin(sunAngle),0);
+        double day=Math.max(0,Math.min(1,(sunDir.y+.16)/.4));
+        double air=atmosphere?Math.max(0,Math.min(1,(world.getTopY()+160-pos.y)/180)):0;
         Vec3d sky=world.getSkyColor(pos,delta).multiply(1-dark);
         if(body==Destination.MARS)sky=new Vec3d(.42,.24,.14);
         if(body==Destination.VENUS)sky=new Vec3d(.60,.43,.23);
         if(body==Destination.TITAN)sky=new Vec3d(.45,.25,.10);
+        if(atmosphere)sky=sky.multiply((.055+.945*day)*air);
         RenderSystem.depthMask(false);RenderSystem.disableCull();RenderSystem.enableBlend();RenderSystem.defaultBlendFunc();
         RenderSystem.setShader(GameRenderer::getPositionColorProgram);RenderSystem.setShaderColor(1,1,1,1);
         BackgroundRenderer.clearFog();
@@ -66,42 +74,99 @@ public final class SpaceSky {
             BufferBuilder stars=begin();
             for(Star star:STARS){
                 Vec3d center=star.dir.multiply(85),a=axis(star.dir).multiply(star.size),b=star.dir.crossProduct(a).normalize().multiply(star.size);
-                int c=((int)(dark*(atmosphere?45:240))<<24)|star.rgb;
+                int c=((int)(dark*(atmosphere?240-195*day*air:240))<<24)|star.rgb;
                 Vec3d q=center.subtract(a).subtract(b),w=center.add(a).subtract(b),e=center.add(a).add(b),r=center.subtract(a).add(b);
                 v(stars,matrix,q,c);v(stars,matrix,w,c);v(stars,matrix,e,c);v(stars,matrix,q,c);v(stars,matrix,e,c);v(stars,matrix,r,c);
             }draw(stars);
-            sun(matrix,new Vec3d(.24,.62,-.75).normalize(),dark,world.getTime()+delta);
+            if(orbit||sunDir.y>-.09) sun(matrix,sunDir,atmosphere?.4+.6*(1-air):dark,ticks);
             if(orbit){
-                Vec3d earthDirection=new Vec3d(-Destination.EARTH_RADIUS*1.5-pos.x,-Destination.EARTH_RADIUS*.35-pos.y,-pos.z);
-                double earthApproach=ApproachRules.distance(pos.x,pos.z,ApproachRules.EARTH_X,ApproachRules.EARTH_Z);
-                double earthBlend=Math.max(0,Math.min(1,(ApproachRules.LOAD_RADIUS-earthApproach)/(ApproachRules.LOAD_RADIUS-ApproachRules.ENTRY_RADIUS)));
-                double earthAngular=SolarScale.apparent(SolarScale.EARTH_RADIUS_KM,earthApproach);
-                planet(matrix,earthDirection.normalize(),earthAngular*(1-earthBlend)+1.05*earthBlend,true,1);
-                Destination[] targets=Destination.values();
-                java.util.Arrays.sort(targets,java.util.Comparator.comparingDouble((Destination target)->-new Vec3d(target.distance+1200-pos.x,56-pos.y,target.lane-pos.z).lengthSquared()));
+                java.util.List<Destination> targets=new java.util.ArrayList<>(java.util.Arrays.asList(Destination.values()));targets.add(null);
+                targets.sort(java.util.Comparator.comparingDouble(d->-SolarDynamics.position(d,ticks).distance(pos.x,pos.z)));
                 for(Destination target:targets){
-                    // Globe centers lie behind the arrival point on their respective orbital lanes.
-                    Vec3d toward=new Vec3d(target.distance+1200-pos.x,56-pos.y,target.lane-pos.z);
-                    double approach=ApproachRules.distance(pos.x,pos.z,target.distance,target.lane);
-                    double angular=SolarScale.apparent(target.meanRadiusKm,approach);
-                    // Moon route is enlarged for safe gameplay, and close entry is cinematic.
-                    if(target==Destination.MOON)angular=Math.max(angular,.025*Math.min(1,12000/Math.max(1,approach)));
+                    var p=SolarDynamics.position(target,ticks);
+                    double approach=p.distance(pos.x,pos.z);
+                    Vec3d toward=new Vec3d(p.x()-pos.x,56-pos.y,p.z()-pos.z);
+                    double radius=target==null?SolarScale.EARTH_RADIUS_KM:target.meanRadiusKm;
+                    double angular=SolarScale.apparent(radius,approach);
                     double blend=Math.max(0,Math.min(1,(ApproachRules.LOAD_RADIUS-approach)/(ApproachRules.LOAD_RADIUS-ApproachRules.ENTRY_RADIUS)));
-                    angular=angular*(1-blend)+(target.orbitOnly()?.67:1.05)*blend;
-                    if(target==Destination.MOON)planet(matrix,toward.normalize(),angular,false,1);
-                    else globe(matrix,toward.normalize(),target==Destination.SATURN?angular/.53:angular,MegaRockets.id("textures/sky/"+target.key()+".png"));
+                    angular=angular*(1-blend)+((target!=null&&target.orbitOnly())?.67:1.05)*blend;
+                    rotatingGlobe(matrix,toward.normalize(),angular,target,ticks,new Vec3d(-p.x(),0,-p.z()).normalize());
                 }
-            }else if(body!=null&&body!=Destination.MOON){
-                if(body==Destination.EUROPA)globe(matrix,new Vec3d(.3,.65,-.7).normalize(),.32,MegaRockets.id("textures/sky/jupiter.png"));
-                else if(body==Destination.TITAN)globe(matrix,new Vec3d(.3,.65,-.7).normalize(),.40,MegaRockets.id("textures/sky/saturn.png"));
-                else planet(matrix,new Vec3d(-.8,.5,.3).normalize(),body==Destination.MARS?.035:.02,true,1);
-            }else if(moon){
-                planet(matrix,new Vec3d(-.8,.55,.4).normalize(),.18,true,1);
+            }else if(body!=null){
+                if(body==Destination.EUROPA)rotatingGlobe(matrix,new Vec3d(.3,.65,-.7).normalize(),.32,Destination.JUPITER,ticks,sunDir);
+                else if(body==Destination.TITAN)rotatingGlobe(matrix,new Vec3d(.3,.65,-.7).normalize(),.22,Destination.SATURN,ticks,sunDir);
+                else if(body==Destination.MOON)rotatingGlobe(matrix,new Vec3d(-.8,.55,.4).normalize(),.18,null,ticks,sunDir);
+                if(atmosphere&&air>.01)clouds(matrix,body,ticks,day,air);
             }else{
-                planet(matrix,new Vec3d(0,-1,0),.95-.50*Math.max(0,Math.min(1,(pos.y-1200)/8800)),true,dark);
+                rotatingGlobe(matrix,new Vec3d(0,-1,0),.95-.50*Math.max(0,Math.min(1,(pos.y-1200)/8800)),null,ticks,sunDir);
             }
         }finally{
             RenderSystem.depthMask(true);RenderSystem.enableCull();RenderSystem.disableBlend();RenderSystem.setShaderColor(1,1,1,1);fog.run();
+        }
+    }
+    private static void rotatingGlobe(Matrix4f matrix,Vec3d dir,double angular,Destination body,double ticks,Vec3d sun){
+        if(dir.lengthSquared()<.001)return;
+        Vec3d center=dir.multiply(45),u=axis(dir),w=dir.crossProduct(u).normalize();
+        double radius=45*angular,spin=SolarDynamics.spin(body,ticks);
+        String key=body==null?"earth":body.key();
+        if(body==Destination.SATURN)rings(matrix,center,u,w,dir,radius,false);
+        RenderSystem.setShader(GameRenderer::getPositionTexColorProgram);
+        RenderSystem.setShaderTexture(0,MegaRockets.id("textures/sky/"+key+"_map.png"));
+        BufferBuilder disk=Tessellator.getInstance().begin(VertexFormat.DrawMode.QUADS,VertexFormats.POSITION_TEXTURE_COLOR);
+        for(int j=0;j<12;j++)for(int i=0;i<48;i++){
+            double r=j/12.,rr=(j+1)/12.,a=i*Math.PI/24,b=(i+1)*Math.PI/24;
+            Vec3d[] normals={normal(dir,u,w,r,a),normal(dir,u,w,rr,a),normal(dir,u,w,rr,b),normal(dir,u,w,r,b)};
+            Vec3d[] points={point(center,u,w,radius,r,a),point(center,u,w,radius,rr,a),point(center,u,w,radius,rr,b),point(center,u,w,radius,r,b)};
+            double[] lon=new double[4];double min=10,max=-10;
+            for(int k=0;k<4;k++){lon[k]=(Math.atan2(normals[k].z,normals[k].x)-spin)/(2*Math.PI)+.5;lon[k]-=Math.floor(lon[k]);min=Math.min(min,lon[k]);max=Math.max(max,lon[k]);}
+            for(int k=0;k<4;k++){
+                if(max-min>.5&&lon[k]<.5)lon[k]+=1;
+                float lat=(float)(.5-Math.asin(Math.max(-1,Math.min(1,normals[k].y)))/Math.PI);
+                int shade=(int)(255*(.13+.87*Math.max(0,normals[k].dotProduct(sun))));
+                disk.vertex(matrix,(float)points[k].x,(float)points[k].y,(float)points[k].z).texture((float)lon[k],lat).color(shade,shade,shade,255);
+            }
+        }
+        draw(disk);RenderSystem.setShader(GameRenderer::getPositionColorProgram);
+        double density=SolarDynamics.atmosphere(body);
+        if(density>0){
+            var b=begin();int rgb=body==null?0x66adff:body==Destination.MARS?0xca8056:0xe2b36a;
+            for(int i=0;i<72;i++){double a=i*Math.PI/36,c=(i+1)*Math.PI/36;int alpha=((int)(70*Math.min(1,density))<<24)|rgb;
+                Vec3d p=point(center,u,w,radius,1,a),q=point(center,u,w,radius,1,c),s=point(center,u,w,radius,1.045,c),t=point(center,u,w,radius,1.045,a);
+                v(b,matrix,p,alpha);v(b,matrix,q,alpha);v(b,matrix,s,rgb);v(b,matrix,p,alpha);v(b,matrix,s,rgb);v(b,matrix,t,rgb);
+            }draw(b);
+        }
+        if(body==Destination.SATURN)rings(matrix,center,u,w,dir,radius,true);
+    }
+    private static Vec3d normal(Vec3d dir,Vec3d u,Vec3d w,double r,double a){
+        return u.multiply(r*Math.cos(a)).add(w.multiply(r*Math.sin(a))).subtract(dir.multiply(Math.sqrt(Math.max(0,1-r*r)))).normalize();
+    }
+    private static void rings(Matrix4f matrix,Vec3d center,Vec3d u,Vec3d w,Vec3d dir,double radius,boolean front){
+        BufferBuilder b=begin();Vec3d tilt=w.multiply(.33).add(dir.multiply(.944));
+        for(int i=0;i<72;i++){double a=i*Math.PI/36,c=(i+1)*Math.PI/36;if((Math.sin((a+c)/2)<0)!=front)continue;
+            for(int j=0;j<9;j++){if(j==4)continue;double r=1.24+j*.10,s=r+.093;
+                int shade=150+j*7,col=color(shade+34,shade+10,shade-19,205);
+                Vec3d p=point(center,u,tilt,radius,r,a),q=point(center,u,tilt,radius,r,c),t=point(center,u,tilt,radius,s,c),vtx=point(center,u,tilt,radius,s,a);
+                v(b,matrix,p,col);v(b,matrix,q,col);v(b,matrix,t,col);v(b,matrix,p,col);v(b,matrix,t,col);v(b,matrix,vtx,col);
+            }
+        }draw(b);
+    }
+    private static void clouds(Matrix4f matrix,Destination body,double ticks,double day,double air){
+        for(int layer=0;layer<2;layer++){
+            var b=begin();double drift=ticks*(layer==0?.00015:.00009);
+            for(int i=0;i<48;i++)for(int j=0;j<12;j++){
+                double a=i*Math.PI/24,c=(i+1)*Math.PI/24,p=j*Math.PI/24,q=(j+1)*Math.PI/24;
+                Vec3d[] n={polar(a,p,1),polar(c,p,1),polar(c,q,1),polar(a,q,1)};
+                int[] colors=new int[4];
+                for(int k=0;k<4;k++){var v=n[k];double lon=Math.atan2(v.z,v.x)+drift,lat=Math.asin(v.y);
+                    double noise=Math.sin(lon*7+Math.sin(lat*8+layer)*2)+.45*Math.sin(lon*15-lat*12);
+                    double opacity=Math.max(0,Math.min(1,(noise+.4)*.65))*(body==Destination.MARS?.22:.64)*air;
+                    double light=.15+.85*day;
+                    colors[k]=color(220*light,body==Destination.MARS?135*light:181*light,98*light,(int)(255*opacity));
+                }
+                double r=layer==0?82:80;
+                v(b,matrix,n[0].multiply(r),colors[0]);v(b,matrix,n[1].multiply(r),colors[1]);v(b,matrix,n[2].multiply(r),colors[2]);
+                v(b,matrix,n[0].multiply(r),colors[0]);v(b,matrix,n[2].multiply(r),colors[2]);v(b,matrix,n[3].multiply(r),colors[3]);
+            }draw(b);
         }
     }
     private static Vec3d point(Vec3d center,Vec3d u,Vec3d w,double radius,double r,double a){

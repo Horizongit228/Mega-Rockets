@@ -14,6 +14,24 @@ public class PlanetTextures {
         Path root=Path.of(args[0],"assets","megarockets","textures","sky");Files.createDirectories(root);
         create(root.resolve("earth.png"),EARTH,true,12,8);
         create(root.resolve("moon.png"),MOON,false,0,0);
+        for(String name:new String[]{"mercury","venus","mars","jupiter","saturn","uranus","neptune","europa","titan"})procedural(root.resolve(name+"_map.png"),name);
+    }
+    private static void procedural(Path out,String name)throws Exception{
+        BufferedImage img=new BufferedImage(512,256,BufferedImage.TYPE_INT_RGB);
+        int[] rgb=switch(name){case "mercury"->new int[]{151,145,137};case "venus"->new int[]{218,182,116};case "mars"->new int[]{179,101,65};case "jupiter"->new int[]{201,161,125};case "saturn"->new int[]{221,190,138};case "uranus"->new int[]{146,208,216};case "neptune"->new int[]{68,112,203};case "europa"->new int[]{194,205,196};default->new int[]{185,132,64};};
+        for(int y=0;y<256;y++)for(int x=0;x<512;x++){
+            double lon=x*Math.PI/256,lat=(.5-y/255.)*Math.PI;
+            double n=Math.sin(lon*7+2*Math.cos(lat*9))*Math.cos(lat*11-lon*4)+.25*Math.sin(lon*31+lat*19);
+            boolean gas=name.equals("jupiter")||name.equals("saturn")||name.equals("uranus")||name.equals("neptune");
+            double band=Math.sin(lat*26+.15*Math.sin(lon*6))+.4*Math.sin(lat*63+.2*Math.cos(lon*12));
+            double amp=name.equals("jupiter")?24:name.equals("saturn")?10:4;
+            double d=gas?band*amp+4*n: n*(name.equals("titan")?7:26);
+            int red=rgb[0],green=rgb[1],blue=rgb[2];
+            if(name.equals("mars")&&Math.abs(lat)>1.3){red=220;green=209;blue=193;}
+            if(name.equals("europa")&&Math.abs(Math.sin(lon*13+lat*17+2*Math.sin(lat*8)))<.10){red=134;green=106;blue=81;}
+            if(name.equals("jupiter")&&Math.hypot((Math.IEEEremainder(lon-2.2,2*Math.PI))/.22,(lat+.35)/.09)<1){red=185;green=99;blue=67;}
+            img.setRGB(x,y,((int)clamp(red+d,0,255)<<16)|((int)clamp(green+d,0,255)<<8)|(int)clamp(blue+d,0,255));
+        }ImageIO.write(img,"PNG",out.toFile());
     }
     private static BufferedImage read(String url) throws Exception {
         var con=(HttpURLConnection)URI.create(url).toURL().openConnection();
@@ -42,6 +60,7 @@ public class PlanetTextures {
     }
     private static void create(Path out,String url,boolean earth,double lonDeg,double latDeg)throws Exception{
         BufferedImage src=read(url),dst=new BufferedImage(SIZE,SIZE,BufferedImage.TYPE_INT_ARGB);
+        ImageIO.write(src,"PNG",out.resolveSibling((earth?"earth":"moon")+"_map.png").toFile());
         double lat=Math.toRadians(latDeg),lon=Math.toRadians(lonDeg);
         for(int j=0;j<SIZE;j++)for(int i=0;i<SIZE;i++){
             double x=(i+.5-SIZE/2.0)/(SIZE/2.0-2),y=(SIZE/2.0-j-.5)/(SIZE/2.0-2),r=Math.hypot(x,y);

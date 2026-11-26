@@ -54,6 +54,7 @@ public final class MegaRockets implements ModInitializer {
         MarsBlocks.init();
         OuterPlanetBlocks.init();
         Registry.register(Registries.CHUNK_GENERATOR,id("outer_planet"),OuterPlanetGenerator.CODEC);
+        Registry.register(Registries.CHUNK_GENERATOR,id("asteroid_belt"),AsteroidGenerator.CODEC);
         Registry.register(Registries.CHUNK_GENERATOR,id("mars_terrain"),MarsChunkGenerator.CODEC);
         RocketItems.init();
         SpaceSuitItems.init();

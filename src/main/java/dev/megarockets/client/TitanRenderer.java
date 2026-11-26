@@ -68,6 +68,15 @@ public final class TitanRenderer extends EntityRenderer<TitanRocket> {
                 lamp(interior,matrix,x,55.15f,z);
             }
         }
+        if(rocket.entryHeat()>0){
+            VertexConsumer hot=consumers.getBuffer(RenderLayer.getEntityTranslucent(WHITE));
+            float heat=rocket.entryHeat()/100f;
+            for(var q:model.hull()){
+                int alpha=(int)(heat*(65+35*Math.sin(rocket.age*.4+q.points()[0].y()*.17)));
+                int tint=(alpha<<24)|0xff6826;
+                for(var p:q.points())hot.vertex(matrix,p.x()*1.009f,p.y(),p.z()*1.009f).color(tint).texture(.5f,.5f).overlay(OverlayTexture.DEFAULT_UV).light(0xF000F0).normal(matrix,q.nx(),q.ny(),q.nz());
+            }
+        }
         VertexConsumer glass=consumers.getBuffer(RenderLayer.getEntityTranslucent(WHITE));
         for(TitanMesh.Quad q:model.glass())emit(glass,matrix,q,0xF000F0);
         if (rocket.enginesRunning()) {
