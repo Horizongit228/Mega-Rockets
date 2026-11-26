@@ -48,7 +48,7 @@ public final class MarsTerrain {
  public PlanetCaves.Entrance caveEntrance(int gx,int gz){return caveNetwork.entrance(gx,gz);}
  public PlanetCaves.Column caveColumn(int x,int z){return caveNetwork.column(x,z);}
  public int top(int x,int z){
-  double r=Math.hypot(x,z);if(r>=RADIUS)return MIN_Y-1;if(r<=24)return PAD_Y-1;
+  double r=Math.hypot(x,z);if(r>=RADIUS)return MIN_Y-1;
   double hills=22*noise(x/220.,z/220.,11)+12*noise(x/75.,z/75.,12)+3*noise(x/18.,z/18.,13);
   double dune=4*Math.sin((x+noise(x/100.,z/100.,15)*22)/14.)*smooth((noise(x/300.,z/300.,16)+.5)/1.5);
   double canyon=-45*Math.exp(-Math.pow(noise(x/310.,z/310.,31)/.13,2))*smooth((noise(x/600.,z/600.,32)+.15)/.7);
@@ -59,8 +59,7 @@ public final class MarsTerrain {
    double rad=25+75*hash(a,94,b),d=Math.hypot(x-cx,z-cz)/rad;
    if(d<1.3)crater+=rad*(-.34*Math.pow(Math.max(0,1-d*d),2)+.11*Math.exp(-Math.pow((d-1)/.21,2)))*smooth((1.3-d)/.3);
   }
-  double h=mix(PAD_Y-1-Math.min(35,(r-24)*.22),88+hills+dune+canyon+crater+mountains(x,z),smooth((r-55)/240));
-  if(r<192)h=Math.min(PAD_Y-2,h);
+  double h=88+hills+dune+canyon+crater+mountains(x,z);
   // The finite disk tapers into a low rim over its outer 320 blocks.
   h=mix(8,h,smooth((RADIUS-r)/320));
   return (int)Math.max(8,Math.min(670,Math.floor(h)));
@@ -71,7 +70,6 @@ public final class MarsTerrain {
  public int material(int x,int y,int z,int top,PlanetCaves.Column column){
   if(y<MIN_Y||y>top)return AIR;if(y==MIN_Y)return BEDROCK;
   int depth=top-y;
-  if(Math.hypot(x,z)<=24&&depth<32)return depth==0?PAD:ROCK;
   if(y>MIN_Y+3&&caveNetwork.air(column,depth))return AIR;
   if(depth>7&&y>MIN_Y+3){
    double a=Math.sin((x+off)*.075+Math.sin(y*.051)),b=Math.cos((z-off)*.071+Math.cos(y*.067));

@@ -27,11 +27,10 @@ public class PlanetGeologyCheck {
    if(mars.top(8192,0)!=MarsTerrain.MIN_Y-1||mars.top(0,-8192)!=MarsTerrain.MIN_Y-1||mars.material(8192,MarsTerrain.MIN_Y,0,mars.top(8192,0))!=MarsTerrain.AIR)throw new AssertionError("Mars edge");
    for(int x=-1800;x<=1800;x+=32)for(int z=-1800;z<=1800;z+=32){
     int h=mars.top(x,z);if(h<150)plains++;else if(h>300)rocks++;
-    if(Math.hypot(x,z)<192&&Math.hypot(x,z)>24&&h>=127)throw new AssertionError("Landing clearance");
+    if(mars.material(x,h,z,h)==MarsTerrain.PAD)throw new AssertionError("Artificial Mars pad");
    }
-   for(int x=-16;x<=16;x+=4)for(int z=-16;z<=16;z+=4){
-    if(Math.hypot(x,z)>24)continue;var c=moon.column(x,z);
-    for(int d=0;d<32;d++)if(moon.material(c,x,c.top()-d,z)==MoonTerrain.AIR||mars.material(x,127-d,z,127)==MarsTerrain.AIR)throw new AssertionError("Landing foundation");
+   for(int x=-32;x<=32;x+=2)for(int z=-32;z<=32;z+=2){
+    var col=moon.column(x,z);if(col.pad()||moon.material(col,x,col.top(),z)==MoonTerrain.PAD)throw new AssertionError("Artificial lunar pad");
    }
    if(lunarEntrances<80||marsEntrances<80||peaks!=10||high<450||plains<7000)throw new AssertionError("Insufficient terrain variety "+lunarEntrances+" "+marsEntrances+" "+peaks+" "+high+" "+plains+" "+rocks);
    System.out.println("PASS seed "+seed+": Moon entrances "+lunarEntrances+", Mars entrances "+marsEntrances+", mountains "+peaks+", max Y "+high+", lowlands "+plains+", high mountain samples "+rocks);

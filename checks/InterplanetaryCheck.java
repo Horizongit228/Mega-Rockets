@@ -24,8 +24,7 @@ public class InterplanetaryCheck{
   for(int x=-600;x<=600;x+=8)for(int z=-600;z<=600;z+=8){
    int h=a.top(x,z);if(h!=same.top(x,z))throw new AssertionError("Seed");
    if(h!=b.top(x,z))changed++;lo=Math.min(lo,h);hi=Math.max(hi,h);
-   if(Math.hypot(x,z)<=24&&(h!=127||a.material(x,h,z,h)!=MarsTerrain.PAD))throw new AssertionError("Pad");
-   if(Math.hypot(x,z)>24&&Math.hypot(x,z)<192&&h>=127)throw new AssertionError("Pad clearance");
+   if(a.material(x,h,z,h)==MarsTerrain.PAD)throw new AssertionError("Artificial pad");
    if(a.material(x,h-20,z,h)==MarsTerrain.AIR)caves++;
   }
   if(changed<1000||hi-lo<25||caves<50)throw new AssertionError("Mars terrain variation");

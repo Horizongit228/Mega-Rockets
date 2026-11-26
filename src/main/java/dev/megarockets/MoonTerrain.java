@@ -57,25 +57,15 @@ public final class MoonTerrain {
   double mountain=high*(85*ridge*ridge+14*field(x/40.0,z/40.0,97)+5*field(x/18.0,z/18.0,101));
   double detail=.9*field(x/18.0,z/18.0,113)+.25*field(x/7.0,z/7.0,127);
   double top=h+(broad+rolling+mountain+detail+crater(x,z)*(.08+.92*basin)-20*basin)*taper;
-  if(r<=PAD_RADIUS)top=PAD_GLOBAL_Y;
-  else if(r<720){
-   // A continuous, broad apron around the highland instead of a steep artificial rim.
-   double distance=r-PAD_RADIUS;
-   double fall=Math.min(170,.42*distance);
-   double apron=PAD_GLOBAL_Y-fall+clamp(rolling*.25+detail,-4,4)*smooth(distance/32);
-   top=mix(apron,top,smooth((r-SAFE_RADIUS)/(720-SAFE_RADIUS)));
-   if(r<SAFE_RADIUS)top=Math.min(PAD_GLOBAL_Y-1,top);
-  }
   int bottom=(int)Math.ceil(-h+35*field(x/250.0,z/250.0,131)*taper),t=(int)Math.floor(top);
   double inner=RADIUS-CRUST;int half=r<inner?(int)Math.floor(Math.sqrt(inner*inner-r*r)):-1;
   int ib=half<0?1:Math.max(bottom+8,-half),it=half<0?0:Math.min(t-24,half);
-  return new Column(bottom,t,ib,it,r<=PAD_RADIUS,Math.sin((x+ox)*.078+(z+oz)*.025),Math.cos((z+oz)*.071-(x+ox)*.019),region,seed,caveNetwork.column(x,z));
+  return new Column(bottom,t,ib,it,false,Math.sin((x+ox)*.078+(z+oz)*.025),Math.cos((z+oz)*.071-(x+ox)*.019),region,seed,caveNetwork.column(x,z));
  }
  public PlanetCaves.Entrance caveEntrance(int gx,int gz){return caveNetwork.entrance(gx,gz);}
  public int material(Column c,int x,int y,int z){
   if(y<c.bottom()||y>c.top()||(y>=c.innerBottom()&&y<=c.innerTop()))return AIR;
   int depth=Math.min(c.top()-y,y-c.bottom());
-  if(c.pad()&&y>=PAD_GLOBAL_Y-31)return y==PAD_GLOBAL_Y?PAD:ROCK;
   if(caveNetwork.air(c.caves(),c.top()-y))return AIR;
   if(depth>5){
    double a=c.tunnelX()+Math.sin((y+oy)*.094+(z+oz)*.026),b=c.tunnelZ()+Math.cos((y+oy)*.071-(x+ox)*.019);

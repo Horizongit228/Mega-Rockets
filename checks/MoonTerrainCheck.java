@@ -16,9 +16,8 @@ public class MoonTerrainCheck {
   }
   for(var world:new MoonTerrain[]{a,b}){
    for(int x=-192;x<=192;x+=2)for(int z=-192;z<=192;z+=2){
-    double r=Math.hypot(x,z);if(r>=192)continue;var c=world.column(x,z);
-    if(r<=24){if(c.top()!=MoonTerrain.PAD_GLOBAL_Y||world.material(c,x,c.top(),z)!=MoonTerrain.PAD)throw new AssertionError("Pad");}
-    else if(c.top()>=MoonTerrain.PAD_GLOBAL_Y)throw new AssertionError("Crater wall");
+    var col=world.column(x,z);
+    if(col.pad()||world.material(col,x,col.top(),z)==MoonTerrain.PAD)throw new AssertionError("Artificial pad");
    }
   }
   // Ordinary traversable terrain should have mostly one-block steps.
@@ -54,7 +53,7 @@ public class MoonTerrainCheck {
   System.out.println("PASS denser forest: "+forestTrees+" trees / "+forestCells+" forest cells");
   if(kinds.size()!=3||rocks<100||crystals<10)throw new AssertionError("Missing forest or rock variety");
   System.out.println("PASS tree forms "+kinds+", rock formations "+rocks+", crystal formations "+crystals);
-  if(caves<100||ore<100||changed<1000||trees<100||biomes.size()!=4||regions!=7||high<=4095||low>=1000)throw new AssertionError("Terrain variation missing");
+  if(caves<100||ore<100||changed<1000||trees<100||biomes.size()!=4||regions!=7||high<4000||low>=1000)throw new AssertionError("Terrain variation missing");
   System.out.println("PASS seeded Moon: "+changed+" changed columns; "+trees+" trees; "+biomes+"; caves "+caves+"; ore "+ore);
  }
 }
