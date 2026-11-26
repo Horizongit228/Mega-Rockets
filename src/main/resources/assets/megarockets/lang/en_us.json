@@ -23,7 +23,7 @@
   "message.megarockets.phase.turn": "Turn for braking",
   "message.megarockets.phase.brake": "Braking burn",
   "message.megarockets.phase.hold": "Waiting for target readiness",
-  "message.megarockets.phase.align": "Landing alignment",
+  "message.megarockets.phase.align": "Aligning for landing",
   "message.megarockets.phase.descent": "Descent",
   "message.megarockets.phase.final": "Final landing",
   "message.megarockets.phase.landed": "Landed",
@@ -72,7 +72,7 @@
   "message.megarockets.launch_button": "[LAUNCH]",
   "message.megarockets.departure_target": "Course: %s! Distance %s blocks.",
   "message.megarockets.entry_target": "Arriving in dimension: %s. Beginning descent.",
-  "message.megarockets.target_status": "Target: %s | %s | Transfer %s%% | Remaining %s blocks | %s blocks/s | Above pad %s blocks",
+  "message.megarockets.target_status": "Target: %s | %s | Transfer %s%% | Remaining %s blocks | %s blocks/s | Landing altitude remaining %s blocks",
   "message.megarockets.target_arrived": "Landed: %s! Shift to exit. /rocket return to go home.",
   "block.megarockets.lunar_bricks": "Lunar bricks",
   "block.megarockets.lunar_brick_stairs": "Lunar brick stairs",
@@ -106,5 +106,8 @@
   "cockpit.megarockets.launch": "LAUNCH",
   "cockpit.megarockets.speed": "Speed: %s blocks/s",
   "cockpit.megarockets.altitude": "Altitude: %s",
-  "cockpit.megarockets.pressurized": "Pressure nominal | O₂ available"
+  "cockpit.megarockets.pressurized": "Pressure nominal | O₂ available",
+  "message.megarockets.scanning_landing": "Autopilot surveying terrain for a natural landing site.",
+  "message.megarockets.landing_site": "Landing site found: X=%s Y=%s Z=%s",
+  "message.megarockets.landing_obstructed": "Descent paused: obstruction beneath rocket."
 }

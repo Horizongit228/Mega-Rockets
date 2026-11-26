@@ -23,7 +23,7 @@
   "message.megarockets.phase.turn": "Разворот для торможения",
   "message.megarockets.phase.brake": "Торможение",
   "message.megarockets.phase.hold": "Ожидание готовности цели",
-  "message.megarockets.phase.align": "Выравнивание над площадкой",
+  "message.megarockets.phase.align": "Выравнивание перед посадкой",
   "message.megarockets.phase.descent": "Снижение",
   "message.megarockets.phase.final": "Мягкая посадка",
   "message.megarockets.phase.landed": "Посадка завершена",
@@ -72,7 +72,7 @@
   "message.megarockets.launch_button": "[СТАРТ]",
   "message.megarockets.departure_target": "Курс: %s! Дистанция %s блоков.",
   "message.megarockets.entry_target": "Прибытие в измерение: %s. Начинаем спуск.",
-  "message.megarockets.target_status": "Цель: %s | %s | Путь %s%% | Осталось %s бл. | %s бл/с | Над площадкой %s бл.",
+  "message.megarockets.target_status": "Цель: %s | %s | Путь %s%% | Осталось %s бл. | %s бл/с | До посадки по высоте %s бл.",
   "message.megarockets.target_arrived": "Посадка: %s! Shift — выход. /rocket return — домой.",
   "block.megarockets.lunar_bricks": "Лунные кирпичи",
   "block.megarockets.lunar_brick_stairs": "Ступеньки из лунного кирпича",
@@ -106,5 +106,8 @@
   "cockpit.megarockets.launch": "СТАРТ",
   "cockpit.megarockets.speed": "Скорость: %s бл/с",
   "cockpit.megarockets.altitude": "Высота: %s",
-  "cockpit.megarockets.pressurized": "Герметизация: в норме | O₂ доступен"
+  "cockpit.megarockets.pressurized": "Герметизация: в норме | O₂ доступен",
+  "message.megarockets.scanning_landing": "Автопилот сканирует рельеф: поиск естественного места посадки.",
+  "message.megarockets.landing_site": "Найдено место посадки: X=%s Y=%s Z=%s",
+  "message.megarockets.landing_obstructed": "Посадка приостановлена: препятствие под ракетой."
 }

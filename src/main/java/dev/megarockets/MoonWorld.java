@@ -41,15 +41,13 @@ public final class MoonWorld {
             int index=i++;
             int dx=index%SIDE-RADIUS, dz=(index/SIDE)%SIDE-RADIUS, dy=index/(SIDE*SIDE)-RADIUS;
             int d2=dx*dx+dy*dy+dz*dz, y=CENTER_Y+dy;
-            if(d2>RADIUS*RADIUS||y>=LAND_Y) continue;
-            boolean pad=dx*dx+dz*dz<=20*20 && y>=LAND_Y-4;
-            // Hollow solid crust, thick enough to walk on and mine. Flatten landing area.
-            if(!pad && d2<(RADIUS-4)*(RADIUS-4)) continue;
+            if(d2>RADIUS*RADIUS) continue;
+            // Natural hollow crust; no flattened platform.
+            if(d2<(RADIUS-4)*(RADIUS-4)) continue;
             pos.set(X+dx,y,Z+dz);
             if(!world.getBlockState(pos).isAir()) continue;
             int hash=Math.floorMod(dx*73428767 ^ dy*19349663 ^ dz*83492791,100);
-            BlockState state=pad && y==LAND_Y-1 ? Blocks.SMOOTH_STONE.getDefaultState()
-                : hash<8 ? Blocks.ANDESITE.getDefaultState() : hash<22 ? Blocks.TUFF.getDefaultState()
+            BlockState state=hash<8 ? Blocks.ANDESITE.getDefaultState() : hash<22 ? Blocks.TUFF.getDefaultState()
                 : Blocks.STONE.getDefaultState();
             world.setBlockState(pos,state,Block.NOTIFY_LISTENERS|Block.FORCE_STATE);
             placed++;

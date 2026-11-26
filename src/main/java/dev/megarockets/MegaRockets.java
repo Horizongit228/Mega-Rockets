@@ -153,42 +153,29 @@ public final class MegaRockets implements ModInitializer {
 
     static boolean enterMoon(TitanRocket old,ServerPlayerEntity pilot,LunarFlight.State state) {
         Destination destination=old.destination();
-        int pad=destination.padY;
         ServerWorld moon=pilot.getServer().getWorld(destinationWorld(destination));
         if(moon==null)return false;
-        // Check actual blocks, not just theoretical terrain. Old generated chunks must not
-        // cause a landing in empty air or rock. Never overwrite a player's existing builds.
-        for(int[] point:new int[][]{{0,0},{-7,-7},{-7,7},{7,-7},{7,7},{16,0}}) {
-            BlockPos floor=new BlockPos(point[0],pad-1,point[1]);
-            if(!moon.getBlockState(floor).isOf(MoonBlocks.PAD)) {
-                if(old.age%40==0)pilot.sendMessage(Text.translatable("message.megarockets.old_moon"),true);
-                return false;
-            }
-        }
-        for(int x=-7;x<=7;x++)for(int z=-7;z<=7;z++) {
-            // Heightmap checks every column in the rocket footprint for obstructions.
-            if(moon.getTopY(Heightmap.Type.MOTION_BLOCKING,x,z)>pad) {
-                if(old.age%40==0)pilot.sendMessage(Text.translatable("message.megarockets.pad_blocked"),true);
-                return false;
-            }
-        }
-        if(moon.getTopY(Heightmap.Type.MOTION_BLOCKING,16,0)>pad) {
-            if(old.age%40==0)pilot.sendMessage(Text.translatable("message.megarockets.pad_blocked"),true);
+        if(old.age%5!=0)return false;
+        var site=NaturalLanding.find(moon,old);
+        if(site==null){
+            if(old.age%40==0)pilot.sendMessage(Text.translatable("message.megarockets.scanning_landing"),true);
             return false;
         }
         TitanRocket ship=new TitanRocket(old.rocketType(),moon);
         ship.copyDestination(old);
-        double y=state.y()+pad-LunarFlight.LAND_Y;
-        ship.refreshPositionAndAngles(.5,y,.5,0,0);
+        double y=state.y()+site.y()-LunarFlight.LAND_Y;
+        ship.setLandingSite(site);
+        ship.refreshPositionAndAngles(site.x()+.5,y,site.z()+.5,0,0);
         ship.acceptLunarState(state);
         if(!moon.spawnEntity(ship))return false;
         pilot.stopRiding();
-        if(!pilot.teleport(moon,.5,y+51.35,1.15,Set.of(),pilot.getYaw(),0)){
+        if(!pilot.teleport(moon,site.x()+.5,y+51.35,site.z()+1.15,Set.of(),pilot.getYaw(),0)){
             ship.discard();pilot.startRiding(old,true);return false;
         }
         if(!pilot.startRiding(ship,true)){ship.discard();return false;}
         old.discard();
         pilot.sendMessage(Text.translatable("message.megarockets.entry_target",Text.translatable("destination.megarockets."+destination.key())),false);
+        pilot.sendMessage(Text.translatable("message.megarockets.landing_site",site.x(),site.y(),site.z()),false);
         return true;
     }
 
