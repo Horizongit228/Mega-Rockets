@@ -352,5 +352,15 @@
   "energy.megarockets.panel": "Выработка панели: %s ед./с",
   "energy.megarockets.battery": "Заряд: %s / %s | Генерация сети: %s ед./с | Кислородных установок: %s",
   "energy.megarockets.no_power": "Нет энергии. Подключите панель и аккумулятор кабелем.",
-  "station.megarockets.energy_status": "Аврора: активных контрольных панелей %s/4, кислородных установок %s/%s"
+  "station.megarockets.energy_status": "Аврора: активных контрольных панелей %s/4, кислородных установок %s/%s",
+  "cockpit.megarockets.jump": "Гиперпрыжок",
+  "cockpit.megarockets.jump_earth": "Прыжок к Земле",
+  "cockpit.megarockets.jump_ascent": "ГИПЕРПРЫЖОК: безопасный подъём",
+  "cockpit.megarockets.jump_charge": "ГИПЕРПРЫЖОК: заряд %s%%",
+  "message.megarockets.jump_begin": "Гиперпрыжок к %s. B или M — отмена.",
+  "message.megarockets.jump_arrived": "Гиперпрыжок завершён: %s. Обычный режим полёта.",
+  "message.megarockets.jump_cancel": "Гиперпрыжок отменён.",
+  "message.megarockets.jump_blocked": "Прыжок прерван: препятствие или сектор прибытия недоступен.",
+  "message.megarockets.jump_target": "Неизвестная цель прыжка. Используйте карту U.",
+  "map.megarockets.jump": "Гиперпрыжок"
 }

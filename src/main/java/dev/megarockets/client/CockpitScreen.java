@@ -32,7 +32,7 @@ public final class CockpitScreen extends Screen {
     }
     private void selectTab(Tab t){tab=t;clearChildren();init();}
     @Override protected void init(){
-        targets.clear();actions.clear();w=Math.min(width-12,324);h=224;
+        targets.clear();actions.clear();w=Math.min(width-12,324);h=246;
         x=(width-w)/2;y=Math.max(2,(height-h)/2);
         accent=rocket.getType()==MegaRockets.HYPERION?0xff65dcff:rocket.getType()==MegaRockets.PHANTOM?0xffff984f:0xfff17c6a;
         int tw=(w-12)/5;
@@ -52,6 +52,7 @@ public final class CockpitScreen extends Screen {
                 control(Control.MANUAL,"manual",10+half,164,half);
                 control(Control.AUTO_NAV,"auto_nav",8,186,half);
                 control(Control.APPROACH,"approach",10+half,186,half);
+                control(Control.JUMP,"jump",8,208,half);control(Control.JUMP_EARTH,"jump_earth",10+half,208,half);
             }
             case ENG ->{
                 control(Control.ARM,"arm",8,119,half);control(Control.HOLD,"hold",10+half,119,half);
@@ -85,15 +86,18 @@ public final class CockpitScreen extends Screen {
         if(client==null||client.player==null||client.player.getVehicle()!=rocket){close();return;}
         boolean ready=rocket.cabinReady(),orbit=rocket.getWorld().getRegistryKey().equals(MegaRockets.ORBIT),manual=rocket.manualMode(),armed=rocket.armed();
         for(var e:targets.entrySet()){
-            e.getValue().active=ready||manual;
+            e.getValue().active=!rocket.jumping()&&(ready||manual);
             e.getValue().setMessage(Text.literal(rocket.cabinTarget()==e.getKey()?"● ":"").append(Text.translatable("destination.megarockets."+e.getKey().key())));
         }
-        state(Control.LAUNCH,ready&&armed,"launch");
+        state(Control.LAUNCH,ready&&armed&&!rocket.jumping(),"launch");
+        boolean jumpWorld=orbit||rocket.getWorld().getRegistryKey().equals(net.minecraft.world.World.OVERWORLD)||MegaRockets.planet(rocket.getWorld())!=null;
+        state(Control.JUMP,jumpWorld&&armed&&!rocket.jumping()&&(orbit||MegaRockets.planet(rocket.getWorld())!=rocket.cabinTarget()),"jump");
+        state(Control.JUMP_EARTH,jumpWorld&&armed&&!rocket.jumping()&&!rocket.getWorld().getRegistryKey().equals(net.minecraft.world.World.OVERWORLD),"jump_earth");
         state(Control.MANUAL,true,"manual_state",on(manual&&!rocket.autoNavigation()));
-        state(Control.AUTO_NAV,orbit&&armed,"auto_nav");
-        state(Control.RETURN_EARTH,orbit&&armed,"return_earth");
-        state(Control.STATION_NAV,orbit&&armed,"station_nav");
-        state(Control.APPROACH,orbit&&manual&&armed,"approach");
+        state(Control.AUTO_NAV,orbit&&armed&&!rocket.jumping(),"auto_nav");
+        state(Control.RETURN_EARTH,orbit&&armed&&!rocket.jumping(),"return_earth");
+        state(Control.STATION_NAV,orbit&&armed&&!rocket.jumping(),"station_nav");
+        state(Control.APPROACH,orbit&&manual&&armed&&!rocket.jumping(),"approach");
         state(Control.HOLD,true,"hold");
         state(Control.ARM,true,"arm_state",on(armed));
         state(Control.THROTTLE_DOWN,rocket.throttle()>25,"throttle_down");
@@ -150,7 +154,7 @@ public final class CockpitScreen extends Screen {
                 line(c,tr("view_hint2"),12,72,accent);
             }
         }
-        line(c,tab==Tab.NAV&&rocket.getWorld().getRegistryKey().equals(MegaRockets.ORBIT)?tr("earth_gate",(int)SolarDynamics.position(null,rocket.getWorld().getTime()).x(),(int)SolarDynamics.position(null,rocket.getWorld().getTime()).z()):tr(rocket.cabinBreathable()?"pressurized":"vacuum_warning"),10,211,rocket.cabinBreathable()?green:red);
+        line(c,tab==Tab.NAV&&rocket.getWorld().getRegistryKey().equals(MegaRockets.ORBIT)?tr("earth_gate",(int)SolarDynamics.position(null,rocket.getWorld().getTime()).x(),(int)SolarDynamics.position(null,rocket.getWorld().getTime()).z()):tr(rocket.cabinBreathable()?"pressurized":"vacuum_warning"),10,233,rocket.cabinBreathable()?green:red);
         super.render(c,mx,my,d);
     }
 }

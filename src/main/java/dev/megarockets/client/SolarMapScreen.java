@@ -9,7 +9,7 @@ import net.minecraft.text.Text;
 public final class SolarMapScreen extends Screen {
  private static final Destination[] BODIES={null,Destination.MERCURY,Destination.VENUS,Destination.MOON,Destination.MARS,Destination.JUPITER,Destination.EUROPA,Destination.SATURN,Destination.TITAN,Destination.URANUS,Destination.NEPTUNE};
  private int selected=0,zoom=0,cx,cy,radius,px,py,pw;
- private ButtonWidget course,zoomButton;
+ private ButtonWidget course,zoomButton,jumpButton;
  private final Screen parent;
  public SolarMapScreen(Screen parent){super(Text.translatable("map.megarockets.title"));this.parent=parent;}
  private Text tr(String key,Object... args){return Text.translatable("map.megarockets."+key,args);}
@@ -21,7 +21,7 @@ public final class SolarMapScreen extends Screen {
  private TitanRocket rocket(){return client!=null&&client.player!=null&&client.player.getVehicle() instanceof TitanRocket r?r:null;}
  private boolean orbit(){return client!=null&&client.world!=null&&client.world.getRegistryKey().equals(MegaRockets.ORBIT);}
  private void advance(int by){selected=Math.floorMod(selected+by,BODIES.length+1);var p=position(selected,0);double distance=Math.hypot(p.x(),p.z());if(distance>extent())zoom=distance>12*SolarDynamics.AU?2:1;refresh();}
- private void refresh(){if(zoomButton!=null)zoomButton.setMessage(tr("zoom",zoom==0?"3.5":zoom==1?"12":"32"));if(course!=null){course.setMessage(tr(station()?"station_course":selected==0?"earth_course":"choose_course"));TitanRocket r=rocket();course.active=r!=null&&(station()||selected==0?orbit()&&r.armed():r.manualMode()||r.cabinReady());}}
+ private void refresh(){if(zoomButton!=null)zoomButton.setMessage(tr("zoom",zoom==0?"3.5":zoom==1?"12":"32"));if(course!=null){course.setMessage(tr(station()?"station_course":selected==0?"earth_course":"choose_course"));TitanRocket r=rocket();course.active=r!=null&&(station()||selected==0?orbit()&&r.armed():r.manualMode()||r.cabinReady());course.active=course.active&&r!=null&&!r.jumping();}if(jumpButton!=null){TitanRocket r=rocket();jumpButton.active=r!=null&&!station()&&r.armed()&&!r.jumping()&&client.world!=null&&(orbit()||client.world.getRegistryKey().equals(net.minecraft.world.World.OVERWORLD)||MegaRockets.planet(client.world)!=null)&&(orbit()||MegaRockets.planet(client.world)!=body());}}
  @Override protected void init(){
   int left=Math.max(8,(width-Math.min(width-16,450))/2),top=30,w=Math.min(width-16,450);
   int mapSize=Math.min(Math.max(90,height-86),Math.max(90,w*3/5));
@@ -29,7 +29,10 @@ public final class SolarMapScreen extends Screen {
   addDrawableChild(ButtonWidget.builder(Text.literal("◀"),b->advance(-1)).dimensions(px,py+19,20,20).build());
   addDrawableChild(ButtonWidget.builder(Text.literal("▶"),b->advance(1)).dimensions(px+pw-20,py+19,20,20).build());
   zoomButton=addDrawableChild(ButtonWidget.builder(tr("zoom","3.5"),b->{zoom=(zoom+1)%3;refresh();}).dimensions(left,height-49,Math.min(100,w/3),20).build());
-  course=addDrawableChild(ButtonWidget.builder(tr("choose_course"),b->choose()).dimensions(left+Math.min(100,w/3)+3,height-49,w-Math.min(100,w/3)-3,20).build());
+  int zw=Math.min(90,w/3),cw=(w-zw-6)/2;
+  zoomButton.setWidth(zw);
+  course=addDrawableChild(ButtonWidget.builder(tr("choose_course"),b->choose()).dimensions(left+zw+3,height-49,cw,20).build());
+  jumpButton=addDrawableChild(ButtonWidget.builder(tr("jump"),b->{if(rocket()!=null&&!station())client.player.networkHandler.sendChatCommand("rocket jump "+(body()==null?"earth":body().key()));}).dimensions(left+zw+cw+6,height-49,w-zw-cw-6,20).build());
   addDrawableChild(ButtonWidget.builder(Text.translatable("gui.done"),b->close()).dimensions(left,height-25,w,20).build());refresh();
  }
  private void choose(){TitanRocket r=rocket();if(r==null)return;

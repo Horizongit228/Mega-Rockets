@@ -352,5 +352,15 @@
   "energy.megarockets.panel": "Solar output: %s units/s",
   "energy.megarockets.battery": "Charge: %s / %s | Network generation: %s units/s | Powered oxygen stations: %s",
   "energy.megarockets.no_power": "No power. Connect a solar panel and battery with cables.",
-  "station.megarockets.energy_status": "Aurora: intact control panels %s/4, powered oxygen stations %s/%s"
+  "station.megarockets.energy_status": "Aurora: intact control panels %s/4, powered oxygen stations %s/%s",
+  "cockpit.megarockets.jump": "Hyperjump",
+  "cockpit.megarockets.jump_earth": "Jump to Earth",
+  "cockpit.megarockets.jump_ascent": "HYPERJUMP: safe ascent",
+  "cockpit.megarockets.jump_charge": "HYPERJUMP: charging %s%%",
+  "message.megarockets.jump_begin": "Hyperjump to %s. B or M to cancel.",
+  "message.megarockets.jump_arrived": "Hyperjump complete: %s. Normal flight mode.",
+  "message.megarockets.jump_cancel": "Hyperjump cancelled.",
+  "message.megarockets.jump_blocked": "Jump aborted: obstruction or arrival sector unavailable.",
+  "message.megarockets.jump_target": "Unknown jump target. Use map U.",
+  "map.megarockets.jump": "Hyperjump"
 }

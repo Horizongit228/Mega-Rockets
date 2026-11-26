@@ -89,6 +89,7 @@ public final class MegaRockets implements ModInitializer {
                     .then(CommandManager.literal("saturn").executes(ctx -> choose(ctx.getSource(),Destination.SATURN)))
                     .then(CommandManager.literal("uranus").executes(ctx -> choose(ctx.getSource(),Destination.URANUS)))
                     .then(CommandManager.literal("neptune").executes(ctx -> choose(ctx.getSource(),Destination.NEPTUNE))))
+                .then(CommandManager.literal("jump").then(CommandManager.argument("target",com.mojang.brigadier.arguments.StringArgumentType.word()).executes(ctx->jump(ctx.getSource(),com.mojang.brigadier.arguments.StringArgumentType.getString(ctx,"target")))))
                 .then(CommandManager.literal("manual").executes(ctx -> manual(ctx.getSource(),false)))
                 .then(CommandManager.literal("approach").executes(ctx -> manual(ctx.getSource(),true)))
                 .then(CommandManager.literal("village").executes(ctx -> locateVillage(ctx.getSource())))
@@ -156,6 +157,34 @@ public final class MegaRockets implements ModInitializer {
         var pilot=source.getPlayerOrThrow();
         if(!(pilot.getVehicle() instanceof TitanRocket rocket)){source.sendError(Text.translatable("message.megarockets.destination_seat"));return 0;}
         return (approach?rocket.requestApproach(pilot):rocket.toggleManual(pilot))?1:0;
+    }
+    private static int jump(ServerCommandSource source,String target) throws com.mojang.brigadier.exceptions.CommandSyntaxException {
+        var pilot=source.getPlayerOrThrow();
+        if(!(pilot.getVehicle() instanceof TitanRocket rocket)){source.sendError(Text.translatable("message.megarockets.destination_seat"));return 0;}
+        Destination body=null;
+        if(!target.equalsIgnoreCase("earth")){
+            try{body=Destination.valueOf(target.toUpperCase(java.util.Locale.ROOT));}
+            catch(IllegalArgumentException ex){source.sendError(Text.translatable("message.megarockets.jump_target"));return 0;}
+        }
+        if(!rocket.beginJump(pilot,body)){source.sendError(Text.translatable("cockpit.megarockets.action_unavailable"));return 0;}return 1;
+    }
+    static boolean jumpOrbit(TitanRocket old,ServerPlayerEntity pilot,ServerWorld orbit,Destination body,double x,double z){
+        if(old.getFirstPassenger()!=pilot||!old.armed())return false;
+        double y=JumpRules.ARRIVAL_Y;
+        TitanRocket ship=new TitanRocket(old.rocketType(),orbit);
+        ship.copyDestination(old);ship.arriveFromJump(body);
+        ship.refreshPositionAndAngles(x,y,z,old.getYaw(),0);
+        var box=ship.getBoundingBox();
+        if(!orbit.getWorldBorder().contains(box)||!orbit.isSpaceEmpty(ship,box)||!orbit.getOtherEntities(ship,box).isEmpty()||!orbit.spawnEntity(ship))return false;
+        var origin=(ServerWorld)old.getWorld();var pos=pilot.getPos();float yaw=pilot.getYaw(),pitch=pilot.getPitch();
+        pilot.stopRiding();
+        if(!pilot.teleport(orbit,x,y+51.35,z+.65,Set.of(),yaw,pitch)||!pilot.startRiding(ship,true)){
+            ship.discard();pilot.teleport(origin,pos.x,pos.y,pos.z,Set.of(),yaw,pitch);pilot.startRiding(old,true);return false;
+        }
+        old.discard();pilot.fallDistance=0;
+        pilot.sendMessage(Text.translatable("message.megarockets.jump_arrived",Text.translatable("destination.megarockets."+(body==null?"earth":body.key()))),false);
+        orbit.spawnParticles(net.minecraft.particle.ParticleTypes.PORTAL,x,y+30,z,100,6,20,6,.5);
+        return true;
     }
     static boolean manualOrbit(TitanRocket old,ServerPlayerEntity pilot){
         ServerWorld orbit=pilot.getServer().getWorld(ORBIT);
