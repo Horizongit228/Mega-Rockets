@@ -124,5 +124,6 @@
   "block.megarockets.titan_surface": "Titan sediment",
   "block.megarockets.titan_rock": "Titan ice rock",
   "block.megarockets.titan_ore": "Titan ore",
-  "biome.megarockets.titan_surface": "Titan"
+  "biome.megarockets.titan_surface": "Titan",
+  "cockpit.megarockets.route": "%s blocks | ~%s km (ref.)"
 }

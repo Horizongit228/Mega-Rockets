@@ -124,5 +124,6 @@
   "block.megarockets.titan_surface": "Осадки Титана",
   "block.megarockets.titan_rock": "Ледяная порода Титана",
   "block.megarockets.titan_ore": "Руда Титана",
-  "biome.megarockets.titan_surface": "Титан"
+  "biome.megarockets.titan_surface": "Титан",
+  "cockpit.megarockets.route": "%s бл. | ~%s км (справ.)"
 }

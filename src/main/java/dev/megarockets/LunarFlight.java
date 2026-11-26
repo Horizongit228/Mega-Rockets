@@ -38,7 +38,7 @@ public final class LunarFlight {
     private static double turnDistance(double distance,double max){return max<=15?2600:Math.min(distance*.76,brakeDistance(max)+max*60);}
     public static State step(State s,boolean moonReady) {return step(s,moonReady,DISTANCE,MAX_SPEED);}
     public static State step(State s,boolean moonReady,double distance,double maxSpeed) {
-        double braking=brake(maxSpeed),accel=maxSpeed<=15?.14:maxSpeed<=30?.65:.48;
+        double braking=brake(maxSpeed),accel=maxSpeed<=15?.14:maxSpeed<=30?.65:.8;
         double brakeAt=brakeDistance(maxSpeed),turnAt=turnDistance(distance,maxSpeed);
         float tiltRate=maxSpeed<=15?2f:maxSpeed<=30?3.5f:1.8f;
         Phase phase=s.phase(); int ticks=s.ticks()+1;
