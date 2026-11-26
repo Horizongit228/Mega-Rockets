@@ -4,6 +4,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import dev.megarockets.MegaRockets;
 import dev.megarockets.Destination;
 import dev.megarockets.ApproachRules;
+import dev.megarockets.SolarScale;
 import net.minecraft.client.render.*;
 import net.minecraft.util.Identifier;
 import net.minecraft.client.world.ClientWorld;
@@ -74,19 +75,19 @@ public final class SpaceSky {
                 Vec3d earthDirection=new Vec3d(-Destination.EARTH_RADIUS*1.5-pos.x,-Destination.EARTH_RADIUS*.35-pos.y,-pos.z);
                 double earthApproach=ApproachRules.distance(pos.x,pos.z,ApproachRules.EARTH_X,ApproachRules.EARTH_Z);
                 double earthBlend=Math.max(0,Math.min(1,(ApproachRules.LOAD_RADIUS-earthApproach)/(ApproachRules.LOAD_RADIUS-ApproachRules.ENTRY_RADIUS)));
-                double earthAngular=Math.min(.74,Destination.EARTH_RADIUS/Math.max(Destination.EARTH_RADIUS*1.5,earthDirection.length()));
+                double earthAngular=SolarScale.apparent(SolarScale.EARTH_RADIUS_KM,earthApproach);
                 planet(matrix,earthDirection.normalize(),earthAngular*(1-earthBlend)+1.05*earthBlend,true,1);
                 Destination[] targets=Destination.values();
-                java.util.Arrays.sort(targets,java.util.Comparator.comparingDouble((Destination target)->-new Vec3d(target.distance+target.radius*1.5-pos.x,56-pos.y,target.lane-pos.z).lengthSquared()));
+                java.util.Arrays.sort(targets,java.util.Comparator.comparingDouble((Destination target)->-new Vec3d(target.distance+1200-pos.x,56-pos.y,target.lane-pos.z).lengthSquared()));
                 for(Destination target:targets){
                     // Globe centers lie behind the arrival point on their respective orbital lanes.
-                    Vec3d toward=new Vec3d(target.distance+target.radius*1.5-pos.x,56-pos.y,target.lane-pos.z);
-                    double angular=Math.min(.74,target.radius/Math.max(target.radius*1.5,toward.length()));
-                    if(!target.orbitOnly()){
-                        double approach=ApproachRules.distance(pos.x,pos.z,target.distance,target.lane);
-                        double blend=Math.max(0,Math.min(1,(ApproachRules.LOAD_RADIUS-approach)/(ApproachRules.LOAD_RADIUS-ApproachRules.ENTRY_RADIUS)));
-                        angular=angular*(1-blend)+1.05*blend;
-                    }
+                    Vec3d toward=new Vec3d(target.distance+1200-pos.x,56-pos.y,target.lane-pos.z);
+                    double approach=ApproachRules.distance(pos.x,pos.z,target.distance,target.lane);
+                    double angular=SolarScale.apparent(target.meanRadiusKm,approach);
+                    // Moon route is enlarged for safe gameplay, and close entry is cinematic.
+                    if(target==Destination.MOON)angular=Math.max(angular,.025*Math.min(1,12000/Math.max(1,approach)));
+                    double blend=Math.max(0,Math.min(1,(ApproachRules.LOAD_RADIUS-approach)/(ApproachRules.LOAD_RADIUS-ApproachRules.ENTRY_RADIUS)));
+                    angular=angular*(1-blend)+(target.orbitOnly()?.67:1.05)*blend;
                     if(target==Destination.MOON)planet(matrix,toward.normalize(),angular,false,1);
                     else globe(matrix,toward.normalize(),target==Destination.SATURN?angular/.53:angular,MegaRockets.id("textures/sky/"+target.key()+".png"));
                 }

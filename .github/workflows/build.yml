@@ -57,7 +57,7 @@ jobs:
           java -cp mesh-check LandingSurveyCheck
       - name: Check expanded solar system
         run: |
-          javac -d mesh-check src/main/java/dev/megarockets/PlanetCaves.java src/main/java/dev/megarockets/MoonTerrain.java src/main/java/dev/megarockets/MarsTerrain.java src/main/java/dev/megarockets/Destination.java src/main/java/dev/megarockets/OuterPlanetTerrain.java src/main/java/dev/megarockets/LunarFlight.java src/main/java/dev/megarockets/LandingSurvey.java checks/UniverseCheck.java
+          javac -d mesh-check src/main/java/dev/megarockets/PlanetCaves.java src/main/java/dev/megarockets/MoonTerrain.java src/main/java/dev/megarockets/MarsTerrain.java src/main/java/dev/megarockets/SolarScale.java src/main/java/dev/megarockets/Destination.java src/main/java/dev/megarockets/OuterPlanetTerrain.java src/main/java/dev/megarockets/LunarFlight.java src/main/java/dev/megarockets/LandingSurvey.java checks/UniverseCheck.java
           java -cp mesh-check UniverseCheck
       - name: Check manual rocket controls
         run: |
