@@ -117,8 +117,8 @@ public final class CockpitScreen extends Screen {
             case NAV ->{
                 line(c,rocket.cabinPhase(),12,54,accent);
                 line(c,tr("speed",rocket.cabinSpeed()),12,66,white);
-                line(c,tr("altitude",(int)rocket.getY()),w/2,66,white);
-                line(c,tr("manual_target",(int)rocket.cabinTarget().distance,(int)rocket.cabinTarget().lane),12,78,amber);
+                line(c,rocket.groundClearance()>=0?tr("agl",rocket.groundClearance()):tr("altitude",(int)rocket.getY()),w/2,66,white);
+                line(c,rocket.entryProgress()>=0?tr("entry_loading",rocket.entryProgress()):rocket.groundClearance()>=0?tr("manual_landing_hint"):tr("manual_target",(int)rocket.cabinTarget().distance,(int)rocket.cabinTarget().lane),12,78,amber);
             }
             case ENG ->{
                 meter(c,tr("velocity"),(int)(100*rocket.cabinSpeed()/(rocket.maxSpeed()*20)),53,accent);

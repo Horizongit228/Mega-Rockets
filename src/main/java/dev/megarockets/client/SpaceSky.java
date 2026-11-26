@@ -3,6 +3,7 @@ package dev.megarockets.client;
 import com.mojang.blaze3d.systems.RenderSystem;
 import dev.megarockets.MegaRockets;
 import dev.megarockets.Destination;
+import dev.megarockets.ApproachRules;
 import net.minecraft.client.render.*;
 import net.minecraft.util.Identifier;
 import net.minecraft.client.world.ClientWorld;
@@ -78,6 +79,11 @@ public final class SpaceSky {
                     // Globe centers lie behind the arrival point on their respective orbital lanes.
                     Vec3d toward=new Vec3d(target.distance+target.radius*1.5-pos.x,56-pos.y,target.lane-pos.z);
                     double angular=Math.min(.74,target.radius/Math.max(target.radius*1.5,toward.length()));
+                    if(!target.orbitOnly()){
+                        double approach=ApproachRules.distance(pos.x,pos.z,target.distance,target.lane);
+                        double blend=Math.max(0,Math.min(1,(ApproachRules.LOAD_RADIUS-approach)/(ApproachRules.LOAD_RADIUS-ApproachRules.ENTRY_RADIUS)));
+                        angular=angular*(1-blend)+1.05*blend;
+                    }
                     if(target==Destination.MOON)planet(matrix,toward.normalize(),angular,false,1);
                     else globe(matrix,toward.normalize(),target==Destination.SATURN?angular/.53:angular,MegaRockets.id("textures/sky/"+target.key()+".png"));
                 }

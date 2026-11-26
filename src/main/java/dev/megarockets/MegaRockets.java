@@ -145,7 +145,7 @@ public final class MegaRockets implements ModInitializer {
         ServerWorld orbit=pilot.getServer().getWorld(ORBIT);
         if(orbit==null)return false;
         Destination origin=planet(old.getWorld());
-        double x=origin==null?.5:origin.distance+.5,z=origin==null?.5:origin.lane+.5;
+        double x=origin==null?.5:origin.distance-ApproachRules.EXIT_OFFSET+.5,z=origin==null?.5:origin.lane+.5;
         TitanRocket ship=new TitanRocket(old.rocketType(),orbit);
         ship.copyDestination(old);ship.refreshPositionAndAngles(x,LunarFlight.CRUISE_Y,z,old.getYaw(),0);ship.startManual();
         if(!orbit.isSpaceEmpty(ship,ship.getBoundingBox())||!orbit.getOtherEntities(ship,ship.getBoundingBox()).isEmpty()||!orbit.spawnEntity(ship))return false;
@@ -157,6 +157,23 @@ public final class MegaRockets implements ModInitializer {
             ship.discard();pilot.teleport((ServerWorld)old.getWorld(),old.getX(),old.getY()+51.35,old.getZ()+.65,Set.of(),pilot.getYaw(),pilot.getPitch());pilot.startRiding(old,true);return false;
         }
         old.discard();pilot.sendMessage(Text.translatable("message.megarockets.manual_orbit"),false);return true;
+    }
+    static boolean manualSurface(TitanRocket old,ServerPlayerEntity pilot,ServerWorld target,Destination body,double x,double y,double z){
+        TitanRocket ship=new TitanRocket(old.rocketType(),target);
+        ship.copyDestination(old);ship.setEntryDestination(body);ship.startManual();
+        ship.refreshPositionAndAngles(x,y,z,old.getYaw(),0);
+        if(!target.getWorldBorder().contains(ship.getBoundingBox())||!target.isSpaceEmpty(ship,ship.getBoundingBox())||
+            !target.getOtherEntities(ship,ship.getBoundingBox()).isEmpty()||!target.spawnEntity(ship))return false;
+        pilot.stopRiding();
+        if(!pilot.teleport(target,x,y+51.35,z+.65,Set.of(),pilot.getYaw(),pilot.getPitch())){
+            ship.discard();pilot.startRiding(old,true);return false;
+        }
+        if(!pilot.startRiding(ship,true)){
+            ship.discard();pilot.teleport((ServerWorld)old.getWorld(),old.getX(),old.getY()+51.35,old.getZ()+.65,Set.of(),pilot.getYaw(),pilot.getPitch());pilot.startRiding(old,true);return false;
+        }
+        old.discard();
+        pilot.sendMessage(Text.translatable("message.megarockets.manual_entry",Text.translatable("destination.megarockets."+(body==null?"earth":body.key()))),false);
+        return true;
     }
     private static int status(ServerCommandSource source) throws com.mojang.brigadier.exceptions.CommandSyntaxException {
         ServerPlayerEntity player=source.getPlayerOrThrow();
