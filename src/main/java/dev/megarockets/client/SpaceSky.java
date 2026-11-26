@@ -70,7 +70,8 @@ public final class SpaceSky {
             }draw(stars);
             sun(matrix,new Vec3d(.24,.62,-.75).normalize(),dark,world.getTime()+delta);
             if(orbit){
-                planet(matrix,new Vec3d(-1,-.24,0).normalize(),Math.max(.12,.38-pos.x/30000),true,1);
+                Vec3d earthDirection=new Vec3d(-Destination.EARTH_RADIUS*1.5-pos.x,-Destination.EARTH_RADIUS*.35-pos.y,-pos.z);
+                planet(matrix,earthDirection.normalize(),Math.min(.74,Destination.EARTH_RADIUS/Math.max(Destination.EARTH_RADIUS*1.5,earthDirection.length())),true,1);
                 Destination[] targets=Destination.values();
                 java.util.Arrays.sort(targets,java.util.Comparator.comparingDouble((Destination target)->-new Vec3d(target.distance+target.radius*1.5-pos.x,56-pos.y,target.lane-pos.z).lengthSquared()));
                 for(Destination target:targets){
@@ -78,7 +79,7 @@ public final class SpaceSky {
                     Vec3d toward=new Vec3d(target.distance+target.radius*1.5-pos.x,56-pos.y,target.lane-pos.z);
                     double angular=Math.min(.74,target.radius/Math.max(target.radius*1.5,toward.length()));
                     if(target==Destination.MOON)planet(matrix,toward.normalize(),angular,false,1);
-                    else globe(matrix,toward.normalize(),angular,MegaRockets.id("textures/sky/"+target.key()+".png"));
+                    else globe(matrix,toward.normalize(),target==Destination.SATURN?angular/.53:angular,MegaRockets.id("textures/sky/"+target.key()+".png"));
                 }
             }else if(body!=null&&body!=Destination.MOON){
                 if(body==Destination.EUROPA)globe(matrix,new Vec3d(.3,.65,-.7).normalize(),.32,MegaRockets.id("textures/sky/jupiter.png"));

@@ -1,6 +1,6 @@
 package dev.megarockets;
 public final class MarsTerrain {
- public static final int PAD_Y=128,MIN_Y=-64,HEIGHT=768,RADIUS=8192,DIAMETER=2*RADIUS;
+ public static final int PAD_Y=128,MIN_Y=-64,HEIGHT=768,RADIUS=7984,DIAMETER=2*RADIUS;
  public static final int AIR=0,ROCK=1,REGOLITH=2,ORE=3,PAD=4,BEDROCK=5;
  private final long seed; private final double off;
  private final PlanetCaves caveNetwork;

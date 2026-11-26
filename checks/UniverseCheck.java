@@ -1,6 +1,7 @@
 import dev.megarockets.*;
 public class UniverseCheck {
  public static void main(String[] args){
+  if(Destination.MOON.radius!=MoonTerrain.RADIUS||Destination.MARS.radius!=MarsTerrain.RADIUS||Destination.JUPITER.radius<Destination.SATURN.radius||Destination.SATURN.radius<Destination.URANUS.radius||Destination.EARTH_RADIUS<Destination.VENUS.radius)throw new AssertionError("Planet scale");
   for(Destination d:Destination.values())for(double max:new double[]{15,30,50}){
    var s=LunarFlight.start();int ticks=0;double peak=0;
    while(!LunarFlight.finished(s)&&ticks++<100000){s=LunarFlight.step(s,true,d.distance,max,d.orbitOnly());peak=Math.max(peak,s.speed());if(d.orbitOnly()&&(s.phase()==LunarFlight.Phase.DESCENT||s.phase()==LunarFlight.Phase.FINAL||s.phase()==LunarFlight.Phase.LANDED))throw new AssertionError("Gas giant landing");}

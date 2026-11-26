@@ -24,7 +24,7 @@ public class PlanetGeologyCheck {
     int h=mars.top(m.x(),m.z());high=Math.max(high,h);
     if(h<300||h>=MarsTerrain.MIN_Y+MarsTerrain.HEIGHT)throw new AssertionError("Mountain height "+h);
    }
-   if(mars.top(8192,0)!=MarsTerrain.MIN_Y-1||mars.top(0,-8192)!=MarsTerrain.MIN_Y-1||mars.material(8192,MarsTerrain.MIN_Y,0,mars.top(8192,0))!=MarsTerrain.AIR)throw new AssertionError("Mars edge");
+   if(mars.top(MarsTerrain.RADIUS,0)!=MarsTerrain.MIN_Y-1||mars.top(0,-MarsTerrain.RADIUS)!=MarsTerrain.MIN_Y-1||mars.material(MarsTerrain.RADIUS,MarsTerrain.MIN_Y,0,mars.top(MarsTerrain.RADIUS,0))!=MarsTerrain.AIR)throw new AssertionError("Mars edge");
    for(int x=-1800;x<=1800;x+=32)for(int z=-1800;z<=1800;z+=32){
     int h=mars.top(x,z);if(h<150)plains++;else if(h>300)rocks++;
     if(mars.material(x,h,z,h)==MarsTerrain.PAD)throw new AssertionError("Artificial Mars pad");
