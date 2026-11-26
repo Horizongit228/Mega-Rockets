@@ -75,6 +75,10 @@ jobs:
         run: |
           javac -d mesh-check src/main/java/dev/megarockets/PlanetCaves.java src/main/java/dev/megarockets/MoonTerrain.java src/main/java/dev/megarockets/MarsTerrain.java src/main/java/dev/megarockets/SolarScale.java src/main/java/dev/megarockets/Destination.java src/main/java/dev/megarockets/SolarDynamics.java src/main/java/dev/megarockets/AsteroidTerrain.java src/main/java/dev/megarockets/ManualFlight.java checks/SolarDynamicsCheck.java
           java -cp mesh-check SolarDynamicsCheck
+      - name: Check orbital station
+        run: |
+          javac -d mesh-check src/main/java/dev/megarockets/StationLayout.java checks/StationCheck.java
+          java -cp mesh-check StationCheck
       - name: Build Fabric mod
         run: gradle build --stacktrace
       - uses: actions/upload-artifact@v4

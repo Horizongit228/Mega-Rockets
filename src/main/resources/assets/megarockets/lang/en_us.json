@@ -214,5 +214,22 @@
   "loading.megarockets.tip.saturn": "Gas giant • ring system",
   "loading.megarockets.tip.uranus": "Ice giant • turquoise haze",
   "loading.megarockets.tip.neptune": "Ice giant • powerful winds",
-  "cockpit.megarockets.entry_heat": "ENTRY HEAT: %s%%"
+  "cockpit.megarockets.entry_heat": "ENTRY HEAT: %s%%",
+  "key.megarockets.solar_map": "Solar system map",
+  "cockpit.megarockets.station_nav": "Station course",
+  "cockpit.megarockets.return_earth": "Earth return",
+  "message.megarockets.station_arrived": "Station below. Ctrl to land manually. Wear a suit in the airlock.",
+  "oxygen.megarockets.room_safe": "Sealed room — breathable air",
+  "oxygen.megarockets.room_refill": "Sealed base: oxygen %s%% (%s)",
+  "map.megarockets.title": "SOLAR SYSTEM MAP",
+  "map.megarockets.station": "Outpost",
+  "map.megarockets.zoom": "Scale %s AU",
+  "map.megarockets.choose_course": "Select target",
+  "map.megarockets.station_course": "Navigate to outpost",
+  "map.megarockets.earth_course": "Navigate to Earth",
+  "map.megarockets.range": "%s blocks",
+  "map.megarockets.eta": "≈ %s min %s s",
+  "map.megarockets.station_hint": "Manual landing",
+  "map.megarockets.orbit_only": "Orbit only",
+  "map.megarockets.surface": "Surface landing"
 }

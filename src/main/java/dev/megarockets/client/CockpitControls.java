@@ -27,9 +27,10 @@ public final class CockpitControls {
     }
     private static KeyBinding key(String name,int code){return KeyBindingHelper.registerKeyBinding(new KeyBinding("key.megarockets."+name,InputUtil.Type.KEYSYM,code,"key.categories.megarockets"));}
     public static void init(){
-        KeyBinding screen=key("cockpit",GLFW.GLFW_KEY_R),instrument=key("instrument",GLFW.GLFW_KEY_G),manual=key("manual",GLFW.GLFW_KEY_M),
+        KeyBinding map=key("solar_map",GLFW.GLFW_KEY_U),screen=key("cockpit",GLFW.GLFW_KEY_R),instrument=key("instrument",GLFW.GLFW_KEY_G),manual=key("manual",GLFW.GLFW_KEY_M),
             approach=key("approach",GLFW.GLFW_KEY_L),brake=key("brake",GLFW.GLFW_KEY_B);
         ClientTickEvents.END_CLIENT_TICK.register(client->{
+            while(map.wasPressed())if(client.player!=null&&client.currentScreen==null)client.setScreen(new SolarMapScreen(null));
             while(screen.wasPressed())if(client.player!=null&&client.currentScreen==null&&client.player.getVehicle() instanceof TitanRocket rocket)client.setScreen(new CockpitScreen(rocket));
             while(instrument.wasPressed())if(client.player!=null&&client.currentScreen==null&&client.player.getVehicle() instanceof TitanRocket rocket){
                 var tab=instrumentTab(rocket,client.player.getEyePos(),client.player.getRotationVec(1));

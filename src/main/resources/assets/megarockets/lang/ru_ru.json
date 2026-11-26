@@ -214,5 +214,22 @@
   "loading.megarockets.tip.saturn": "Газовый гигант • система колец",
   "loading.megarockets.tip.uranus": "Ледяной гигант • бирюзовая дымка",
   "loading.megarockets.tip.neptune": "Ледяной гигант • сильные ветры",
-  "cockpit.megarockets.entry_heat": "НАГРЕВ ОБШИВКИ: %s%%"
+  "cockpit.megarockets.entry_heat": "НАГРЕВ ОБШИВКИ: %s%%",
+  "key.megarockets.solar_map": "Карта Солнечной системы",
+  "cockpit.megarockets.station_nav": "К станции",
+  "cockpit.megarockets.return_earth": "К Земле",
+  "message.megarockets.station_arrived": "Станция под вами. Ctrl — ручная посадка. Шлюз — в скафандре.",
+  "oxygen.megarockets.room_safe": "Герметичное помещение — воздух безопасен",
+  "oxygen.megarockets.room_refill": "Герметичная база: кислород %s%% (%s)",
+  "map.megarockets.title": "КАРТА СОЛНЕЧНОЙ СИСТЕМЫ",
+  "map.megarockets.station": "Станция",
+  "map.megarockets.zoom": "Масштаб %s а.е.",
+  "map.megarockets.choose_course": "Выбрать цель",
+  "map.megarockets.station_course": "Автопилот к станции",
+  "map.megarockets.earth_course": "Автопилот к Земле",
+  "map.megarockets.range": "%s бл.",
+  "map.megarockets.eta": "≈ %s мин %s с",
+  "map.megarockets.station_hint": "Ручная посадка",
+  "map.megarockets.orbit_only": "Только орбита",
+  "map.megarockets.surface": "Есть поверхность"
 }

@@ -65,6 +65,7 @@ public final class CockpitScreen extends Screen {
                 control(Control.RETURN_EARTH,"return_earth",8,154,half);control(Control.STATION_NAV,"station_nav",10+half,154,half);
             }
             case VIEW ->{
+                addDrawableChild(ButtonWidget.builder(Text.translatable("map.megarockets.title"),b->{if(client!=null)client.setScreen(new SolarMapScreen(this));}).dimensions(x+8,y+168,w-16,20).build());
                 camera("view_first",Perspective.FIRST_PERSON,96);
                 camera("view_back",Perspective.THIRD_PERSON_BACK,120);
                 camera("view_front",Perspective.THIRD_PERSON_FRONT,144);
