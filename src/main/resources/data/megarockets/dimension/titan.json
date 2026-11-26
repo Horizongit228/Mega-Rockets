@@ -1,0 +1,11 @@
+{
+  "type": "megarockets:titan",
+  "generator": {
+    "type": "megarockets:outer_planet",
+    "planet": "TITAN",
+    "biome_source": {
+      "type": "minecraft:fixed",
+      "biome": "megarockets:titan_surface"
+    }
+  }
+}

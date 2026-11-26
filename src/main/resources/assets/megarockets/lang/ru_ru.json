@@ -109,5 +109,20 @@
   "cockpit.megarockets.pressurized": "Герметизация: в норме | O₂ доступен",
   "message.megarockets.scanning_landing": "Автопилот сканирует рельеф: поиск естественного места посадки.",
   "message.megarockets.landing_site": "Найдено место посадки: X=%s Y=%s Z=%s",
-  "message.megarockets.landing_obstructed": "Посадка приостановлена: препятствие под ракетой."
+  "message.megarockets.landing_obstructed": "Посадка приостановлена: препятствие под ракетой.",
+  "destination.megarockets.venus": "Венера",
+  "block.megarockets.venus_surface": "Венерианская пыль",
+  "block.megarockets.venus_rock": "Вулканический базальт Венеры",
+  "block.megarockets.venus_ore": "Венерианская руда",
+  "biome.megarockets.venus_surface": "Венера",
+  "destination.megarockets.europa": "Европа",
+  "block.megarockets.europa_surface": "Ледяной грунт Европы",
+  "block.megarockets.europa_rock": "Плотный лёд Европы",
+  "block.megarockets.europa_ore": "Кристаллическая руда Европы",
+  "biome.megarockets.europa_surface": "Европа",
+  "destination.megarockets.titan": "Титан",
+  "block.megarockets.titan_surface": "Осадки Титана",
+  "block.megarockets.titan_rock": "Ледяная порода Титана",
+  "block.megarockets.titan_ore": "Руда Титана",
+  "biome.megarockets.titan_surface": "Титан"
 }

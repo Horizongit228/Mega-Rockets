@@ -109,5 +109,20 @@
   "cockpit.megarockets.pressurized": "Pressure nominal | O₂ available",
   "message.megarockets.scanning_landing": "Autopilot surveying terrain for a natural landing site.",
   "message.megarockets.landing_site": "Landing site found: X=%s Y=%s Z=%s",
-  "message.megarockets.landing_obstructed": "Descent paused: obstruction beneath rocket."
+  "message.megarockets.landing_obstructed": "Descent paused: obstruction beneath rocket.",
+  "destination.megarockets.venus": "Venus",
+  "block.megarockets.venus_surface": "Venus dust",
+  "block.megarockets.venus_rock": "Venus volcanic basalt",
+  "block.megarockets.venus_ore": "Venus ore",
+  "biome.megarockets.venus_surface": "Venus",
+  "destination.megarockets.europa": "Europa",
+  "block.megarockets.europa_surface": "Europa ice dust",
+  "block.megarockets.europa_rock": "Europa solid ice",
+  "block.megarockets.europa_ore": "Europa crystal ore",
+  "biome.megarockets.europa_surface": "Europa",
+  "destination.megarockets.titan": "Titan",
+  "block.megarockets.titan_surface": "Titan sediment",
+  "block.megarockets.titan_rock": "Titan ice rock",
+  "block.megarockets.titan_ore": "Titan ore",
+  "biome.megarockets.titan_surface": "Titan"
 }

@@ -13,10 +13,8 @@ public abstract class SpaceGravityMixin {
     @Inject(method="getFinalGravity",at=@At("RETURN"),cancellable=true)
     private void megaRockets$gravity(CallbackInfoReturnable<Double> cir) {
         Entity self=(Entity)(Object)this;
-        if(MegaRockets.isMoon(self.getWorld()))
-            cir.setReturnValue(cir.getReturnValue()*.165);
-        else if(self.getWorld().getRegistryKey().equals(MegaRockets.MARS))
-            cir.setReturnValue(cir.getReturnValue()*.38);
+        var planet=MegaRockets.planet(self.getWorld());
+        if(planet!=null)cir.setReturnValue(cir.getReturnValue()*planet.gravity);
         else if(self.getWorld().getRegistryKey().equals(MegaRockets.ORBIT))
             cir.setReturnValue(0.0);
     }

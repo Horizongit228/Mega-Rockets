@@ -13,6 +13,14 @@
     "megarockets:lunar_brick_stairs",
     "megarockets:lunar_brick_slab",
     "megarockets:lunar_brick_wall",
-    "megarockets:oxygen_station"
+    "megarockets:venus_surface",
+    "megarockets:venus_rock",
+    "megarockets:venus_ore",
+    "megarockets:europa_surface",
+    "megarockets:europa_rock",
+    "megarockets:europa_ore",
+    "megarockets:titan_surface",
+    "megarockets:titan_rock",
+    "megarockets:titan_ore"
   ]
 }

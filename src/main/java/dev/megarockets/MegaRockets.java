@@ -27,6 +27,9 @@ public final class MegaRockets implements ModInitializer {
     public static final String ID = "megarockets";
     public static final RegistryKey<World> ORBIT = RegistryKey.of(RegistryKeys.WORLD, id("orbit"));
     public static final RegistryKey<World> MARS=RegistryKey.of(RegistryKeys.WORLD,id("mars"));
+    public static final RegistryKey<World> VENUS=RegistryKey.of(RegistryKeys.WORLD,id("venus"));
+    public static final RegistryKey<World> EUROPA=RegistryKey.of(RegistryKeys.WORLD,id("europa"));
+    public static final RegistryKey<World> TITAN_WORLD=RegistryKey.of(RegistryKeys.WORLD,id("titan"));
     public static final RegistryKey<World> MOON=RegistryKey.of(RegistryKeys.WORLD,id("moon"));
     public static final RegistryKey<World> MOON_MIDDLE=RegistryKey.of(RegistryKeys.WORLD,id("moon_middle"));
     public static final RegistryKey<World> MOON_SOUTH=RegistryKey.of(RegistryKeys.WORLD,id("moon_south"));
@@ -41,12 +44,15 @@ public final class MegaRockets implements ModInitializer {
         return Registry.register(Registries.ENTITY_TYPE,id(name),EntityType.Builder.<TitanRocket>create(TitanRocket::new,SpawnGroup.MISC)
             .dimensions(14f,64f).maxTrackingRange(16).trackingTickInterval(1).build("megarockets:"+name));
     }
-    public static RegistryKey<World> destinationWorld(Destination d){return d==Destination.MARS?MARS:MOON;}
+    public static RegistryKey<World> destinationWorld(Destination d){return switch(d){case MARS->MARS;case VENUS->VENUS;case EUROPA->EUROPA;case TITAN->TITAN_WORLD;default->MOON;};}
+    public static Destination planet(World world){for(Destination d:Destination.values())if(world.getRegistryKey().equals(destinationWorld(d)))return d;return isMoon(world)?Destination.MOON:null;}
     public static Identifier id(String path) { return Identifier.of(ID, path); }
 
     @Override public void onInitialize() {
         MoonBlocks.init();
         MarsBlocks.init();
+        OuterPlanetBlocks.init();
+        Registry.register(Registries.CHUNK_GENERATOR,id("outer_planet"),OuterPlanetGenerator.CODEC);
         Registry.register(Registries.CHUNK_GENERATOR,id("mars_terrain"),MarsChunkGenerator.CODEC);
         RocketItems.init();
         SpaceSuitItems.init();
@@ -65,7 +71,10 @@ public final class MegaRockets implements ModInitializer {
                 .then(CommandManager.literal("launch").executes(ctx -> launch(ctx.getSource())))
                 .then(CommandManager.literal("destination").executes(ctx -> choose(ctx.getSource(),null))
                     .then(CommandManager.literal("moon").executes(ctx -> choose(ctx.getSource(),Destination.MOON)))
-                    .then(CommandManager.literal("mars").executes(ctx -> choose(ctx.getSource(),Destination.MARS))))
+                    .then(CommandManager.literal("mars").executes(ctx -> choose(ctx.getSource(),Destination.MARS)))
+                    .then(CommandManager.literal("venus").executes(ctx -> choose(ctx.getSource(),Destination.VENUS)))
+                    .then(CommandManager.literal("europa").executes(ctx -> choose(ctx.getSource(),Destination.EUROPA)))
+                    .then(CommandManager.literal("titan").executes(ctx -> choose(ctx.getSource(),Destination.TITAN))))
                 .then(CommandManager.literal("status").executes(ctx -> status(ctx.getSource())))
                 .then(CommandManager.literal("return").executes(ctx -> returnHome(ctx.getSource())))));
     }

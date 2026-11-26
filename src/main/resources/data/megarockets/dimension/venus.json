@@ -1,0 +1,11 @@
+{
+  "type": "megarockets:venus",
+  "generator": {
+    "type": "megarockets:outer_planet",
+    "planet": "VENUS",
+    "biome_source": {
+      "type": "minecraft:fixed",
+      "biome": "megarockets:venus_surface"
+    }
+  }
+}

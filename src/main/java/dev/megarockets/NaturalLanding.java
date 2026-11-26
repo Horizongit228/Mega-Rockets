@@ -10,7 +10,7 @@ import net.minecraft.world.Heightmap;
 public final class NaturalLanding {
     private NaturalLanding(){}
     private static boolean ground(BlockState b){
-        return b.isOf(MoonBlocks.ROCK)||b.isOf(MoonBlocks.REGOLITH)||b.isOf(MoonBlocks.BASALT)||b.isOf(MoonBlocks.ORE)||
+        return OuterPlanetBlocks.isGround(b)||b.isOf(MoonBlocks.ROCK)||b.isOf(MoonBlocks.REGOLITH)||b.isOf(MoonBlocks.BASALT)||b.isOf(MoonBlocks.ORE)||
             b.isOf(MarsBlocks.ROCK)||b.isOf(MarsBlocks.REGOLITH)||b.isOf(MarsBlocks.ORE);
     }
     private static int actualGround(ServerWorld world,int x,int z){

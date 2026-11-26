@@ -1,0 +1,11 @@
+{
+  "type": "megarockets:europa",
+  "generator": {
+    "type": "megarockets:outer_planet",
+    "planet": "EUROPA",
+    "biome_source": {
+      "type": "minecraft:fixed",
+      "biome": "megarockets:europa_surface"
+    }
+  }
+}

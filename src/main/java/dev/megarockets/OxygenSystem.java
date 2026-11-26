@@ -38,7 +38,7 @@ public final class OxygenSystem {
     }
     public static boolean vacuum(ServerPlayerEntity p){
         World w=p.getWorld();var key=w.getRegistryKey();
-        return MegaRockets.isMoon(w)||key.equals(MegaRockets.MARS)||key.equals(MegaRockets.ORBIT)||
+        return MegaRockets.planet(w)!=null||key.equals(MegaRockets.ORBIT)||
             key.equals(World.OVERWORLD)&&p.getY()>=OxygenRules.ALTITUDE;
     }
     public static boolean sealed(ServerPlayerEntity p){
