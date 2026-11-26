@@ -21,7 +21,7 @@ public class LunarVillageCheck{
   for(long seed:new long[]{0,1,42,123456,-19}){int y=LunarVillageLayout.base(new MoonTerrain(seed));if(y<800||y>1400)throw new AssertionError("Deck outside north slice "+y);}
   for(long seed:new long[]{0,1,42,123456,-19}){
    var a=new LunarSettlements(seed,new MoonTerrain(seed));var b=new LunarSettlements(seed,new MoonTerrain(seed));
-   var sites=a.near(0,0,9000);if(sites.size()<3)throw new AssertionError("Too few villages "+seed);
+   var sites=a.near(0,0,9000);if(sites.size()<3)throw new AssertionError("Too few villages "+seed+": "+sites.size());System.out.println("Seed "+seed+" villages: "+sites.size());
    if(!sites.equals(b.near(0,0,9000)))throw new AssertionError("Seed instability");
    for(var s:sites){
     if(!s.equals(a.at(s.x(),s.z()))||!s.equals(a.at(s.x()+92,s.z())))throw new AssertionError("Village cell mismatch");

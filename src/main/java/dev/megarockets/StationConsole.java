@@ -44,9 +44,4 @@ public final class StationConsole extends Block {
    if(w.getChunkManager().getWorldChunk(pos.getX()>>4,pos.getZ()>>4)!=null&&w.getBlockState(pos).isOf(SpaceEnergy.PANEL))n++;
   }return n;
  }
- public static boolean supplies(ServerWorld w,BlockPos pos){
-  // Only the outpost's own fixed generators depend on its array; ordinary player bases retain their old rules.
-  if(!w.getRegistryKey().equals(MegaRockets.ORBIT)||StationLayout.material(pos.getX(),pos.getY(),pos.getZ())!=StationLayout.OXYGEN)return true;
-  return power(w)>=2;
- }
 }

@@ -71,7 +71,7 @@ public final class SpaceEnergy {
  }
  public static final class Battery extends BlockEntity {
   private int energy,generation,consumers;
-  Battery(BlockPos pos,BlockState state){super(TYPE,pos,state);}
+  public Battery(BlockPos pos,BlockState state){super(TYPE,pos,state);}
   @Override protected void writeNbt(NbtCompound nbt,RegistryWrapper.WrapperLookup lookup){super.writeNbt(nbt,lookup);nbt.putInt("Energy",energy);}
   @Override protected void readNbt(NbtCompound nbt,RegistryWrapper.WrapperLookup lookup){super.readNbt(nbt,lookup);energy=Math.max(0,Math.min(EnergyRules.CAPACITY,nbt.getInt("Energy")));}
   static void tick(World world,BlockPos pos,BlockState state,Battery self){

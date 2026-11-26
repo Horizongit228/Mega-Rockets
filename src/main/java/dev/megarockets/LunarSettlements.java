@@ -19,17 +19,23 @@ public final class LunarSettlements {
  private Site choose(int gx,int gz){
   long n=hash(seed^gx*341873128712L^gz*132897987541L);
   if(Math.floorMod(n,100)>=76)return null;
-  int x=gx*SPACING+320+(int)Math.floorMod(hash(n+1),241)-120,z=gz*SPACING+320+(int)Math.floorMod(hash(n+2),241)-120;
-  if(Math.hypot(x,z)>3150||Math.hypot(x,z)<190)return null;
-  if(terrain.region(x,z)==MoonTerrain.Region.CRATERS||terrain.region(x,z)==MoonTerrain.Region.HIGHLANDS)return null;
-  int min=Integer.MAX_VALUE,max=Integer.MIN_VALUE;
-  for(int a=LunarVillageLayout.MIN_X;a<=LunarVillageLayout.MAX_X;a+=8)for(int b=LunarVillageLayout.MIN_Z;b<=LunarVillageLayout.MAX_Z;b+=8){
-   int y=terrain.column(x+a,z+b).top()-MoonTerrain.NORTH_OFFSET;min=Math.min(min,y);max=Math.max(max,y);
+  Site best=null;int bestRelief=Integer.MAX_VALUE;
+  for(int attempt=0;attempt<5;attempt++){
+   int x=gx*SPACING+320+(int)Math.floorMod(hash(n+1+attempt*2),321)-160,z=gz*SPACING+320+(int)Math.floorMod(hash(n+2+attempt*2),321)-160;
+   if(Math.hypot(x,z)>3000||Math.hypot(x,z)<190)continue;
+   int min=Integer.MAX_VALUE,max=Integer.MIN_VALUE;
+   for(int dx=LunarVillageLayout.MIN_X;dx<=LunarVillageLayout.MAX_X;dx+=8)for(int dz=LunarVillageLayout.MIN_Z;dz<=LunarVillageLayout.MAX_Z;dz+=8){
+    int y=terrain.column(x+dx,z+dz).top()-MoonTerrain.NORTH_OFFSET;min=Math.min(min,y);max=Math.max(max,y);
+   }
+   int relief=max-min;
+   if(relief>90||max>MoonTerrain.MIN_Y+MoonTerrain.HEIGHT-100||min<MoonTerrain.MIN_Y+32)continue;
+   if(relief<bestRelief){bestRelief=relief;best=new Site(x,z,max+4);}
+   if(relief<=28)break;
   }
-  if(max-min>32||max>MoonTerrain.MIN_Y+MoonTerrain.HEIGHT-100||min<MoonTerrain.MIN_Y+32)return null;
-  return new Site(x,z,max+4);
+  return best;
  }
  public Site cell(int gx,int gz){
+  if(gx<-6||gx>5||gz<-6||gz>5)return null;
   long k=((long)gx<<32)^(gz&0xffffffffL);
   return cache.computeIfAbsent(k,v->Optional.ofNullable(choose(gx,gz))).orElse(null);
  }

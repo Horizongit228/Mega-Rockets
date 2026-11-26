@@ -150,7 +150,11 @@ public final class MoonChunkGenerator extends ChunkGenerator {
             int ground=terrain.column(x,z).top()-yOffset;
             int low=Math.max(chunk.getBottomY(),Math.min(ground-3,villageBase-4));
             int high=Math.min(chunk.getTopY()-1,Math.max(villageBase+16,ground+24));
-            for(int y=low;y<=high;y++)chunk.setBlockState(pos.set(x,y,z),villageState(site.material(x,y,z),site.localX(x),site.localZ(z)),false);
+            for(int y=low;y<=high;y++){
+                var state=villageState(site.material(x,y,z),site.localX(x),site.localZ(z));
+                chunk.setBlockState(pos.set(x,y,z),state,false);
+                if(state.isOf(SpaceEnergy.BATTERY))chunk.setBlockEntity(new SpaceEnergy.Battery(pos.toImmutable(),state));
+            }
         }
         Heightmap.populateHeightmaps(chunk,Set.of(Heightmap.Type.OCEAN_FLOOR_WG,Heightmap.Type.WORLD_SURFACE_WG));
         return CompletableFuture.completedFuture(chunk);

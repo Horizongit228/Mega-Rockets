@@ -74,7 +74,7 @@ public final class AsteroidGenerator extends ChunkGenerator {
   int x0=chunk.getPos().getStartX(),z0=chunk.getPos().getStartZ();
   for(int x=x0;x<x0+16;x++)for(int z=z0;z<z0+16;z++){
    if(StationLayout.column(x,z)){
-    for(int y=98;y<=StationLayout.TOP_Y;y++){int type=StationLayout.material(x,y,z);if(type!=0)chunk.setBlockState(pos.set(x,y,z),stationState(type),false);}
+    for(int y=98;y<=StationLayout.TOP_Y;y++){int type=StationLayout.material(x,y,z);if(type!=0){var block=stationState(type);chunk.setBlockState(pos.set(x,y,z),block,false);if(block.isOf(SpaceEnergy.BATTERY))chunk.setBlockEntity(new SpaceEnergy.Battery(pos.toImmutable(),block));}}
     continue;
    }
    var rock=t.at(x,z);if(rock==null||Math.abs(x-rock.x())>rock.rx()+3||Math.abs(z-rock.z())>rock.rz()+3)continue;
