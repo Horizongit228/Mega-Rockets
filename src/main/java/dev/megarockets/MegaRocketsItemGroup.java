@@ -26,7 +26,7 @@ public final class MegaRocketsItemGroup {
                     entries.add(MarsBlocks.REGOLITH);
                     entries.add(MarsBlocks.ROCK);
                     entries.add(MarsBlocks.ORE);
-                    for(Destination planet:java.util.List.of(Destination.VENUS,Destination.EUROPA,Destination.TITAN)){var m=OuterPlanetBlocks.get(planet);entries.add(m.surface());entries.add(m.rock());entries.add(m.ore());}
+                    for(Destination planet:java.util.List.of(Destination.VENUS,Destination.EUROPA,Destination.TITAN,Destination.MERCURY)){var m=OuterPlanetBlocks.get(planet);entries.add(m.surface());entries.add(m.rock());entries.add(m.ore());}
                     entries.add(MoonBlocks.ROCK);
                     entries.add(MoonBlocks.REGOLITH);
                     entries.add(MoonBlocks.BASALT);

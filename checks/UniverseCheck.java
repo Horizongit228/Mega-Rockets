@@ -3,11 +3,11 @@ public class UniverseCheck {
  public static void main(String[] args){
   for(Destination d:Destination.values())for(double max:new double[]{15,30,50}){
    var s=LunarFlight.start();int ticks=0;double peak=0;
-   while(s.phase()!=LunarFlight.Phase.LANDED&&ticks++<50000){s=LunarFlight.step(s,true,d.distance,max);peak=Math.max(peak,s.speed());}
-   if(s.phase()!=LunarFlight.Phase.LANDED||s.x()!=d.distance||s.y()!=LunarFlight.LAND_Y||peak>max+1e-6||peak<max*.9)throw new AssertionError(d+" "+max+" "+s);
+   while(!LunarFlight.finished(s)&&ticks++<100000){s=LunarFlight.step(s,true,d.distance,max,d.orbitOnly());peak=Math.max(peak,s.speed());if(d.orbitOnly()&&(s.phase()==LunarFlight.Phase.DESCENT||s.phase()==LunarFlight.Phase.FINAL||s.phase()==LunarFlight.Phase.LANDED))throw new AssertionError("Gas giant landing");}
+   if(s.phase()!=(d.orbitOnly()?LunarFlight.Phase.ORBIT_ARRIVAL:LunarFlight.Phase.LANDED)||s.x()!=d.distance||s.y()!=(d.orbitOnly()?LunarFlight.CRUISE_Y:LunarFlight.LAND_Y)||peak>max+1e-6||peak<max*.9)throw new AssertionError(d+" "+max+" "+s);
    System.out.println("PASS "+d+" "+max*20+" blocks/s "+ticks+" ticks");
   }
-  for(Destination d:new Destination[]{Destination.VENUS,Destination.EUROPA,Destination.TITAN}){
+  for(Destination d:new Destination[]{Destination.VENUS,Destination.EUROPA,Destination.TITAN,Destination.MERCURY}){
    var a=new OuterPlanetTerrain(d,42);var b=new OuterPlanetTerrain(d,43);int changed=0;
    for(int x=-500;x<=500;x+=16)for(int z=-500;z<=500;z+=16)if(a.top(x,z)!=b.top(x,z))changed++;
    if(changed<1000||a.top(d.radius,0)!=OuterPlanetTerrain.MIN_Y-1)throw new AssertionError(d+" terrain");

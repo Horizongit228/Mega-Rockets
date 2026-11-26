@@ -71,7 +71,9 @@ public final class SpaceSky {
             sun(matrix,new Vec3d(.24,.62,-.75).normalize(),dark,world.getTime()+delta);
             if(orbit){
                 planet(matrix,new Vec3d(-1,-.24,0).normalize(),Math.max(.12,.38-pos.x/30000),true,1);
-                for(Destination target:Destination.values()){
+                Destination[] targets=Destination.values();
+                java.util.Arrays.sort(targets,java.util.Comparator.comparingDouble((Destination target)->-new Vec3d(target.distance+target.radius*1.5-pos.x,56-pos.y,target.lane-pos.z).lengthSquared()));
+                for(Destination target:targets){
                     // Globe centers lie behind the arrival point on their respective orbital lanes.
                     Vec3d toward=new Vec3d(target.distance+target.radius*1.5-pos.x,56-pos.y,target.lane-pos.z);
                     double angular=Math.min(.74,target.radius/Math.max(target.radius*1.5,toward.length()));
@@ -79,7 +81,9 @@ public final class SpaceSky {
                     else globe(matrix,toward.normalize(),angular,MegaRockets.id("textures/sky/"+target.key()+".png"));
                 }
             }else if(body!=null&&body!=Destination.MOON){
-                planet(matrix,new Vec3d(-.8,.5,.3).normalize(),body==Destination.MARS?.035:.02,true,1);
+                if(body==Destination.EUROPA)globe(matrix,new Vec3d(.3,.65,-.7).normalize(),.32,MegaRockets.id("textures/sky/jupiter.png"));
+                else if(body==Destination.TITAN)globe(matrix,new Vec3d(.3,.65,-.7).normalize(),.40,MegaRockets.id("textures/sky/saturn.png"));
+                else planet(matrix,new Vec3d(-.8,.5,.3).normalize(),body==Destination.MARS?.035:.02,true,1);
             }else if(moon){
                 planet(matrix,new Vec3d(-.8,.55,.4).normalize(),.18,true,1);
             }else{

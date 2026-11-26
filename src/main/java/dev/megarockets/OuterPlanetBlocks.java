@@ -11,7 +11,7 @@ public final class OuterPlanetBlocks {
   Registry.register(Registries.ITEM,id,new BlockItem(b,new Item.Settings()));return b;
  }
  public static void init(){
-  for(Destination d:List.of(Destination.VENUS,Destination.EUROPA,Destination.TITAN)){
+  for(Destination d:List.of(Destination.VENUS,Destination.EUROPA,Destination.TITAN,Destination.MERCURY)){
    String n=d.key();BLOCKS.put(d,new Materials(add(n+"_surface",Blocks.STONE),add(n+"_rock",Blocks.DEEPSLATE),add(n+"_ore",Blocks.IRON_ORE)));
   }
  }

@@ -21,6 +21,10 @@
     "megarockets:europa_ore",
     "megarockets:titan_surface",
     "megarockets:titan_rock",
-    "megarockets:titan_ore"
+    "megarockets:titan_ore",
+    "megarockets:mercury_surface",
+    "megarockets:mercury_rock",
+    "megarockets:mercury_ore",
+    "megarockets:oxygen_station"
   ]
 }

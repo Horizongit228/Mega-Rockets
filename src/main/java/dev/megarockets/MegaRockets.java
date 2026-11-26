@@ -27,6 +27,7 @@ public final class MegaRockets implements ModInitializer {
     public static final String ID = "megarockets";
     public static final RegistryKey<World> ORBIT = RegistryKey.of(RegistryKeys.WORLD, id("orbit"));
     public static final RegistryKey<World> MARS=RegistryKey.of(RegistryKeys.WORLD,id("mars"));
+    public static final RegistryKey<World> MERCURY=RegistryKey.of(RegistryKeys.WORLD,id("mercury"));
     public static final RegistryKey<World> VENUS=RegistryKey.of(RegistryKeys.WORLD,id("venus"));
     public static final RegistryKey<World> EUROPA=RegistryKey.of(RegistryKeys.WORLD,id("europa"));
     public static final RegistryKey<World> TITAN_WORLD=RegistryKey.of(RegistryKeys.WORLD,id("titan"));
@@ -44,8 +45,8 @@ public final class MegaRockets implements ModInitializer {
         return Registry.register(Registries.ENTITY_TYPE,id(name),EntityType.Builder.<TitanRocket>create(TitanRocket::new,SpawnGroup.MISC)
             .dimensions(14f,64f).maxTrackingRange(16).trackingTickInterval(1).build("megarockets:"+name));
     }
-    public static RegistryKey<World> destinationWorld(Destination d){return switch(d){case MARS->MARS;case VENUS->VENUS;case EUROPA->EUROPA;case TITAN->TITAN_WORLD;default->MOON;};}
-    public static Destination planet(World world){for(Destination d:Destination.values())if(world.getRegistryKey().equals(destinationWorld(d)))return d;return isMoon(world)?Destination.MOON:null;}
+    public static RegistryKey<World> destinationWorld(Destination d){return switch(d){case MARS->MARS;case VENUS->VENUS;case EUROPA->EUROPA;case TITAN->TITAN_WORLD;case MERCURY->MERCURY;case JUPITER,SATURN,URANUS,NEPTUNE->ORBIT;default->MOON;};}
+    public static Destination planet(World world){for(Destination d:Destination.values())if(!d.orbitOnly()&&world.getRegistryKey().equals(destinationWorld(d)))return d;return isMoon(world)?Destination.MOON:null;}
     public static Identifier id(String path) { return Identifier.of(ID, path); }
 
     @Override public void onInitialize() {
@@ -74,7 +75,12 @@ public final class MegaRockets implements ModInitializer {
                     .then(CommandManager.literal("mars").executes(ctx -> choose(ctx.getSource(),Destination.MARS)))
                     .then(CommandManager.literal("venus").executes(ctx -> choose(ctx.getSource(),Destination.VENUS)))
                     .then(CommandManager.literal("europa").executes(ctx -> choose(ctx.getSource(),Destination.EUROPA)))
-                    .then(CommandManager.literal("titan").executes(ctx -> choose(ctx.getSource(),Destination.TITAN))))
+                    .then(CommandManager.literal("titan").executes(ctx -> choose(ctx.getSource(),Destination.TITAN)))
+                    .then(CommandManager.literal("mercury").executes(ctx -> choose(ctx.getSource(),Destination.MERCURY)))
+                    .then(CommandManager.literal("jupiter").executes(ctx -> choose(ctx.getSource(),Destination.JUPITER)))
+                    .then(CommandManager.literal("saturn").executes(ctx -> choose(ctx.getSource(),Destination.SATURN)))
+                    .then(CommandManager.literal("uranus").executes(ctx -> choose(ctx.getSource(),Destination.URANUS)))
+                    .then(CommandManager.literal("neptune").executes(ctx -> choose(ctx.getSource(),Destination.NEPTUNE))))
                 .then(CommandManager.literal("status").executes(ctx -> status(ctx.getSource())))
                 .then(CommandManager.literal("return").executes(ctx -> returnHome(ctx.getSource())))));
     }
@@ -162,6 +168,7 @@ public final class MegaRockets implements ModInitializer {
 
     static boolean enterMoon(TitanRocket old,ServerPlayerEntity pilot,LunarFlight.State state) {
         Destination destination=old.destination();
+        if(destination.orbitOnly())return false;
         ServerWorld moon=pilot.getServer().getWorld(destinationWorld(destination));
         if(moon==null)return false;
         if(old.age%5!=0)return false;

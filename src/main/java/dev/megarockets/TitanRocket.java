@@ -136,7 +136,7 @@ public final class TitanRocket extends Entity {
     }
     public void acceptLunarState(LunarFlight.State state) { lunar=state; lunarPaused=false; }
     public boolean canResumeMoon() {
-        return lunar!=null && lunar.phase()!=LunarFlight.Phase.LANDED && (getWorld().getRegistryKey().equals(MegaRockets.ORBIT)||getWorld().getRegistryKey().equals(MegaRockets.destinationWorld(destination)));
+        return lunar!=null && !LunarFlight.finished(lunar) && (getWorld().getRegistryKey().equals(MegaRockets.ORBIT)||getWorld().getRegistryKey().equals(MegaRockets.destinationWorld(destination)));
     }
     public Text missionStatus() {
         if(lunar!=null) {
@@ -144,7 +144,7 @@ public final class TitanRocket extends Entity {
             int percent=(int)Math.floor(100*lunar.x()/destination.distance);
             return Text.translatable("message.megarockets.target_status",Text.translatable("destination.megarockets."+destination.key()),phase,percent,
                 (int)Math.ceil(Math.max(0,destination.distance-lunar.x())),(int)Math.round(lunar.speed()*20),
-                (int)Math.ceil(Math.max(0,lunar.y()-LunarFlight.LAND_Y)));
+                destination.orbitOnly()?0:(int)Math.ceil(Math.max(0,lunar.y()-LunarFlight.LAND_Y)));
         }
         if(moonLanded) return Text.translatable("message.megarockets.phase.landed");
         return Text.translatable("message.megarockets.altitude",(int)getY(),TARGET_ALTITUDE,(int)(flightSpeed*20));
@@ -233,7 +233,7 @@ public final class TitanRocket extends Entity {
         if (getWorld().isClient) { interpolateClient(); return; }
         if (!(getWorld() instanceof ServerWorld world)) return;
         syncCabin();
-        if (lunar!=null && lunar.phase()!=LunarFlight.Phase.LANDED) { tickMoon(world); return; }
+        if (lunar!=null && !LunarFlight.finished(lunar)) { tickMoon(world); return; }
         if (countdown == 0 && !flying) return;
         if (!(getFirstPassenger() instanceof ServerPlayerEntity pilot)) {
             stopEngines(); return;
@@ -267,16 +267,16 @@ public final class TitanRocket extends Entity {
             dataTracker.set(ENGINES,false); return;
         }
         lunarPaused=false;
-        boolean onMoon=world.getRegistryKey().equals(MegaRockets.destinationWorld(destination));
+        boolean onMoon=!destination.orbitOnly()&&world.getRegistryKey().equals(MegaRockets.destinationWorld(destination));
         pilot.fallDistance=0;
         var previous=lunar.phase();
         // Transfer only once the interplanetary path and alignment have finished.
-        if(!onMoon&&(lunar.phase()==LunarFlight.Phase.DESCENT||lunar.phase()==LunarFlight.Phase.FINAL)) {
+        if(!destination.orbitOnly()&&!onMoon&&(lunar.phase()==LunarFlight.Phase.DESCENT||lunar.phase()==LunarFlight.Phase.FINAL)) {
             MegaRockets.enterMoon(this,pilot,lunar);
             flightTicks++;
             return;
         }
-        var next=LunarFlight.step(lunar,onMoon||pilot.getServer().getWorld(MegaRockets.destinationWorld(destination))!=null,destination.distance,maxSpeed());
+        var next=LunarFlight.step(lunar,destination.orbitOnly()||onMoon||pilot.getServer().getWorld(MegaRockets.destinationWorld(destination))!=null,destination.distance,maxSpeed(),destination.orbitOnly());
         if(onMoon){
             var site=site();
             double nextY=next.y()+site.y()-LunarFlight.LAND_Y;
@@ -298,6 +298,10 @@ public final class TitanRocket extends Entity {
         if(flightTicks%20==0) pilot.sendMessage(missionStatus(),true);
         if((lunar.phase()==LunarFlight.Phase.DESCENT||lunar.phase()==LunarFlight.Phase.FINAL)&&lunar.y()<MoonWorld.LAND_Y+18&&flightTicks%4==0)
             world.spawnParticles(ParticleTypes.CAMPFIRE_COSY_SMOKE,onMoon?site().x()+.5:MoonWorld.X+.5,onMoon?site().y()+.1:MoonWorld.LAND_Y+.1,onMoon?site().z()+.5:.5,20,5,.35,5,.035);
+        if(lunar.phase()==LunarFlight.Phase.ORBIT_ARRIVAL){
+            stopEngines();setPitch(0);syncCabin();
+            pilot.sendMessage(Text.translatable("message.megarockets.giant_arrived",Text.translatable("destination.megarockets."+destination.key())),false);
+        }
         if(lunar.phase()==LunarFlight.Phase.LANDED) {
             moonLanded=true; stopEngines(); setPitch(0);
             pilot.sendMessage(Text.translatable("message.megarockets.target_arrived",Text.translatable("destination.megarockets."+destination.key())),false);

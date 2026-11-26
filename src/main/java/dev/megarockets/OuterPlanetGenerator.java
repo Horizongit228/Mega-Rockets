@@ -26,7 +26,7 @@ public final class OuterPlanetGenerator extends ChunkGenerator {
  public static final MapCodec<OuterPlanetGenerator> CODEC=RecordCodecBuilder.mapCodec(i->i.group(BiomeSource.CODEC.fieldOf("biome_source").forGetter(OuterPlanetGenerator::getBiomeSource),Codec.STRING.fieldOf("planet").forGetter(g->g.planet.name())).apply(i,OuterPlanetGenerator::new));
  private final Destination planet;
  private NoiseConfig last;private OuterPlanetTerrain cached;
- public OuterPlanetGenerator(BiomeSource source,String name){super(source);planet=Destination.read(name);if(planet==Destination.MOON||planet==Destination.MARS)throw new IllegalArgumentException(name);}
+ public OuterPlanetGenerator(BiomeSource source,String name){super(source);planet=Destination.read(name);if(planet==Destination.MOON||planet==Destination.MARS||planet.orbitOnly())throw new IllegalArgumentException(name);}
  private synchronized OuterPlanetTerrain terrain(NoiseConfig config){
   if(last!=config||cached==null){last=config;cached=new OuterPlanetTerrain(planet,config.getOrCreateRandomDeriver(MegaRockets.id(planet.key()+"_seed")).split(0,0,0).nextLong());}return cached;
  }

@@ -3,9 +3,10 @@ package dev.megarockets;
 /** Deterministic cinematic guidance, independent of Minecraft. Positions are real block coordinates. */
 public final class LunarFlight {
     public static final double DISTANCE=6000, CRUISE_Y=180, LAND_Y=101, MAX_SPEED=15.0;
-    public enum Phase { ORBIT, DEPARTURE, COAST, TURN, BRAKE, HOLD, ALIGN, DESCENT, FINAL, LANDED }
+    public enum Phase { ORBIT, DEPARTURE, COAST, TURN, BRAKE, HOLD, ALIGN, DESCENT, FINAL, LANDED, ORBIT_ARRIVAL }
     public record State(Phase phase,int ticks,double x,double y,double speed,float tilt) {}
     private LunarFlight() {}
+    public static boolean finished(State s){return s.phase()==Phase.LANDED||s.phase()==Phase.ORBIT_ARRIVAL;}
     public static State start() { return new State(Phase.ORBIT,0,0,CRUISE_Y,0,0); }
     private static double approach(double current,double goal,double accel,double brake) {
         return current+Math.max(-brake,Math.min(accel,goal-current));
@@ -38,6 +39,9 @@ public final class LunarFlight {
     private static double turnDistance(double distance,double max){return max<=15?2600:Math.min(distance*.76,brakeDistance(max)+max*60);}
     public static State step(State s,boolean moonReady) {return step(s,moonReady,DISTANCE,MAX_SPEED);}
     public static State step(State s,boolean moonReady,double distance,double maxSpeed) {
+        return step(s,moonReady,distance,maxSpeed,false);
+    }
+    public static State step(State s,boolean moonReady,double distance,double maxSpeed,boolean orbitOnly){
         double braking=brake(maxSpeed),accel=maxSpeed<=15?.14:maxSpeed<=30?.65:.8;
         double brakeAt=brakeDistance(maxSpeed),turnAt=turnDistance(distance,maxSpeed);
         float tiltRate=maxSpeed<=15?2f:maxSpeed<=30?3.5f:1.8f;
@@ -61,7 +65,7 @@ public final class LunarFlight {
                 if(x>=distance-1e-8) {x=distance;y=CRUISE_Y;speed=0;phase=moonReady?Phase.ALIGN:Phase.HOLD;ticks=0;angle=0;}
             }
             case HOLD -> { speed=0; if(moonReady){phase=Phase.ALIGN;ticks=0;} }
-            case ALIGN -> { speed=0; if(Math.abs(s.tilt())<=.01&&ticks>=20){phase=Phase.DESCENT;ticks=0;} }
+            case ALIGN -> { speed=0; if(Math.abs(s.tilt())<=.01&&ticks>=20){phase=orbitOnly?Phase.ORBIT_ARRIVAL:Phase.DESCENT;ticks=0;} }
             case DESCENT,FINAL -> {
                 if(!moonReady) { speed=0; break; }
                 remaining=Math.max(0,y-LAND_Y);
@@ -71,7 +75,7 @@ public final class LunarFlight {
                 y-=speed;
                 if(y<=LAND_Y+1e-8){y=LAND_Y;speed=0;phase=Phase.LANDED;ticks=0;}
             }
-            case LANDED -> speed=0;
+            case LANDED,ORBIT_ARRIVAL -> speed=0;
         }
         float tilt=s.tilt()+Math.max(-tiltRate,Math.min(tiltRate,angle-s.tilt()));
         return new State(phase,ticks,x,y,speed,tilt);

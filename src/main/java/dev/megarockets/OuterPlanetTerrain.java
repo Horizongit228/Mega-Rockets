@@ -12,6 +12,16 @@ public final class OuterPlanetTerrain {
   double r=Math.hypot(x,z);if(r>=planet.radius)return MIN_Y-1;
   double broad=n(x/240.,z/240.,1),fine=n(x/60.,z/60.,2),detail=n(x/16.,z/16.,3),h;
   switch(planet){
+   case MERCURY -> {
+    h=106+18*broad+6*fine+2*detail;
+    int gx=Math.floorDiv(x,192),gz=Math.floorDiv(z,192);
+    for(int a=gx-1;a<=gx+1;a++)for(int b=gz-1;b<=gz+1;b++){
+     if(hash(a,81,b)>.85)continue;
+     double cx=a*192+24+144*hash(a,82,b),cz=b*192+24+144*hash(a,83,b);
+     double radius=22+64*hash(a,84,b),q=Math.hypot(x-cx,z-cz)/radius;
+     if(q<1.35)h+=radius*(-.32*Math.pow(Math.max(0,1-q*q),2)+.10*Math.exp(-Math.pow((q-1)/.2,2)))*smooth((1.35-q)/.35);
+    }
+   }
    case VENUS -> {double dome=Math.pow(Math.max(0,n(x/510.,z/510.,4)),3);h=105+24*broad+8*fine+2*detail+180*dome;}
    case EUROPA -> {double fault=-18*Math.exp(-Math.pow(n(x/180.,z/180.,5)/.10,2));h=80+10*broad+3*fine+detail+fault;}
    case TITAN -> {double dune=7*Math.sin((x+18*n(x/120.,z/120.,6))/19.)*smooth((broad+.6)/1.6);h=95+19*broad+5*fine+dune+detail;}

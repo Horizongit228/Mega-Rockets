@@ -1,0 +1,11 @@
+{
+  "type": "megarockets:mercury",
+  "generator": {
+    "type": "megarockets:outer_planet",
+    "planet": "MERCURY",
+    "biome_source": {
+      "type": "minecraft:fixed",
+      "biome": "megarockets:mercury_surface"
+    }
+  }
+}
