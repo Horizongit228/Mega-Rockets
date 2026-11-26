@@ -306,6 +306,7 @@ public final class TitanRocket extends Entity {
     }
     public boolean toggleManual(ServerPlayerEntity pilot){
         if(getFirstPassenger()!=pilot||pilot.isSpectator())return false;
+        if(autoNavigation()){hold();return true;}
         boolean enabled=!manualMode();
         if(enabled&&!getWorld().getRegistryKey().equals(World.OVERWORLD)&&!getWorld().getRegistryKey().equals(MegaRockets.ORBIT)&&MegaRockets.planet(getWorld())==null)return false;
         // Taking over ends the previous automatic mission; position is never rewound.
@@ -357,7 +358,7 @@ public final class TitanRocket extends Entity {
             case LAUNCH -> ok=beginLaunch(pilot);
             case APPROACH -> ok=requestApproach(pilot);
             case HOLD -> hold();
-            case ARM -> {if(armed()){hold();dataTracker.set(ARMED,false);}else dataTracker.set(ARMED,true);}
+            case ARM -> {if(armed()){if(flying||countdown>0||manualMode()||lunar!=null&&!LunarFlight.finished(lunar))hold();dataTracker.set(ARMED,false);}else dataTracker.set(ARMED,true);}
             case LIGHTS -> dataTracker.set(LIGHTS,!cabinLights());
             case LIFE -> dataTracker.set(LIFE,!lifeSupport());
             case BEACON -> dataTracker.set(BEACON,!beacon());

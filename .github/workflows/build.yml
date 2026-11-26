@@ -63,6 +63,10 @@ jobs:
         run: |
           javac -d mesh-check src/main/java/dev/megarockets/ManualFlight.java checks/ManualFlightCheck.java
           java -cp mesh-check ManualFlightCheck
+      - name: Check cockpit systems and orbital navigation
+        run: |
+          javac -d mesh-check src/main/java/dev/megarockets/CabinSystems.java src/main/java/dev/megarockets/ManualFlight.java checks/CabinSystemsCheck.java
+          java -cp mesh-check CabinSystemsCheck
       - name: Build Fabric mod
         run: gradle build --stacktrace
       - uses: actions/upload-artifact@v4
