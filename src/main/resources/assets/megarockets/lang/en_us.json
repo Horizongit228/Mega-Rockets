@@ -138,5 +138,15 @@
   "message.megarockets.phase.orbit_arrival": "Orbital arrival",
   "message.megarockets.giant_arrived": "Orbit reached: %s. No solid surface. Cabin pressurized. /rocket return to Earth.",
   "cockpit.megarockets.orbit_only": "Orbital route — no surface landing",
-  "cockpit.megarockets.surface": "Expedition — surface landing"
+  "cockpit.megarockets.surface": "Expedition — surface landing",
+  "key.megarockets.manual": "Manual flight",
+  "key.megarockets.approach": "Request approach",
+  "key.megarockets.brake": "Rocket brake",
+  "cockpit.megarockets.manual": "MANUAL FLIGHT",
+  "cockpit.megarockets.manual_target": "Target X=%s Z=%s | L — approach",
+  "message.megarockets.manual_status": "MANUAL | X=%s Y=%s Z=%s | %s blocks/s",
+  "message.megarockets.manual_on": "Manual mode: WASD fly, Space up, Ctrl down, B brake, R select target, L approach.",
+  "message.megarockets.manual_off": "Manual flight disabled. Rocket holding position.",
+  "message.megarockets.approach_range": "Approach within 2000 blocks of the selected target (coordinates in R) and slow to 20 blocks/s.",
+  "message.megarockets.manual_orbit": "Orbit reached. Manual flight active."
 }

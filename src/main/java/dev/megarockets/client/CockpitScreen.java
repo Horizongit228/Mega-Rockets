@@ -47,7 +47,7 @@ public final class CockpitScreen extends Screen {
         context.drawTextWithShadow(textRenderer,Text.translatable("cockpit.megarockets.speed",rocket.cabinSpeed()),x+15,y+44,0xff72e6f2);
         context.drawTextWithShadow(textRenderer,Text.translatable("cockpit.megarockets.altitude",(int)rocket.getY()),x+166,y+44,0xff72e6f2);
         context.drawTextWithShadow(textRenderer,rocket.cabinPhase(),x+15,y+56,0xffdfc079);
-        context.drawTextWithShadow(textRenderer,Text.translatable("cockpit.megarockets.route", (int)rocket.cabinTarget().distance,rocket.cabinTarget().referenceKm),x+15,y+68,0xffd1e5ef);
+        context.drawTextWithShadow(textRenderer,rocket.manualMode()?Text.translatable("cockpit.megarockets.manual_target",(int)rocket.cabinTarget().distance,(int)rocket.cabinTarget().lane):Text.translatable("cockpit.megarockets.route", (int)rocket.cabinTarget().distance,rocket.cabinTarget().referenceKm),x+15,y+68,0xffd1e5ef);
         context.drawTextWithShadow(textRenderer,Text.translatable(rocket.cabinTarget().orbitOnly()?"cockpit.megarockets.orbit_only":"cockpit.megarockets.surface"),x+15,y+78,0xffdfc079);
         context.fill(x+15,y+90,x+281,y+98,0xff314653);
         context.fill(x+15,y+90,x+15+266*rocket.cabinProgress()/100,y+98,0xff47c2c8);
