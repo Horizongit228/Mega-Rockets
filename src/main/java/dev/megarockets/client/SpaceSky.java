@@ -2,6 +2,7 @@ package dev.megarockets.client;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import dev.megarockets.MegaRockets;
+import dev.megarockets.Destination;
 import net.minecraft.client.render.*;
 import net.minecraft.util.Identifier;
 import net.minecraft.client.world.ClientWorld;
@@ -27,7 +28,7 @@ public final class SpaceSky {
         }return out;
     }
     public static double darkness(ClientWorld world,double y){
-        if(world.getRegistryKey().equals(MegaRockets.ORBIT)||MegaRockets.isMoon(world)||world.getRegistryKey().equals(MegaRockets.MARS))return 1;
+        if(world.getRegistryKey().equals(MegaRockets.ORBIT)||MegaRockets.planet(world)!=null)return 1;
         if(!world.getRegistryKey().equals(World.OVERWORLD))return 0;
         double t=Math.max(0,Math.min(1,(y-180)/1100));return t*t*(3-2*t);
     }
@@ -42,9 +43,12 @@ public final class SpaceSky {
     public static void render(Matrix4f matrix,Camera camera,ClientWorld world,float delta,Runnable fog){
         Vec3d pos=camera.getPos();double dark=darkness(world,pos.y);
         boolean orbit=world.getRegistryKey().equals(MegaRockets.ORBIT),moon=MegaRockets.isMoon(world);
-        boolean mars=world.getRegistryKey().equals(MegaRockets.MARS);
+        var body=MegaRockets.planet(world);
+        boolean atmosphere=body==Destination.MARS||body==Destination.VENUS||body==Destination.TITAN;
         Vec3d sky=world.getSkyColor(pos,delta).multiply(1-dark);
-        if(mars)sky=new Vec3d(.42,.24,.14);
+        if(body==Destination.MARS)sky=new Vec3d(.42,.24,.14);
+        if(body==Destination.VENUS)sky=new Vec3d(.60,.43,.23);
+        if(body==Destination.TITAN)sky=new Vec3d(.45,.25,.10);
         RenderSystem.depthMask(false);RenderSystem.disableCull();RenderSystem.enableBlend();RenderSystem.defaultBlendFunc();
         RenderSystem.setShader(GameRenderer::getPositionColorProgram);RenderSystem.setShaderColor(1,1,1,1);
         BackgroundRenderer.clearFog();
@@ -60,20 +64,22 @@ public final class SpaceSky {
             BufferBuilder stars=begin();
             for(Star star:STARS){
                 Vec3d center=star.dir.multiply(85),a=axis(star.dir).multiply(star.size),b=star.dir.crossProduct(a).normalize().multiply(star.size);
-                int c=((int)(dark*(mars?45:240))<<24)|star.rgb;
+                int c=((int)(dark*(atmosphere?45:240))<<24)|star.rgb;
                 Vec3d q=center.subtract(a).subtract(b),w=center.add(a).subtract(b),e=center.add(a).add(b),r=center.subtract(a).add(b);
                 v(stars,matrix,q,c);v(stars,matrix,w,c);v(stars,matrix,e,c);v(stars,matrix,q,c);v(stars,matrix,e,c);v(stars,matrix,r,c);
             }draw(stars);
             sun(matrix,new Vec3d(.24,.62,-.75).normalize(),dark,world.getTime()+delta);
             if(orbit){
                 planet(matrix,new Vec3d(-1,-.24,0).normalize(),Math.max(.12,.38-pos.x/30000),true,1);
-                Vec3d toward=new Vec3d((6000.5+4600)-pos.x,56-pos.y,.5-pos.z);
-                double radius=Math.min(.78,4096/Math.max(4600,toward.length()));
-                planet(matrix,toward.normalize(),radius,false,1);
-                Vec3d redPlanet=new Vec3d(36050-pos.x,65-pos.y,4500-pos.z);
-                marsDisk(matrix,redPlanet.normalize(),Math.min(.68,8192/Math.max(12050,redPlanet.length())));
-            }else if(mars){
-                planet(matrix,new Vec3d(-.8,.5,.3).normalize(),.035,true,1);
+                for(Destination target:Destination.values()){
+                    // Globe centers lie behind the arrival point on their respective orbital lanes.
+                    Vec3d toward=new Vec3d(target.distance+target.radius*1.5-pos.x,56-pos.y,target.lane-pos.z);
+                    double angular=Math.min(.74,target.radius/Math.max(target.radius*1.5,toward.length()));
+                    if(target==Destination.MOON)planet(matrix,toward.normalize(),angular,false,1);
+                    else globe(matrix,toward.normalize(),angular,MegaRockets.id("textures/sky/"+target.key()+".png"));
+                }
+            }else if(body!=null&&body!=Destination.MOON){
+                planet(matrix,new Vec3d(-.8,.5,.3).normalize(),body==Destination.MARS?.035:.02,true,1);
             }else if(moon){
                 planet(matrix,new Vec3d(-.8,.55,.4).normalize(),.18,true,1);
             }else{
@@ -130,6 +136,17 @@ public final class SpaceSky {
         double grain=Math.sin(x*43+Math.cos(y*31))*Math.cos(y*37-x*13);
         double limb=Math.pow(r,5);
         return color(255,247-48*limb+4*grain,218-100*limb+8*grain,(int)(255*alpha));
+    }
+    private static void globe(Matrix4f matrix,Vec3d dir,double angular,Identifier texture){
+        Vec3d center=dir.multiply(45),u=axis(dir),w=dir.crossProduct(u).normalize();
+        Vec3d right=u.multiply(45*angular),down=w.multiply(45*angular);
+        RenderSystem.setShader(GameRenderer::getPositionTexColorProgram);RenderSystem.setShaderTexture(0,texture);
+        BufferBuilder disk=Tessellator.getInstance().begin(VertexFormat.DrawMode.QUADS,VertexFormats.POSITION_TEXTURE_COLOR);
+        textured(disk,matrix,center.subtract(right).subtract(down),0,0,255);
+        textured(disk,matrix,center.add(right).subtract(down),1,0,255);
+        textured(disk,matrix,center.add(right).add(down),1,1,255);
+        textured(disk,matrix,center.subtract(right).add(down),0,1,255);
+        draw(disk);RenderSystem.setShader(GameRenderer::getPositionColorProgram);
     }
     private static void marsDisk(Matrix4f matrix,Vec3d dir,double angular){
         Vec3d center=dir.multiply(45),u=axis(dir),w=dir.crossProduct(u).normalize();double radius=45*angular;

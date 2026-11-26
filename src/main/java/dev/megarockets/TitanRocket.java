@@ -98,7 +98,9 @@ public final class TitanRocket extends Entity {
         if(nbt.contains("LunarPhase")) {
             try {
                 var phase=LunarFlight.Phase.valueOf(nbt.getString("LunarPhase"));
-                lunar=LunarFlight.pause(new LunarFlight.State(phase,nbt.getInt("LunarTicks"),nbt.getDouble("LunarX"),
+                double oldDistance=nbt.contains("RouteDistance")?nbt.getDouble("RouteDistance"):(destination==Destination.MARS?24000:6000);
+                double routeX=Math.max(0,Math.min(destination.distance,nbt.getDouble("LunarX")*destination.distance/Math.max(1,oldDistance)));
+                lunar=LunarFlight.pause(new LunarFlight.State(phase,nbt.getInt("LunarTicks"),routeX,
                     nbt.getDouble("LunarY"),0,nbt.getFloat("LunarTilt")),destination.distance,maxSpeed());
                 lunarPaused=true;
             } catch(IllegalArgumentException ignored) { lunar=null; }
@@ -112,6 +114,7 @@ public final class TitanRocket extends Entity {
             nbt.putInt("ExitX",landingSite.exitX());nbt.putInt("ExitY",landingSite.exitY());nbt.putInt("ExitZ",landingSite.exitZ());
         }
         nbt.putString("Destination",destination.name());
+        nbt.putDouble("RouteDistance",destination.distance);
         if(lunar!=null) {
             nbt.putString("LunarPhase",lunar.phase().name()); nbt.putInt("LunarTicks",lunar.ticks());
             nbt.putDouble("LunarX",lunar.x()); nbt.putDouble("LunarY",lunar.y()); nbt.putFloat("LunarTilt",lunar.tilt());
@@ -201,7 +204,7 @@ public final class TitanRocket extends Entity {
             return;
         }
         lerpX=x; lerpY=y; lerpZ=z; lerpYaw=yaw; lerpPitch=pitch;
-        lerpTicks=2;
+        lerpTicks=getType()==MegaRockets.HYPERION?5:getType()==MegaRockets.PHANTOM?4:3;
     }
 
     @Override public double getLerpTargetX() { return lerpTicks>0 ? lerpX : getX(); }
@@ -292,7 +295,7 @@ public final class TitanRocket extends Entity {
         flightTicks++;
         if(previous!=lunar.phase()) pilot.sendMessage(
             Text.translatable("message.megarockets.phase."+lunar.phase().name().toLowerCase(java.util.Locale.ROOT)),false);
-        if(flightTicks%10==0) pilot.sendMessage(missionStatus(),true);
+        if(flightTicks%20==0) pilot.sendMessage(missionStatus(),true);
         if((lunar.phase()==LunarFlight.Phase.DESCENT||lunar.phase()==LunarFlight.Phase.FINAL)&&lunar.y()<MoonWorld.LAND_Y+18&&flightTicks%4==0)
             world.spawnParticles(ParticleTypes.CAMPFIRE_COSY_SMOKE,onMoon?site().x()+.5:MoonWorld.X+.5,onMoon?site().y()+.1:MoonWorld.LAND_Y+.1,onMoon?site().z()+.5:.5,20,5,.35,5,.035);
         if(lunar.phase()==LunarFlight.Phase.LANDED) {

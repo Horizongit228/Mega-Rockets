@@ -33,14 +33,14 @@ public final class LunarFlight {
             default -> false;
         };
     }
-    private static double brake(double max){return max<=15?.18:max<=30?.55:.90;}
+    private static double brake(double max){return max<=15?.18:max<=30?.55:.62;}
     private static double brakeDistance(double max){return max<=15?1150:max*max/(2*brake(max))+max*3+20;}
     private static double turnDistance(double distance,double max){return max<=15?2600:Math.min(distance*.76,brakeDistance(max)+max*60);}
     public static State step(State s,boolean moonReady) {return step(s,moonReady,DISTANCE,MAX_SPEED);}
     public static State step(State s,boolean moonReady,double distance,double maxSpeed) {
-        double braking=brake(maxSpeed),accel=maxSpeed<=15?.14:maxSpeed<=30?.65:1.1;
+        double braking=brake(maxSpeed),accel=maxSpeed<=15?.14:maxSpeed<=30?.65:.48;
         double brakeAt=brakeDistance(maxSpeed),turnAt=turnDistance(distance,maxSpeed);
-        float tiltRate=maxSpeed<=15?2f:3.5f;
+        float tiltRate=maxSpeed<=15?2f:maxSpeed<=30?3.5f:1.8f;
         Phase phase=s.phase(); int ticks=s.ticks()+1;
         double x=s.x(),y=s.y(),speed=s.speed(),remaining=distance-x;
         float angle=0;

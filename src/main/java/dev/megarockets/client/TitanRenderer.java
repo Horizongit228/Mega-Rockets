@@ -14,7 +14,9 @@ import net.minecraft.util.math.RotationAxis;
 import net.minecraft.client.render.Frustum;
 
 public final class TitanRenderer extends EntityRenderer<TitanRocket> {
-    private static final Identifier TEXTURE = MegaRockets.id("textures/entity/titan_hull.png");
+    private static final Identifier TITAN= MegaRockets.id("textures/entity/titan_reborn.png");
+    private static final Identifier PHANTOM= MegaRockets.id("textures/entity/phantom_reborn.png");
+    private static final Identifier HYPERION= MegaRockets.id("textures/entity/hyperion_reborn.png");
     private static final Identifier WHITE = MegaRockets.id("textures/entity/titan_white.png");
     public TitanRenderer(EntityRendererFactory.Context context) { super(context); shadowRadius=0; }
     @Override public boolean shouldRender(TitanRocket rocket,Frustum frustum,double x,double y,double z) {
@@ -22,7 +24,7 @@ public final class TitanRenderer extends EntityRenderer<TitanRocket> {
         if(rocket.hasPassengers() && rocket.squaredDistanceTo(x,y,z)<256*256) return true;
         return super.shouldRender(rocket,frustum,x,y,z);
     }
-    @Override public Identifier getTexture(TitanRocket rocket) { return TEXTURE; }
+    @Override public Identifier getTexture(TitanRocket rocket) { return rocket.getType()==MegaRockets.HYPERION?HYPERION:rocket.getType()==MegaRockets.PHANTOM?PHANTOM:TITAN; }
     @Override public void render(TitanRocket rocket, float yaw, float tickDelta, MatrixStack matrices,
                                   VertexConsumerProvider consumers, int light) {
         if (rocket.getY() >= 320) light = 0xF000F0; // Prevent a dark hull beyond the world lighting sections.
@@ -30,19 +32,24 @@ public final class TitanRenderer extends EntityRenderer<TitanRocket> {
         matrices.translate(0,32,0);
         matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(rocket.getPitch(tickDelta)));
         matrices.translate(0,-32,0);
-        VertexConsumer buffer = consumers.getBuffer(RenderLayer.getEntityCutoutNoCull(TEXTURE));
+        VertexConsumer buffer = consumers.getBuffer(RenderLayer.getEntityCutoutNoCull(getTexture(rocket)));
         MatrixStack.Entry matrix = matrices.peek();
         boolean phantom=rocket.getType()==MegaRockets.PHANTOM,hyperion=rocket.getType()==MegaRockets.HYPERION;
         for (TitanMesh.Quad q : TitanMesh.QUADS) {
             for (int i=0;i<4;i++) {
                 TitanMesh.Point p=q.points()[i];
                 int c=q.argb();
-                if(c==0xffe4e8ee)c=hyperion?0xffaebed4:phantom?0xffd9e4ec:c;
-                if(c==0xff286583||c==0xff286083)c=hyperion?0xffb47b36:phantom?0xff933d40:c;
+                if(c==0xffe4e8ee)c=0xffffffff;
+                if(c==0xff286583||c==0xff286083)c=hyperion?0xffd5ae64:phantom?0xffec7252:0xffc5d6e7;
                 float taper=(float)Math.max(0,Math.min(1,Math.min((p.y()-5)/8,(48-p.y())/8)));
-                float profile=1-taper*(phantom?.17f:hyperion?.06f:0f);
+                float profile=1-taper*(phantom?.24f:hyperion?-.10f:0f);
                 int faceLight=c==0xff59e4ff||c==0xffff7962?0xF000F0:light;
-                buffer.vertex(matrix,p.x()*profile,p.y(),p.z()*profile).color(c).texture(i==0||i==3?.02f:.98f,i<2?.02f:.98f)
+                // Map the shell as a cylindrical texture, not a full repeated bitmap per quad.
+                float u=(float)(Math.atan2(p.z(),p.x())/(Math.PI*2)+.5);
+                float anchor=(float)(Math.atan2(q.points()[0].z(),q.points()[0].x())/(Math.PI*2)+.5);
+                if(u-anchor>.5f)u-=1;else if(anchor-u>.5f)u+=1;
+                float vv=1-p.y()/64f;
+                buffer.vertex(matrix,p.x()*profile,p.y(),p.z()*profile).color(c).texture(u,vv)
                     .overlay(OverlayTexture.DEFAULT_UV).light(faceLight).normal(matrix,q.nx(),q.ny(),q.nz());
             }
         }
@@ -61,10 +68,10 @@ public final class TitanRenderer extends EntityRenderer<TitanRocket> {
                 boolean vacuum=!rocket.getWorld().getRegistryKey().equals(net.minecraft.world.World.OVERWORLD)||rocket.getY()>1000;
                 float length=(hyperion?48f:phantom?38f:28f)+1.1f*(float)Math.sin(t*.7+i*1.3)+.5f*(float)Math.sin(t*1.6+i);
                 float spread=vacuum?1.25f:1f;
-                plume(exhaust,matrix,x,z,-.02f,.70f,-2.8f,.86f,0xfffff9e9);
-                plume(exhaust,matrix,x,z,-2.8f,.86f,-7.2f,1.02f*spread,0xffffe5a4);
-                plume(exhaust,matrix,x,z,-7.2f,1.02f*spread,-12f,.65f*spread,0xffffa133);
-                plume(exhaust,matrix,x,z,-12f,.65f*spread,-length,.015f,0xffe64b16);
+                plume(exhaust,matrix,x,z,-.02f,.70f,-2.8f,.86f,hyperion?0xffe9fbff:0xfffff9e9);
+                plume(exhaust,matrix,x,z,-2.8f,.86f,-7.2f,1.02f*spread,hyperion?0xffa9eaff:0xffffe5a4);
+                plume(exhaust,matrix,x,z,-7.2f,1.02f*spread,-12f,.65f*spread,hyperion?0xff54b8ed:phantom?0xffff7544:0xffffa133);
+                plume(exhaust,matrix,x,z,-12f,.65f*spread,-length,.015f,hyperion?0xff277bd0:phantom?0xffbd332a:0xffe64b16);
             }
         }
         matrices.pop();
