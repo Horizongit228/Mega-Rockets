@@ -59,6 +59,7 @@ public final class MegaRockets implements ModInitializer {
         RocketItems.init();
         SpaceSuitItems.init();
         OxygenStation.init();
+        StationConsole.init();
         OxygenSystem.init();
         ManualInput.init();
         CockpitAction.init();

@@ -44,9 +44,21 @@ public final class AsteroidGenerator extends ChunkGenerator {
    case StationLayout.GLASS->Blocks.GLASS.getDefaultState();
    case StationLayout.LAMP->Blocks.SEA_LANTERN.getDefaultState();
    case StationLayout.OXYGEN->OxygenStation.STATION.getDefaultState();
-   case StationLayout.DOOR_LOWER,StationLayout.DOOR_UPPER->Blocks.OAK_DOOR.getDefaultState()
+   case StationLayout.DOOR_LOWER,StationLayout.DOOR_UPPER->Blocks.IRON_DOOR.getDefaultState()
      .with(net.minecraft.block.DoorBlock.FACING,net.minecraft.util.math.Direction.EAST)
      .with(net.minecraft.block.DoorBlock.HALF,type==StationLayout.DOOR_LOWER?net.minecraft.block.enums.DoubleBlockHalf.LOWER:net.minecraft.block.enums.DoubleBlockHalf.UPPER);
+   case StationLayout.NORTH_DOOR_LOWER,StationLayout.NORTH_DOOR_UPPER,StationLayout.INNER_DOOR_LOWER,StationLayout.INNER_DOOR_UPPER->Blocks.OAK_DOOR.getDefaultState()
+     .with(net.minecraft.block.DoorBlock.FACING,type==StationLayout.NORTH_DOOR_LOWER||type==StationLayout.NORTH_DOOR_UPPER?net.minecraft.util.math.Direction.NORTH:net.minecraft.util.math.Direction.EAST)
+     .with(net.minecraft.block.DoorBlock.HALF,type==StationLayout.NORTH_DOOR_LOWER||type==StationLayout.INNER_DOOR_LOWER?net.minecraft.block.enums.DoubleBlockHalf.LOWER:net.minecraft.block.enums.DoubleBlockHalf.UPPER);
+   case StationLayout.CONSOLE,StationLayout.STATUS->StationConsole.BLOCK.getDefaultState();
+   case StationLayout.BLUE->Blocks.LIGHT_BLUE_CONCRETE.getDefaultState();
+   case StationLayout.FRAME->Blocks.POLISHED_DEEPSLATE.getDefaultState();
+   case StationLayout.WORKBENCH->Blocks.CRAFTING_TABLE.getDefaultState();
+   case StationLayout.BOOKS->Blocks.BOOKSHELF.getDefaultState();
+   case StationLayout.MOSS->Blocks.MOSS_BLOCK.getDefaultState();
+   case StationLayout.LEAVES->Blocks.AZALEA_LEAVES.getDefaultState().with(net.minecraft.block.LeavesBlock.PERSISTENT,true);
+   case StationLayout.SOIL->Blocks.DIRT.getDefaultState();
+   case StationLayout.SOLAR->Blocks.BLUE_STAINED_GLASS.getDefaultState();
    case StationLayout.PAD->Blocks.SMOOTH_STONE.getDefaultState();
    case StationLayout.MARK->Blocks.YELLOW_CONCRETE.getDefaultState();
    default->Blocks.AIR.getDefaultState();
@@ -60,7 +72,7 @@ public final class AsteroidGenerator extends ChunkGenerator {
   int x0=chunk.getPos().getStartX(),z0=chunk.getPos().getStartZ();
   for(int x=x0;x<x0+16;x++)for(int z=z0;z<z0+16;z++){
    if(StationLayout.column(x,z)){
-    for(int y=100;y<=107;y++){int type=StationLayout.material(x,y,z);if(type!=0)chunk.setBlockState(pos.set(x,y,z),stationState(type),false);}
+    for(int y=98;y<=StationLayout.TOP_Y;y++){int type=StationLayout.material(x,y,z);if(type!=0)chunk.setBlockState(pos.set(x,y,z),stationState(type),false);}
     continue;
    }
    var rock=t.at(x,z);if(rock==null||Math.abs(x-rock.x())>rock.rx()+3||Math.abs(z-rock.z())>rock.rz()+3)continue;
