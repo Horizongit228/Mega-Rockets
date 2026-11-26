@@ -49,8 +49,8 @@ public final class CockpitScreen extends Screen {
         context.drawTextWithShadow(textRenderer,rocket.cabinPhase(),x+15,y+56,0xffdfc079);
         context.drawTextWithShadow(textRenderer,Text.translatable("cockpit.megarockets.route", (int)rocket.cabinTarget().distance,rocket.cabinTarget().referenceKm),x+15,y+68,0xffd1e5ef);
         context.drawTextWithShadow(textRenderer,Text.translatable(rocket.cabinTarget().orbitOnly()?"cockpit.megarockets.orbit_only":"cockpit.megarockets.surface"),x+15,y+78,0xffdfc079);
-        context.fill(x+15,y+86,x+281,y+96,0xff314653);
-        context.fill(x+15,y+86,x+15+266*rocket.cabinProgress()/100,y+96,0xff47c2c8);
+        context.fill(x+15,y+90,x+281,y+98,0xff314653);
+        context.fill(x+15,y+90,x+15+266*rocket.cabinProgress()/100,y+98,0xff47c2c8);
         context.drawCenteredTextWithShadow(textRenderer,Text.translatable("cockpit.megarockets.pressurized"),width/2,y+218,0xff87e5ac);
         super.render(context,mouseX,mouseY,delta);
     }

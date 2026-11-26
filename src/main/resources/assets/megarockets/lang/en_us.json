@@ -125,5 +125,18 @@
   "block.megarockets.titan_rock": "Titan ice rock",
   "block.megarockets.titan_ore": "Titan ore",
   "biome.megarockets.titan_surface": "Titan",
-  "cockpit.megarockets.route": "%s blocks | ~%s km (ref.)"
+  "cockpit.megarockets.route": "%s blocks | ~%s km (ref.)",
+  "destination.megarockets.mercury": "Mercury",
+  "destination.megarockets.jupiter": "Jupiter",
+  "destination.megarockets.saturn": "Saturn",
+  "destination.megarockets.uranus": "Uranus",
+  "destination.megarockets.neptune": "Neptune",
+  "block.megarockets.mercury_surface": "Mercury regolith",
+  "block.megarockets.mercury_rock": "Mercury rock",
+  "block.megarockets.mercury_ore": "Mercury metal ore",
+  "biome.megarockets.mercury_surface": "Mercury cratered plains",
+  "message.megarockets.phase.orbit_arrival": "Orbital arrival",
+  "message.megarockets.giant_arrived": "Orbit reached: %s. No solid surface. Cabin pressurized. /rocket return to Earth.",
+  "cockpit.megarockets.orbit_only": "Orbital route — no surface landing",
+  "cockpit.megarockets.surface": "Expedition — surface landing"
 }

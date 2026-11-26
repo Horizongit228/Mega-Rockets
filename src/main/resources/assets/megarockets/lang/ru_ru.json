@@ -125,5 +125,18 @@
   "block.megarockets.titan_rock": "Ледяная порода Титана",
   "block.megarockets.titan_ore": "Руда Титана",
   "biome.megarockets.titan_surface": "Титан",
-  "cockpit.megarockets.route": "%s бл. | ~%s км (справ.)"
+  "cockpit.megarockets.route": "%s бл. | ~%s км (справ.)",
+  "destination.megarockets.mercury": "Меркурий",
+  "destination.megarockets.jupiter": "Юпитер",
+  "destination.megarockets.saturn": "Сатурн",
+  "destination.megarockets.uranus": "Уран",
+  "destination.megarockets.neptune": "Нептун",
+  "block.megarockets.mercury_surface": "Реголит Меркурия",
+  "block.megarockets.mercury_rock": "Порода Меркурия",
+  "block.megarockets.mercury_ore": "Металлическая руда Меркурия",
+  "biome.megarockets.mercury_surface": "Кратерные равнины Меркурия",
+  "message.megarockets.phase.orbit_arrival": "Орбитальная остановка",
+  "message.megarockets.giant_arrived": "Орбита: %s. Твёрдой поверхности нет. Кабина герметична. /rocket return — домой.",
+  "cockpit.megarockets.orbit_only": "Орбитальный маршрут — без посадки",
+  "cockpit.megarockets.surface": "Экспедиция — посадка на поверхность"
 }
