@@ -30,6 +30,7 @@ public final class TitanRenderer extends EntityRenderer<TitanRocket> {
         if (rocket.getY() >= 320) light = 0xF000F0; // Prevent a dark hull beyond the world lighting sections.
         matrices.push();
         matrices.translate(0,32,0);
+        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-rocket.getYaw(tickDelta)));
         matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(rocket.getPitch(tickDelta)));
         matrices.translate(0,-32,0);
         VertexConsumer buffer = consumers.getBuffer(RenderLayer.getEntityCutoutNoCull(getTexture(rocket)));

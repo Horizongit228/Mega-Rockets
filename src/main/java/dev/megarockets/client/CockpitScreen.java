@@ -30,7 +30,7 @@ public final class CockpitScreen extends Screen {
         if(client==null||client.player==null||client.player.getVehicle()!=rocket){close();return;}
         boolean ready=rocket.cabinReady();launch.active=ready;
         for(var e:targets.entrySet()){
-            e.getValue().active=ready;
+            e.getValue().active=ready||rocket.manualMode();
             e.getValue().setMessage(Text.literal(rocket.cabinTarget()==e.getKey()?"● ":"○ ").append(Text.translatable("destination.megarockets."+e.getKey().key())));
         }
     }

@@ -59,6 +59,7 @@ public final class MegaRockets implements ModInitializer {
         SpaceSuitItems.init();
         OxygenStation.init();
         OxygenSystem.init();
+        ManualInput.init();
         MegaRocketsItemGroup.init();
         Registry.register(Registries.CHUNK_GENERATOR,id("moon_sphere"),MoonChunkGenerator.CODEC);
         Registry.register(Registries.BIOME_SOURCE,id("moon_biomes"),MoonBiomeSource.CODEC);
@@ -81,6 +82,8 @@ public final class MegaRockets implements ModInitializer {
                     .then(CommandManager.literal("saturn").executes(ctx -> choose(ctx.getSource(),Destination.SATURN)))
                     .then(CommandManager.literal("uranus").executes(ctx -> choose(ctx.getSource(),Destination.URANUS)))
                     .then(CommandManager.literal("neptune").executes(ctx -> choose(ctx.getSource(),Destination.NEPTUNE))))
+                .then(CommandManager.literal("manual").executes(ctx -> manual(ctx.getSource(),false)))
+                .then(CommandManager.literal("approach").executes(ctx -> manual(ctx.getSource(),true)))
                 .then(CommandManager.literal("status").executes(ctx -> status(ctx.getSource())))
                 .then(CommandManager.literal("return").executes(ctx -> returnHome(ctx.getSource())))));
     }
@@ -132,6 +135,28 @@ public final class MegaRockets implements ModInitializer {
         rocket.showDestinations(pilot);return 1;
     }
 
+    private static int manual(ServerCommandSource source,boolean approach) throws com.mojang.brigadier.exceptions.CommandSyntaxException {
+        var pilot=source.getPlayerOrThrow();
+        if(!(pilot.getVehicle() instanceof TitanRocket rocket)){source.sendError(Text.translatable("message.megarockets.destination_seat"));return 0;}
+        return (approach?rocket.requestApproach(pilot):rocket.toggleManual(pilot))?1:0;
+    }
+    static boolean manualOrbit(TitanRocket old,ServerPlayerEntity pilot){
+        ServerWorld orbit=pilot.getServer().getWorld(ORBIT);
+        if(orbit==null)return false;
+        Destination origin=planet(old.getWorld());
+        double x=origin==null?.5:origin.distance+.5,z=origin==null?.5:origin.lane+.5;
+        TitanRocket ship=new TitanRocket(old.rocketType(),orbit);
+        ship.copyDestination(old);ship.refreshPositionAndAngles(x,LunarFlight.CRUISE_Y,z,old.getYaw(),0);ship.startManual();
+        if(!orbit.isSpaceEmpty(ship,ship.getBoundingBox())||!orbit.getOtherEntities(ship,ship.getBoundingBox()).isEmpty()||!orbit.spawnEntity(ship))return false;
+        pilot.stopRiding();
+        if(!pilot.teleport(orbit,x,LunarFlight.CRUISE_Y+51.35,z+.65,Set.of(),pilot.getYaw(),pilot.getPitch())){
+            ship.discard();pilot.startRiding(old,true);return false;
+        }
+        if(!pilot.startRiding(ship,true)){
+            ship.discard();pilot.teleport((ServerWorld)old.getWorld(),old.getX(),old.getY()+51.35,old.getZ()+.65,Set.of(),pilot.getYaw(),pilot.getPitch());pilot.startRiding(old,true);return false;
+        }
+        old.discard();pilot.sendMessage(Text.translatable("message.megarockets.manual_orbit"),false);return true;
+    }
     private static int status(ServerCommandSource source) throws com.mojang.brigadier.exceptions.CommandSyntaxException {
         ServerPlayerEntity player=source.getPlayerOrThrow();
         TitanRocket ship=player.getVehicle() instanceof TitanRocket mounted?mounted:
