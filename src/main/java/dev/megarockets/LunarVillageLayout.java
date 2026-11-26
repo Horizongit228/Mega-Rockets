@@ -16,7 +16,7 @@ public final class LunarVillageLayout {
  public static boolean footprint(int x,int z){
   int a=x-X,b=z-Z;
   if(!bounds(x,z))return false;
-  if(Math.abs(b)<=3&&a>=-43&&a<=94||Math.abs(a+32)<=2&&Math.abs(b)<=14||Math.abs(a)<=2&&Math.abs(b)<=14||Math.abs(a-32)<=2&&Math.abs(b)<=14)return true;
+  if(Math.abs(b)<=3&&a>=-43&&a<=105||Math.abs(a+32)<=2&&Math.abs(b)<=14||Math.abs(a)<=2&&Math.abs(b)<=14||Math.abs(a-32)<=2&&Math.abs(b)<=14)return true;
   if(Math.abs(a-92)<=13&&Math.abs(b)<=13)return true;
   for(Home h:HOMES)if(Math.abs(a-h.x())<=h.halfX()&&Math.abs(b-h.z())<=h.halfZ())return true;
   return false;

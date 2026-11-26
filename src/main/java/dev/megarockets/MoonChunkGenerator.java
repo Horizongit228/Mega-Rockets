@@ -30,17 +30,17 @@ public final class MoonChunkGenerator extends ChunkGenerator {
     private final int yOffset;
     private volatile NoiseConfig lastConfig;
     private MoonTerrain cachedTerrain;
-    private int villageBase;
+    private LunarSettlements settlements;
     private synchronized MoonTerrain terrain(NoiseConfig config){
         if(lastConfig!=config||cachedTerrain==null){
             long seed=config.getOrCreateRandomDeriver(MegaRockets.id("lunar_world_seed")).split(0,0,0).nextLong();
-            cachedTerrain=new MoonTerrain(seed);villageBase=yOffset==MoonTerrain.NORTH_OFFSET?LunarVillageLayout.base(cachedTerrain):0;lastConfig=config;
+            cachedTerrain=new MoonTerrain(seed);settlements=new LunarSettlements(seed,cachedTerrain);lastConfig=config;
             if(getBiomeSource() instanceof MoonBiomeSource lunar)lunar.setTerrain(cachedTerrain);
         }
         return cachedTerrain;
     }
     public void initializeSeed(NoiseConfig config){terrain(config);}
-    public int villageBase(NoiseConfig config){terrain(config);return villageBase;}
+    public synchronized LunarSettlements settlements(NoiseConfig config){terrain(config);return settlements;}
     @Override public CompletableFuture<Chunk> populateBiomes(NoiseConfig config,Blender blender,StructureAccessor structures,Chunk chunk){
         terrain(config);return super.populateBiomes(config,blender,structures,chunk);
     }
@@ -99,7 +99,7 @@ public final class MoonChunkGenerator extends ChunkGenerator {
             default->Blocks.AIR.getDefaultState();
         };
     }
-    private boolean village(int x,int z){return yOffset==MoonTerrain.NORTH_OFFSET&&LunarVillageLayout.footprint(x,z);}
+    private LunarSettlements.Site village(int x,int z){return yOffset==MoonTerrain.NORTH_OFFSET?settlements.at(x,z):null;}
     @Override public CompletableFuture<Chunk> populateNoise(Blender blender,NoiseConfig config,StructureAccessor structures,Chunk chunk){
         MoonTerrain terrain=terrain(config);
         int x0=chunk.getPos().getStartX(),z0=chunk.getPos().getStartZ();
@@ -142,18 +142,19 @@ public final class MoonChunkGenerator extends ChunkGenerator {
         }
         // Apply the settlement after terrain decorations, never touching other columns.
         if(yOffset==MoonTerrain.NORTH_OFFSET)for(int x=x0;x<x0+16;x++)for(int z=z0;z<z0+16;z++){
-            if(!village(x,z))continue;
+            var site=village(x,z);if(site==null)continue;
+            int villageBase=site.base();
             int ground=terrain.column(x,z).top()-yOffset;
             int low=Math.max(chunk.getBottomY(),Math.min(ground-3,villageBase-4));
             int high=Math.min(chunk.getTopY()-1,Math.max(villageBase+16,ground+24));
-            for(int y=low;y<=high;y++)chunk.setBlockState(pos.set(x,y,z),villageState(LunarVillageLayout.material(x,y-villageBase,z),x,z),false);
+            for(int y=low;y<=high;y++)chunk.setBlockState(pos.set(x,y,z),villageState(site.material(x,y,z),site.localX(x),site.localZ(z)),false);
         }
         Heightmap.populateHeightmaps(chunk,Set.of(Heightmap.Type.OCEAN_FLOOR_WG,Heightmap.Type.WORLD_SURFACE_WG));
         return CompletableFuture.completedFuture(chunk);
     }
     @Override public int getHeight(int x,int z,Heightmap.Type type,HeightLimitView world,NoiseConfig config){
         MoonTerrain terrain=terrain(config);
-        if(village(x,z))return villageBase+LunarVillageLayout.top(x,z)+1;
+        var site=village(x,z);if(site!=null)return site.base()+LunarVillageLayout.top(site.localX(x),site.localZ(z))+1;
         var col=terrain.column(x,z);
         int hi=Math.min(world.getTopY()-1,col.top()-yOffset),lo=Math.max(world.getBottomY(),col.bottom()-yOffset);
         for(int y=hi;y>=lo;y--){int global=y+yOffset;if(global>=col.innerBottom()&&global<=col.innerTop()){y=col.innerBottom()-yOffset;continue;}if(terrain.material(col,x,global,z)!=MoonTerrain.AIR)return y+1;}
@@ -163,10 +164,11 @@ public final class MoonChunkGenerator extends ChunkGenerator {
         MoonTerrain terrain=terrain(config);
         BlockState[] result=new BlockState[world.getHeight()];
         var col=terrain.column(x,z);
+        var site=village(x,z);
         for(int i=0;i<result.length;i++){
             int y=world.getBottomY()+i;
-            result[i]=village(x,z)&&y>=Math.min(col.top()-yOffset-3,villageBase-4)
-                ?villageState(LunarVillageLayout.material(x,y-villageBase,z),x,z)
+            result[i]=site!=null&&y>=Math.min(col.top()-yOffset-3,site.base()-4)
+                ?villageState(site.material(x,y,z),site.localX(x),site.localZ(z))
                 :state(terrain.material(col,x,y+yOffset,z));
         }
         return new VerticalBlockSample(world.getBottomY(),result);

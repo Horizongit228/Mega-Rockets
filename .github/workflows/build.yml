@@ -81,7 +81,7 @@ jobs:
           java -cp mesh-check StationCheck
       - name: Check lunar village
         run: |
-          javac -d mesh-check src/main/java/dev/megarockets/PlanetCaves.java src/main/java/dev/megarockets/MoonTerrain.java src/main/java/dev/megarockets/LunarVillageLayout.java checks/LunarVillageCheck.java
+          javac -d mesh-check src/main/java/dev/megarockets/PlanetCaves.java src/main/java/dev/megarockets/MoonTerrain.java src/main/java/dev/megarockets/LunarVillageLayout.java src/main/java/dev/megarockets/LunarSettlements.java checks/LunarVillageCheck.java
           java -cp mesh-check LunarVillageCheck
       - name: Build Fabric mod
         run: gradle build --stacktrace

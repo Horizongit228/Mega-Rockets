@@ -344,5 +344,6 @@
   "itemGroup.megarockets.lighting": "Mega Rockets: Освещение",
   "itemGroup.megarockets.glazing": "Mega Rockets: Остекление",
   "entity.megarockets.lunar_resident": "Лунный колонист",
-  "message.megarockets.village_location": "Поселение Селена: Луна, X=%s Z=%s. Посадочная площадка восточнее поселения."
+  "message.megarockets.village_location": "Ближайшая лунная деревня: X=%s Z=%s. Площадка: X=%s Y=%s.",
+  "message.megarockets.no_village": "Подходящее поселение не найдено."
 }

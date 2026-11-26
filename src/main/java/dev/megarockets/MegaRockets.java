@@ -89,11 +89,20 @@ public final class MegaRockets implements ModInitializer {
                     .then(CommandManager.literal("neptune").executes(ctx -> choose(ctx.getSource(),Destination.NEPTUNE))))
                 .then(CommandManager.literal("manual").executes(ctx -> manual(ctx.getSource(),false)))
                 .then(CommandManager.literal("approach").executes(ctx -> manual(ctx.getSource(),true)))
-                .then(CommandManager.literal("village").executes(ctx -> {ctx.getSource().sendFeedback(()->Text.translatable("message.megarockets.village_location",LunarVillageLayout.X,LunarVillageLayout.Z),false);return 1;}))
+                .then(CommandManager.literal("village").executes(ctx -> locateVillage(ctx.getSource())))
                 .then(CommandManager.literal("status").executes(ctx -> status(ctx.getSource())))
                 .then(CommandManager.literal("return").executes(ctx -> returnHome(ctx.getSource())))));
     }
 
+    private static int locateVillage(ServerCommandSource source){
+        var w=source.getServer().getWorld(MOON);
+        if(w==null||!(w.getChunkManager().getChunkGenerator() instanceof MoonChunkGenerator generator))return 0;
+        var pos=source.getWorld()==w?source.getPosition():Vec3d.ZERO;
+        var sites=generator.settlements(w.getChunkManager().getNoiseConfig()).near(pos.x,pos.z,9000);
+        if(sites.isEmpty()){source.sendError(Text.translatable("message.megarockets.no_village"));return 0;}
+        var s=sites.getFirst();
+        source.sendFeedback(()->Text.translatable("message.megarockets.village_location",s.x(),s.z(),s.x()+92,s.base()+1),false);return 1;
+    }
     private static int spawn(ServerCommandSource source) throws com.mojang.brigadier.exceptions.CommandSyntaxException {
         ServerPlayerEntity player = source.getPlayerOrThrow();
         ServerWorld world = player.getServerWorld();

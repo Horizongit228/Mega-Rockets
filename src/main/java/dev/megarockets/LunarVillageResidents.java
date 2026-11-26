@@ -13,11 +13,12 @@ public final class LunarVillageResidents {
  private static void tick(ServerWorld world){
   if(!world.getRegistryKey().equals(MegaRockets.MOON)||world.getTime()%40!=0||
       !(world.getChunkManager().getChunkGenerator() instanceof MoonChunkGenerator generator))return;
-  if(world.getPlayers().stream().noneMatch(p->Math.hypot(p.getX()-LunarVillageLayout.X,p.getZ()-LunarVillageLayout.Z)<160))return;
-  int y=generator.villageBase(world.getChunkManager().getNoiseConfig())+1;
-  for(var home:LunarVillageLayout.HOMES){
+  var sites=new java.util.HashSet<LunarSettlements.Site>();
+  var settlements=generator.settlements(world.getChunkManager().getNoiseConfig());
+  for(var player:world.getPlayers())sites.addAll(settlements.near(player.getX(),player.getZ(),220));
+  for(var site:sites)for(var home:LunarVillageLayout.HOMES){
    if(home.kind()==2)continue;
-   int x=LunarVillageLayout.markerX(home),z=LunarVillageLayout.markerZ(home);
+   int y=site.base()+1,x=site.x()+home.x()-2,z=site.z()+home.z()+2;
    if(world.getChunkManager().getWorldChunk(x>>4,z>>4)==null)continue;
    var pos=new BlockPos(x,y,z);
    if(!world.getBlockState(pos).isOf(BuildingBlocks.get("habitat_core")))continue;

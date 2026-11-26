@@ -344,5 +344,6 @@
   "itemGroup.megarockets.lighting": "Mega Rockets: Lighting",
   "itemGroup.megarockets.glazing": "Mega Rockets: Glazing",
   "entity.megarockets.lunar_resident": "Lunar colonist",
-  "message.megarockets.village_location": "Selena settlement: Moon, X=%s Z=%s. Landing pad east of settlement."
+  "message.megarockets.village_location": "Nearest lunar village: X=%s Z=%s. Pad: X=%s Y=%s.",
+  "message.megarockets.no_village": "No suitable settlement found."
 }
