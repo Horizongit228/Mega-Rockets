@@ -16,6 +16,7 @@
     "megarockets:europa_tiles_wall",
     "megarockets:titan_bricks_wall",
     "megarockets:mercury_tiles_wall",
-    "megarockets:obsidian_composite_wall"
+    "megarockets:obsidian_composite_wall",
+    "megarockets:lunar_brick_wall"
   ]
 }

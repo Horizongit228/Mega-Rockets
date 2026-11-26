@@ -57,7 +57,7 @@ public class BuildingResources {
   model(slab,"slab",tex(n,"bottom","top","side"));model(slab+"_top","slab_top",tex(n,"bottom","top","side"));
   asset("blockstates/"+slab+".json","{\"variants\":{\"type=bottom\":{\"model\":\""+ref(slab)+"\"},\"type=top\":{\"model\":\""+ref(slab+"_top")+"\"},\"type=double\":{\"model\":\""+ref(n)+"\"}}}");
   for(String suffix:List.of("","_inner","_outer"))model(stairs+suffix,suffix.isEmpty()?"stairs":suffix.substring(1)+"_stairs",tex(n,"bottom","top","side"));
-  for(String suffix:List.of("post","side","side_tall","inventory"))model(wall+"_"+suffix,"template_wall_"+suffix,tex(n,"wall"));
+  for(String suffix:List.of("post","side","side_tall"))model(wall+"_"+suffix,"template_wall_"+suffix,tex(n,"wall"));
   // Vanilla inventory wall model uses wall_inventory, not template_wall_inventory.
   model(wall+"_inventory","wall_inventory",tex(n,"wall"));
   for(String type:List.of("stairs","wall")){

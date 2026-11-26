@@ -25,7 +25,7 @@ public final class BuildingBlocks {
     String[] v=line.split("\t");String id=v[0];Block block;
     var settings=AbstractBlock.Settings.copy(Blocks.IRON_BLOCK);
     switch(v[7]){
-     case "glass"->{block=new GlassBlock(AbstractBlock.Settings.copy(Blocks.GLASS));GLASS.add(block);}
+     case "glass"->{block=new TransparentBlock(AbstractBlock.Settings.copy(Blocks.GLASS)){};GLASS.add(block);}
      case "lamp"->block=new Block(AbstractBlock.Settings.copy(Blocks.SEA_LANTERN).luminance(s->15));
      default->block=new Block(settings);
     }
