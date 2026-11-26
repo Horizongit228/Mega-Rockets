@@ -7,6 +7,12 @@ public final class ManualFlight {
  }
  public static final Motion STOP=new Motion(0,0,0);
  private ManualFlight(){}
+ public static Motion toward(Motion current,Motion goal,double accel){
+  double x=goal.x()-current.x(),y=goal.y()-current.y(),z=goal.z()-current.z();
+  double diff=Math.sqrt(x*x+y*y+z*z);
+  double t=diff==0?0:Math.min(1,accel/diff);
+  return new Motion(current.x()+x*t,current.y()+y*t,current.z()+z*t);
+ }
  public static Motion step(Motion previous,int mask,double yaw,double cap,double accel){
   mask&=VALID;
   double a=Math.toRadians(yaw),forward=((mask&FORWARD)!=0?1:0)-((mask&BACK)!=0?1:0),

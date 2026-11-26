@@ -60,6 +60,7 @@ public final class MegaRockets implements ModInitializer {
         OxygenStation.init();
         OxygenSystem.init();
         ManualInput.init();
+        CockpitAction.init();
         MegaRocketsItemGroup.init();
         Registry.register(Registries.CHUNK_GENERATOR,id("moon_sphere"),MoonChunkGenerator.CODEC);
         Registry.register(Registries.BIOME_SOURCE,id("moon_biomes"),MoonBiomeSource.CODEC);

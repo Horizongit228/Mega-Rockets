@@ -55,8 +55,19 @@ public final class TitanRenderer extends EntityRenderer<TitanRocket> {
         }
         // Interior has independent emergency lighting; glass is genuinely translucent.
         VertexConsumer interior=consumers.getBuffer(RenderLayer.getEntityCutoutNoCull(WHITE));
-        for(TitanMesh.Quad q:model.cabin())emit(interior,matrix,q,0xF000F0);
-        for(TitanMesh.Quad q:model.lamps())emit(interior,matrix,q,0xF000F0);
+        for(TitanMesh.Quad q:model.cabin())emit(interior,matrix,q,rocket.cabinLights()?0xF000F0:0x300030);
+        for(TitanMesh.Quad q:model.lamps())emit(interior,matrix,q,rocket.cabinLights()?0xF000F0:0x100010);
+        // Three instrument panels: speed, engine load/throttle and cabin pressure. Independent backlight.
+        instrument(interior,matrix,-1.24f,rocket.cabinSpeed()/(float)(rocket.maxSpeed()*20),rocket.cabinProgress()/100f,model.accent());
+        instrument(interior,matrix,0,rocket.engineHeat()/100f,rocket.throttle()/100f,rocket.engineHeat()>80?0xffff6952:model.accent());
+        instrument(interior,matrix,1.24f,rocket.cabinPressure()/100f,rocket.lifeSupport()?1:0,rocket.cabinBreathable()?0xff7be8ae:0xffff5242);
+        if(rocket.beacon()&&rocket.age%20<9){
+            for(int i=0;i<4;i++){
+                double a=i*Math.PI/2;
+                float x=3.92f*(float)Math.cos(a),z=3.92f*(float)Math.sin(a);
+                lamp(interior,matrix,x,55.15f,z);
+            }
+        }
         VertexConsumer glass=consumers.getBuffer(RenderLayer.getEntityTranslucent(WHITE));
         for(TitanMesh.Quad q:model.glass())emit(glass,matrix,q,0xF000F0);
         if (rocket.enginesRunning()) {
@@ -78,6 +89,22 @@ public final class TitanRenderer extends EntityRenderer<TitanRocket> {
         }
         matrices.pop();
         super.render(rocket,yaw,tickDelta,matrices,consumers,light);
+    }
+    private static void instrument(VertexConsumer out,MatrixStack.Entry m,float x,float a,float b,int color){
+        for(int i=0;i<10;i++){
+            float start=x-.43f+i*.086f;
+            displayQuad(out,m,start,52.58f,start+.066f,52.72f,i<a*10?color:0xff24404b);
+            displayQuad(out,m,start,52.34f,start+.066f,52.46f,i<b*10?0xffe5b765:0xff24404b);
+        }
+    }
+    private static void displayQuad(VertexConsumer out,MatrixStack.Entry m,float x,float y,float X,float Y,int color){
+        for(float[] v:new float[][]{{x,y},{X,y},{X,Y},{x,Y}})
+            out.vertex(m,v[0],v[1],-2.195f).color(color).texture(.5f,.5f).overlay(OverlayTexture.DEFAULT_UV).light(0xF000F0).normal(m,0,0,1);
+    }
+    private static void lamp(VertexConsumer out,MatrixStack.Entry m,float x,float y,float z){
+        // Crossed luminous markers, outside the upper hull.
+        for(int axis=0;axis<2;axis++)for(float[] v:new float[][]{{-.16f,-.16f},{.16f,-.16f},{.16f,.16f},{-.16f,.16f}})
+            out.vertex(m,x+(axis==0?v[0]:0),y+v[1],z+(axis==1?v[0]:0)).color(0xffff5248).texture(.5f,.5f).overlay(OverlayTexture.DEFAULT_UV).light(0xF000F0).normal(m,0,1,0);
     }
     private static void emit(VertexConsumer out,MatrixStack.Entry matrix,TitanMesh.Quad q,int light){
         for(int i=0;i<4;i++){

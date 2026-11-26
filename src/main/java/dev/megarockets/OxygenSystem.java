@@ -69,7 +69,7 @@ public final class OxygenSystem {
     }
     private static void tick(ServerPlayerEntity p){
         if(p.interactionManager.getGameMode()!=GameMode.SURVIVAL||!p.isAlive()){remove(p.getUuid());return;}
-        boolean cabin=p.getVehicle() instanceof TitanRocket;
+        boolean cabin=p.getVehicle() instanceof TitanRocket rocket&&rocket.cabinBreathable();
         boolean vacuum=vacuum(p)&&!cabin,sealed=sealed(p);
         ItemStack tank=p.getEquippedStack(EquipmentSlot.CHEST);
         boolean equipped=tank.isOf(SpaceSuitItems.CHEST);
