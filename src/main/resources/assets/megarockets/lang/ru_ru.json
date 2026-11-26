@@ -342,5 +342,7 @@
   "block.megarockets.magenta_space_glass": "Космостекло: пурпурный",
   "itemGroup.megarockets.architecture": "Mega Rockets: Строительство",
   "itemGroup.megarockets.lighting": "Mega Rockets: Освещение",
-  "itemGroup.megarockets.glazing": "Mega Rockets: Остекление"
+  "itemGroup.megarockets.glazing": "Mega Rockets: Остекление",
+  "entity.megarockets.lunar_resident": "Лунный колонист",
+  "message.megarockets.village_location": "Поселение Селена: Луна, X=%s Z=%s. Посадочная площадка восточнее поселения."
 }

@@ -62,6 +62,7 @@ public final class MegaRockets implements ModInitializer {
         OxygenStation.init();
         StationConsole.init();
         OxygenSystem.init();
+        LunarVillageResidents.init();
         ManualInput.init();
         CockpitAction.init();
         MegaRocketsItemGroup.init();
@@ -88,6 +89,7 @@ public final class MegaRockets implements ModInitializer {
                     .then(CommandManager.literal("neptune").executes(ctx -> choose(ctx.getSource(),Destination.NEPTUNE))))
                 .then(CommandManager.literal("manual").executes(ctx -> manual(ctx.getSource(),false)))
                 .then(CommandManager.literal("approach").executes(ctx -> manual(ctx.getSource(),true)))
+                .then(CommandManager.literal("village").executes(ctx -> {ctx.getSource().sendFeedback(()->Text.translatable("message.megarockets.village_location",LunarVillageLayout.X,LunarVillageLayout.Z),false);return 1;}))
                 .then(CommandManager.literal("status").executes(ctx -> status(ctx.getSource())))
                 .then(CommandManager.literal("return").executes(ctx -> returnHome(ctx.getSource())))));
     }

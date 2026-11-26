@@ -24,7 +24,9 @@ public class BuildingResources {
  }
  static void baseRecipe(String[] v)throws Exception{
   String n=v[0],ingredient=id(v[3]),extra=v[7].equals("lamp")?"minecraft:"+n.substring(0,n.length()-6)+"_dye":v[7].equals("glass")?"minecraft:"+n.substring(0,n.length()-12)+"_dye":"minecraft:iron_ingot";
-  if(n.equals("solar_cell"))extra="minecraft:redstone";
+  if(v[7].equals("solid")){
+   data("recipe/"+n+".json","{\"type\":\"minecraft:stonecutting\",\"ingredient\":{\"item\":\""+ingredient+"\"},\"result\":{\"id\":\"megarockets:"+n+"\",\"count\":1}}");return;
+  }
   data("recipe/"+n+".json","{\"type\":\"minecraft:crafting_shapeless\",\"category\":\"building\",\"ingredients\":[{\"item\":\""+ingredient+"\"},{\"item\":\""+extra+"\"}],\"result\":{\"id\":\"megarockets:"+n+"\",\"count\":1}}");
  }
  static int clamp(double v){return (int)Math.max(0,Math.min(255,v));}

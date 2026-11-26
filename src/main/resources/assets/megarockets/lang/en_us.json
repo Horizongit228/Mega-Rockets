@@ -342,5 +342,7 @@
   "block.megarockets.magenta_space_glass": "Magenta space glass",
   "itemGroup.megarockets.architecture": "Mega Rockets: Construction",
   "itemGroup.megarockets.lighting": "Mega Rockets: Lighting",
-  "itemGroup.megarockets.glazing": "Mega Rockets: Glazing"
+  "itemGroup.megarockets.glazing": "Mega Rockets: Glazing",
+  "entity.megarockets.lunar_resident": "Lunar colonist",
+  "message.megarockets.village_location": "Selena settlement: Moon, X=%s Z=%s. Landing pad east of settlement."
 }
