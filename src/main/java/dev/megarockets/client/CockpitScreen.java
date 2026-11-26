@@ -62,6 +62,7 @@ public final class CockpitScreen extends Screen {
             case SYS ->{
                 control(Control.LIGHTS,"lights",8,105,half);control(Control.BEACON,"beacon",10+half,105,half);
                 control(Control.HOLD,"hold",8,131,w-16);
+                control(Control.RETURN_EARTH,"return_earth",8,154,w-16);
             }
             case VIEW ->{
                 camera("view_first",Perspective.FIRST_PERSON,96);
@@ -89,6 +90,7 @@ public final class CockpitScreen extends Screen {
         state(Control.LAUNCH,ready&&armed,"launch");
         state(Control.MANUAL,true,"manual_state",on(manual&&!rocket.autoNavigation()));
         state(Control.AUTO_NAV,orbit&&armed,"auto_nav");
+        state(Control.RETURN_EARTH,orbit&&armed,"return_earth");
         state(Control.APPROACH,orbit&&manual&&armed,"approach");
         state(Control.HOLD,true,"hold");
         state(Control.ARM,true,"arm_state",on(armed));
@@ -118,7 +120,7 @@ public final class CockpitScreen extends Screen {
                 line(c,rocket.cabinPhase(),12,54,accent);
                 line(c,tr("speed",rocket.cabinSpeed()),12,66,white);
                 line(c,rocket.groundClearance()>=0?tr("agl",rocket.groundClearance()):tr("altitude",(int)rocket.getY()),w/2,66,white);
-                line(c,rocket.entryProgress()>=0?tr("entry_loading",rocket.entryProgress()):rocket.groundClearance()>=0?tr("manual_landing_hint"):tr("manual_target",(int)SolarDynamics.position(rocket.cabinTarget(),rocket.getWorld().getTime()).x(),(int)SolarDynamics.position(rocket.cabinTarget(),rocket.getWorld().getTime()).z()),12,78,amber);
+                line(c,rocket.entryProgress()>=0?tr("entry_loading",rocket.entryProgress()):rocket.groundClearance()>=0?tr("manual_landing_hint"):tr("manual_target",(int)SolarDynamics.position(rocket.returningEarth()?null:rocket.cabinTarget(),rocket.getWorld().getTime()).x(),(int)SolarDynamics.position(rocket.returningEarth()?null:rocket.cabinTarget(),rocket.getWorld().getTime()).z()),12,78,amber);
             }
             case ENG ->{
                 meter(c,tr("velocity"),(int)(100*rocket.cabinSpeed()/(rocket.maxSpeed()*20)),53,accent);
@@ -139,7 +141,7 @@ public final class CockpitScreen extends Screen {
                 line(c,tr("lights_state",on(rocket.cabinLights())),12,55,white);
                 line(c,tr("beacon_state",on(rocket.beacon())),12,69,white);
                 line(c,tr("arm_state",on(rocket.armed())),12,83,white);
-                line(c,tr("hold_hint"),12,160,amber);
+                line(c,tr("hold_hint"),12,181,amber);
             }
             case VIEW ->{
                 line(c,tr("view_hint"),12,57,white);

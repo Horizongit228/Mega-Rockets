@@ -38,6 +38,11 @@ public final class SolarDynamics {
   if(d==Destination.VENUS||d==Destination.URANUS)fraction=(1-fraction)%1;
   return (long)(fraction*24000);
  }
+ public static double arrivalTime(Destination body,double ticks,double x,double z,double speed){
+  double eta=position(body,ticks).distance(x,z)/Math.max(.1,speed);
+  for(int i=0;i<6;i++)eta=position(body,ticks+eta).distance(x,z)/Math.max(.1,speed);
+  return eta;
+ }
  public static double spin(Destination d,double ticks){return phase(ticks,rotationHours(d)/24);}
  public static double atmosphere(Destination d){
   if(d==null)return 1;

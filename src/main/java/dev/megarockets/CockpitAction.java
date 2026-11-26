@@ -7,7 +7,7 @@ import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.packet.CustomPayload;
 
 public record CockpitAction(int action) implements CustomPayload{
- public enum Control{MANUAL,LAUNCH,APPROACH,HOLD,ARM,LIGHTS,LIFE,THROTTLE_DOWN,THROTTLE_UP,BEACON,AUTO_NAV}
+ public enum Control{MANUAL,LAUNCH,APPROACH,HOLD,ARM,LIGHTS,LIFE,THROTTLE_DOWN,THROTTLE_UP,BEACON,AUTO_NAV,RETURN_EARTH}
  public static final Id<CockpitAction> ID=new Id<>(MegaRockets.id("cockpit_action"));
  public static final PacketCodec<RegistryByteBuf,CockpitAction> CODEC=new PacketCodec<>(){
   @Override public CockpitAction decode(RegistryByteBuf buf){return new CockpitAction(buf.readVarInt());}

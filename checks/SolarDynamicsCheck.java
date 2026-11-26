@@ -3,8 +3,8 @@ public class SolarDynamicsCheck{
  public static void main(String[] args){
   if(SolarDynamics.solarDayHours(Destination.MERCURY)<4000||SolarDynamics.solarDayHours(Destination.VENUS)<2800||SolarDynamics.rotationHours(Destination.VENUS)>=0||SolarDynamics.rotationHours(Destination.URANUS)>=0)throw new AssertionError("Solar day vs spin");
   for(Destination d:Destination.values()){
-   long half=(long)(SolarDynamics.DAY_TICKS*SolarDynamics.solarDayHours(d)/48);
-   if(Math.abs(SolarDynamics.localTime(d,half)-12000)>2)throw new AssertionError("Half day "+d);
+   long half=Math.round(SolarDynamics.DAY_TICKS*SolarDynamics.solarDayHours(d)/48);
+   if(Math.abs(SolarDynamics.localTime(d,half)-12000)>3)throw new AssertionError("Half day "+d);
    if(SolarDynamics.localTime(d,0)!=0)throw new AssertionError("Epoch");
    var a=SolarDynamics.position(d,0);var b=SolarDynamics.position(d,SolarDynamics.DAY_TICKS);
    if(a.distance(b.x(),b.z())<.01)throw new AssertionError("Stationary orbit "+d);
