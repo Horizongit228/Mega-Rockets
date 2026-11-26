@@ -72,7 +72,10 @@ public final class SpaceSky {
             sun(matrix,new Vec3d(.24,.62,-.75).normalize(),dark,world.getTime()+delta);
             if(orbit){
                 Vec3d earthDirection=new Vec3d(-Destination.EARTH_RADIUS*1.5-pos.x,-Destination.EARTH_RADIUS*.35-pos.y,-pos.z);
-                planet(matrix,earthDirection.normalize(),Math.min(.74,Destination.EARTH_RADIUS/Math.max(Destination.EARTH_RADIUS*1.5,earthDirection.length())),true,1);
+                double earthApproach=ApproachRules.distance(pos.x,pos.z,ApproachRules.EARTH_X,ApproachRules.EARTH_Z);
+                double earthBlend=Math.max(0,Math.min(1,(ApproachRules.LOAD_RADIUS-earthApproach)/(ApproachRules.LOAD_RADIUS-ApproachRules.ENTRY_RADIUS)));
+                double earthAngular=Math.min(.74,Destination.EARTH_RADIUS/Math.max(Destination.EARTH_RADIUS*1.5,earthDirection.length()));
+                planet(matrix,earthDirection.normalize(),earthAngular*(1-earthBlend)+1.05*earthBlend,true,1);
                 Destination[] targets=Destination.values();
                 java.util.Arrays.sort(targets,java.util.Comparator.comparingDouble((Destination target)->-new Vec3d(target.distance+target.radius*1.5-pos.x,56-pos.y,target.lane-pos.z).lengthSquared()));
                 for(Destination target:targets){

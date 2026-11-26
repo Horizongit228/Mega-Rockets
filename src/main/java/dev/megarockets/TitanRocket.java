@@ -298,7 +298,7 @@ public final class TitanRocket extends Entity {
         if (!(getWorld() instanceof ServerWorld world)) return;
         tickCabinSystems(world);
         if(manualMode()){tickManual(world);syncCabin();return;}
-        syncCabin();
+        clearEntry();dataTracker.set(GROUND_CLEARANCE,-1);syncCabin();
         if (lunar!=null && !LunarFlight.finished(lunar)) { tickMoon(world); return; }
         if (countdown == 0 && !flying) return;
         if (!(getFirstPassenger() instanceof ServerPlayerEntity pilot)) {
@@ -396,7 +396,7 @@ public final class TitanRocket extends Entity {
         }
         if(!ok)pilot.sendMessage(Text.translatable("cockpit.megarockets.action_unavailable"),true);
     }
-    private void clearEntry(){entry=null;dataTracker.set(ENTRY_PROGRESS,-1);}
+    private void clearEntry(){if(entry!=null)entry.cancel();entry=null;dataTracker.set(ENTRY_PROGRESS,-1);}
     public void setEntryDestination(Destination body){
         if(body!=null){destination=body;dataTracker.set(CABIN_TARGET,body.ordinal());}
     }
@@ -406,7 +406,7 @@ public final class TitanRocket extends Entity {
         if(gate==null){clearEntry();return false;}
         if(entry==null||!entry.gate.equals(gate)){
             var target=gate.world(pilot);if(target==null)return false;
-            entry=new ManualEntry(gate,target,getX(),getZ());
+            clearEntry();entry=new ManualEntry(gate,target,getX(),getZ(),getId());
             pilot.sendMessage(Text.translatable("message.megarockets.preloading",Text.translatable("destination.megarockets."+gate.key())),false);
         }
         entry.step();dataTracker.set(ENTRY_PROGRESS,entry.progress());
@@ -491,7 +491,7 @@ public final class TitanRocket extends Entity {
             }
         }
         if(!orbit){
-            boolean landed=stableTouchdown(world)&&manualVelocity.length()<.06;
+            boolean landed=agl<=3&&stableTouchdown(world)&&manualVelocity.length()<.06;
             if(landed&&!manualLanded)pilot.sendMessage(Text.translatable("message.megarockets.manual_touchdown"),false);
             manualLanded=landed;
         }else manualLanded=false;

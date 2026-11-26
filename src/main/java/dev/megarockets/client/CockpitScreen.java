@@ -146,7 +146,7 @@ public final class CockpitScreen extends Screen {
                 line(c,tr("view_hint2"),12,72,accent);
             }
         }
-        line(c,tr(rocket.cabinBreathable()?"pressurized":"vacuum_warning"),10,211,rocket.cabinBreathable()?green:red);
+        line(c,tab==Tab.NAV&&rocket.getWorld().getRegistryKey().equals(MegaRockets.ORBIT)?tr("earth_gate",(int)ApproachRules.EARTH_X,(int)ApproachRules.EARTH_Z):tr(rocket.cabinBreathable()?"pressurized":"vacuum_warning"),10,211,rocket.cabinBreathable()?green:red);
         super.render(c,mx,my,d);
     }
 }

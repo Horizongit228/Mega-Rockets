@@ -67,6 +67,10 @@ jobs:
         run: |
           javac -d mesh-check src/main/java/dev/megarockets/CabinSystems.java src/main/java/dev/megarockets/ManualFlight.java checks/CabinSystemsCheck.java
           java -cp mesh-check CabinSystemsCheck
+      - name: Check direct entry and landing rules
+        run: |
+          javac -d mesh-check src/main/java/dev/megarockets/ApproachRules.java checks/ApproachCheck.java
+          java -cp mesh-check ApproachCheck
       - name: Build Fabric mod
         run: gradle build --stacktrace
       - uses: actions/upload-artifact@v4
