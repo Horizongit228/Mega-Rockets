@@ -118,7 +118,7 @@ public final class CockpitScreen extends Screen {
                 line(c,rocket.cabinPhase(),12,54,accent);
                 line(c,tr("speed",rocket.cabinSpeed()),12,66,white);
                 line(c,rocket.groundClearance()>=0?tr("agl",rocket.groundClearance()):tr("altitude",(int)rocket.getY()),w/2,66,white);
-                line(c,rocket.entryProgress()>=0?tr("entry_loading",rocket.entryProgress()):rocket.groundClearance()>=0?tr("manual_landing_hint"):tr("manual_target",(int)rocket.cabinTarget().distance,(int)rocket.cabinTarget().lane),12,78,amber);
+                line(c,rocket.entryProgress()>=0?tr("entry_loading",rocket.entryProgress()):rocket.groundClearance()>=0?tr("manual_landing_hint"):tr("manual_target",(int)SolarDynamics.position(rocket.cabinTarget(),rocket.getWorld().getTime()).x(),(int)SolarDynamics.position(rocket.cabinTarget(),rocket.getWorld().getTime()).z()),12,78,amber);
             }
             case ENG ->{
                 meter(c,tr("velocity"),(int)(100*rocket.cabinSpeed()/(rocket.maxSpeed()*20)),53,accent);
@@ -146,7 +146,7 @@ public final class CockpitScreen extends Screen {
                 line(c,tr("view_hint2"),12,72,accent);
             }
         }
-        line(c,tab==Tab.NAV&&rocket.getWorld().getRegistryKey().equals(MegaRockets.ORBIT)?tr("earth_gate",(int)ApproachRules.EARTH_X,(int)ApproachRules.EARTH_Z):tr(rocket.cabinBreathable()?"pressurized":"vacuum_warning"),10,211,rocket.cabinBreathable()?green:red);
+        line(c,tab==Tab.NAV&&rocket.getWorld().getRegistryKey().equals(MegaRockets.ORBIT)?tr("earth_gate",(int)SolarDynamics.position(null,rocket.getWorld().getTime()).x(),(int)SolarDynamics.position(null,rocket.getWorld().getTime()).z()):tr(rocket.cabinBreathable()?"pressurized":"vacuum_warning"),10,211,rocket.cabinBreathable()?green:red);
         super.render(c,mx,my,d);
     }
 }

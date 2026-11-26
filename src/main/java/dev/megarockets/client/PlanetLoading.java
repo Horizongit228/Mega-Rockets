@@ -86,10 +86,10 @@ public final class PlanetLoading {
             !(client.player.getVehicle() instanceof TitanRocket rocket)||!client.world.getRegistryKey().equals(MegaRockets.ORBIT))return;
         double x=rocket.getX(),z=rocket.getZ();
         Destination nearest=null;boolean earth=false;double best=ApproachRules.LOAD_RADIUS;
-        double e=ApproachRules.distance(x,z,ApproachRules.EARTH_X,ApproachRules.EARTH_Z);
+        double e=SolarDynamics.position(null,client.world.getTime()).distance(x,z);
         if(e<=best){earth=true;best=e;}
         for(Destination d:Destination.values()){
-            double dist=ApproachRules.distance(x,z,d.distance,d.lane);
+            double dist=SolarDynamics.position(d,client.world.getTime()).distance(x,z);
             if(dist<best){nearest=d;earth=false;best=dist;}
         }
         if(nearest==null&&!earth)return;

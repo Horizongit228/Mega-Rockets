@@ -145,7 +145,8 @@ public final class MegaRockets implements ModInitializer {
         ServerWorld orbit=pilot.getServer().getWorld(ORBIT);
         if(orbit==null)return false;
         Destination origin=planet(old.getWorld());
-        double x=origin==null?.5:origin.distance-ApproachRules.EXIT_OFFSET+.5,z=origin==null?.5:origin.lane+.5;
+        var center=SolarDynamics.position(origin,orbit.getTime());
+        double x=center.x()+ApproachRules.EXIT_OFFSET+.5,z=center.z()+.5;
         TitanRocket ship=new TitanRocket(old.rocketType(),orbit);
         ship.copyDestination(old);ship.refreshPositionAndAngles(x,LunarFlight.CRUISE_Y,z,old.getYaw(),0);ship.startManual();
         if(!orbit.isSpaceEmpty(ship,ship.getBoundingBox())||!orbit.getOtherEntities(ship,ship.getBoundingBox()).isEmpty()||!orbit.spawnEntity(ship))return false;
@@ -158,9 +159,9 @@ public final class MegaRockets implements ModInitializer {
         }
         old.discard();pilot.sendMessage(Text.translatable("message.megarockets.manual_orbit"),false);return true;
     }
-    static boolean manualSurface(TitanRocket old,ServerPlayerEntity pilot,ServerWorld target,Destination body,double x,double y,double z){
+    static boolean manualSurface(TitanRocket old,ServerPlayerEntity pilot,ServerWorld target,Destination body,double x,double y,double z,double entrySpeed){
         TitanRocket ship=new TitanRocket(old.rocketType(),target);
-        ship.copyDestination(old);ship.setEntryDestination(body);ship.startManual();
+        ship.copyDestination(old);ship.setEntryDestination(body);ship.startManual();ship.startEntryHeat(SolarDynamics.atmosphere(body),entrySpeed);
         ship.refreshPositionAndAngles(x,y,z,old.getYaw(),0);
         if(!target.getWorldBorder().contains(ship.getBoundingBox())||!target.isSpaceEmpty(ship,ship.getBoundingBox())||
             !target.getOtherEntities(ship,ship.getBoundingBox()).isEmpty()||!target.spawnEntity(ship))return false;
@@ -190,13 +191,13 @@ public final class MegaRockets implements ModInitializer {
         // Only the transition from the Overworld to space uses a dimension transfer.
         // The subsequent 6000-block flight and landing occur entirely within space.
         Destination destination=old.destination();
-        double lane=destination.lane;
+        var earth=SolarDynamics.position(null,orbit.getTime());double lane=earth.z();double startX=earth.x()+ApproachRules.EXIT_OFFSET+.5;
         TitanRocket ship=new TitanRocket(old.rocketType(),orbit);
         ship.copyDestination(old);
-        ship.refreshPositionAndAngles(.5,MoonWorld.CRUISE_Y,lane+.5,0,0);
+        ship.refreshPositionAndAngles(startX,MoonWorld.CRUISE_Y,lane+.5,0,0);
         if(!orbit.spawnEntity(ship)) return false;
         pilot.stopRiding();
-        if(!pilot.teleport(orbit,.5,MoonWorld.CRUISE_Y+51.35,lane+1.15,Set.of(),pilot.getYaw(),0)) {
+        if(!pilot.teleport(orbit,startX,MoonWorld.CRUISE_Y+51.35,lane+1.15,Set.of(),pilot.getYaw(),0)) {
             ship.discard(); return false;
         }
         if(!pilot.startRiding(ship,true)) {
@@ -225,7 +226,7 @@ public final class MegaRockets implements ModInitializer {
         double y=state.y()+site.y()-LunarFlight.LAND_Y;
         ship.setLandingSite(site);
         ship.refreshPositionAndAngles(site.x()+.5,y,site.z()+.5,0,0);
-        ship.acceptLunarState(state);
+        ship.acceptLunarState(state);ship.startEntryHeat(SolarDynamics.atmosphere(destination),300);
         if(!moon.spawnEntity(ship))return false;
         pilot.stopRiding();
         if(!pilot.teleport(moon,site.x()+.5,y+51.35,site.z()+1.15,Set.of(),pilot.getYaw(),0)){

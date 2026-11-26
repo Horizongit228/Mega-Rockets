@@ -39,6 +39,13 @@ public final class TitanRocket extends Entity {
     private static final TrackedData<Integer> GROUND_CLEARANCE=DataTracker.registerData(TitanRocket.class,TrackedDataHandlerRegistry.INTEGER);
     private ManualEntry entry;
     private boolean manualLanded;
+    private static final TrackedData<Integer> ENTRY_HEAT=DataTracker.registerData(TitanRocket.class,TrackedDataHandlerRegistry.INTEGER);
+    private int entryHeatTicks;
+    public int entryHeat(){return dataTracker.get(ENTRY_HEAT);}
+    public void startEntryHeat(double density,double speed){
+        int heat=(int)(100*SolarDynamics.heating(density,speed));
+        dataTracker.set(ENTRY_HEAT,heat);entryHeatTicks=heat*2;
+    }
     private int manualMask,lastManualAge=-1000;
     private ManualFlight.Motion manualVelocity=ManualFlight.STOP;
     private Destination destination=Destination.MOON;
@@ -90,7 +97,7 @@ public final class TitanRocket extends Entity {
             .withClickEvent(new net.minecraft.text.ClickEvent(net.minecraft.text.ClickEvent.Action.RUN_COMMAND,"/rocket launch"))));
         pilot.sendMessage(menu,false);
     }
-    @Override protected void initDataTracker(DataTracker.Builder builder) { builder.add(ENGINES, false);builder.add(CABIN_TARGET,0);builder.add(CABIN_SPEED,0);builder.add(CABIN_PHASE,-1);builder.add(CABIN_PROGRESS,0);builder.add(MANUAL,false);builder.add(ARMED,true);builder.add(LIGHTS,true);builder.add(LIFE,true);builder.add(BEACON,false);builder.add(NAV,false);builder.add(PRESSURE,100);builder.add(HEAT,0);builder.add(THROTTLE,100);builder.add(ENTRY_PROGRESS,-1);builder.add(GROUND_CLEARANCE,-1); }
+    @Override protected void initDataTracker(DataTracker.Builder builder) { builder.add(ENGINES, false);builder.add(CABIN_TARGET,0);builder.add(CABIN_SPEED,0);builder.add(CABIN_PHASE,-1);builder.add(CABIN_PROGRESS,0);builder.add(MANUAL,false);builder.add(ARMED,true);builder.add(LIGHTS,true);builder.add(LIFE,true);builder.add(BEACON,false);builder.add(NAV,false);builder.add(PRESSURE,100);builder.add(HEAT,0);builder.add(THROTTLE,100);builder.add(ENTRY_PROGRESS,-1);builder.add(GROUND_CLEARANCE,-1);builder.add(ENTRY_HEAT,0); }
     public Destination cabinTarget(){return Destination.values()[Math.max(0,Math.min(Destination.values().length-1,dataTracker.get(CABIN_TARGET)))];}
     public int cabinSpeed(){return dataTracker.get(CABIN_SPEED);}
     public int cabinProgress(){return dataTracker.get(CABIN_PROGRESS);}
@@ -176,11 +183,7 @@ public final class TitanRocket extends Entity {
         return new Vec3d(-offset*Math.sin(a),32+offset*Math.cos(a),.65);
     }
 
-    public void beginMoonFlight() {
-        dataTracker.set(MANUAL,false);
-        lunar=LunarFlight.start(); lunarPaused=false; flightSpeed=0; flightTicks=0;
-        dataTracker.set(ENGINES,false);
-    }
+    public void beginMoonFlight() {startManual();dataTracker.set(NAV,true);syncCabin();}
     public void acceptLunarState(LunarFlight.State state) { lunar=state; lunarPaused=false; }
     public boolean canResumeMoon() {
         return lunar!=null && !LunarFlight.finished(lunar) && (getWorld().getRegistryKey().equals(MegaRockets.ORBIT)||getWorld().getRegistryKey().equals(MegaRockets.destinationWorld(destination)));
@@ -297,9 +300,13 @@ public final class TitanRocket extends Entity {
         if (getWorld().isClient) { interpolateClient(); return; }
         if (!(getWorld() instanceof ServerWorld world)) return;
         tickCabinSystems(world);
+        if(entryHeatTicks>0){entryHeatTicks--;dataTracker.set(ENTRY_HEAT,(entryHeatTicks+1)/2);}else if(entryHeat()>0)dataTracker.set(ENTRY_HEAT,0);
         if(manualMode()){tickManual(world);syncCabin();return;}
         clearEntry();dataTracker.set(GROUND_CLEARANCE,-1);syncCabin();
-        if (lunar!=null && !LunarFlight.finished(lunar)) { tickMoon(world); return; }
+        if (lunar!=null && !LunarFlight.finished(lunar)) {
+            if(world.getRegistryKey().equals(MegaRockets.ORBIT)&&lunar.phase()!=LunarFlight.Phase.DESCENT&&lunar.phase()!=LunarFlight.Phase.FINAL){beginMoonFlight();return;}
+            tickMoon(world);return;
+        }
         if (countdown == 0 && !flying) return;
         if (!(getFirstPassenger() instanceof ServerPlayerEntity pilot)) {
             stopEngines(); return;
@@ -350,7 +357,8 @@ public final class TitanRocket extends Entity {
     }
     public boolean requestApproach(ServerPlayerEntity pilot){
         if(!manualMode()||!armed()||getFirstPassenger()!=pilot||!getWorld().getRegistryKey().equals(MegaRockets.ORBIT))return false;
-        double dx=getX()-destination.distance,dz=getZ()-destination.lane;
+        var goal=SolarDynamics.position(destination,getWorld().getTime());
+        double dx=getX()-goal.x(),dz=getZ()-goal.z();
         if(dx*dx+dz*dz>2000*2000||manualVelocity.length()>1){
             pilot.sendMessage(Text.translatable("message.megarockets.approach_range"),false);return false;
         }
@@ -402,9 +410,9 @@ public final class TitanRocket extends Entity {
     }
     private boolean tickEntry(ServerPlayerEntity pilot,int mask){
         if(!armed()||autoNavigation()){clearEntry();return false;}
-        var gate=ManualEntry.nearest(getX(),getZ());
+        var gate=ManualEntry.nearest(getX(),getZ(),getWorld().getTime());
         if(gate==null){clearEntry();return false;}
-        if(entry==null||!entry.gate.equals(gate)){
+        if(entry==null||entry.gate.body()!=gate.body()){
             var target=gate.world(pilot);if(target==null)return false;
             clearEntry();entry=new ManualEntry(gate,target,getX(),getZ(),getId());
             pilot.sendMessage(Text.translatable("message.megarockets.preloading",Text.translatable("destination.megarockets."+gate.key())),false);
@@ -412,6 +420,7 @@ public final class TitanRocket extends Entity {
         entry.step();dataTracker.set(ENTRY_PROGRESS,entry.progress());
         if(ApproachRules.distance(getX(),getZ(),gate.x(),gate.z())>ApproachRules.ENTRY_RADIUS||(mask&ManualFlight.BRAKE)!=0)return false;
         // Hold at the edge until the local patch exists; B delays entry.
+        entry.recordSpeed(manualVelocity.length()*20);
         manualVelocity=ManualFlight.STOP;flightSpeed=0;dataTracker.set(ENGINES,false);
         if(entry.ready()){
             if(entry.transfer(this,pilot))return true;
@@ -455,9 +464,10 @@ public final class TitanRocket extends Entity {
         double accel=orbit?.5:.12;
         setPitch(0);
         if(autoNavigation()&&armed()&&orbit){
-            double dx=destination.distance+.5-getX(),dy=LunarFlight.CRUISE_Y-getY(),dz=destination.lane+.5-getZ();
+            var target=SolarDynamics.position(destination,world.getTime());
+            double dx=target.x()+.5-getX(),dy=LunarFlight.CRUISE_Y-getY(),dz=target.z()+.5-getZ();
             double distance=Math.sqrt(dx*dx+dy*dy+dz*dz);
-            if(distance<1&&manualVelocity.length()<1){
+            if(distance<4&&manualVelocity.length()<1){
                 manualVelocity=ManualFlight.STOP;dataTracker.set(NAV,false);requestApproach(pilot);return;
             }
             double goal=Math.min(cap,Math.min(distance,Math.sqrt(distance*accel)));
@@ -529,7 +539,7 @@ public final class TitanRocket extends Entity {
         }
         lunar=next;
         if(onMoon) setPosition(site().x()+.5,lunar.y()+site().y()-LunarFlight.LAND_Y,site().z()+.5);
-        else setPosition(lunar.x()+.5,lunar.y(),destination.lane+.5);
+        else {var target=SolarDynamics.position(destination,world.getTime());setPosition(target.x()+.5,lunar.y(),target.z()+.5);}
         setPitch(lunar.tilt());
         flightSpeed=lunar.speed();
         dataTracker.set(ENGINES,LunarFlight.powered(lunar));

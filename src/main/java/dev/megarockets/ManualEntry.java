@@ -14,14 +14,14 @@ public final class ManualEntry {
   public String key(){return earth()?"earth":body.key();}
   public ServerWorld world(ServerPlayerEntity p){return earth()?p.getServer().getOverworld():p.getServer().getWorld(MegaRockets.destinationWorld(body));}
  }
- public static Gate nearest(double x,double z){
+ public static Gate nearest(double x,double z,long ticks){
   Gate result=null;double best=ApproachRules.LOAD_RADIUS;
-  double earth=ApproachRules.distance(x,z,ApproachRules.EARTH_X,ApproachRules.EARTH_Z);
-  if(earth<=best){best=earth;result=new Gate(null,ApproachRules.EARTH_X,ApproachRules.EARTH_Z);}
+  var ep=SolarDynamics.position(null,ticks);double earth=ep.distance(x,z);
+  if(earth<=best){best=earth;result=new Gate(null,ep.x(),ep.z());}
   for(Destination d:Destination.values()){
    if(d.orbitOnly())continue;
-   double distance=ApproachRules.distance(x,z,d.distance,d.lane);
-   if(distance<best){best=distance;result=new Gate(d,d.distance,d.lane);}
+   var p=SolarDynamics.position(d,ticks);double distance=p.distance(x,z);
+   if(distance<best){best=distance;result=new Gate(d,p.x(),p.z());}
   }
   return result;
  }
@@ -30,7 +30,8 @@ public final class ManualEntry {
  private final ServerWorld world;
  private final int x,z,cx,cz,id;
  private final ChunkPos center;
- private int loaded=0,highest;
+ private int loaded=0,highest;private double entrySpeed;
+ public void recordSpeed(double speed){entrySpeed=Math.max(entrySpeed,speed);}
  public ManualEntry(Gate gate,ServerWorld world,double orbitX,double orbitZ,int id){
   this.gate=gate;this.world=world;
   BlockPos spawn=gate.earth()?world.getSpawnPos():BlockPos.ORIGIN;
@@ -59,6 +60,6 @@ public final class ManualEntry {
  }
  public boolean transfer(TitanRocket old,ServerPlayerEntity pilot){
   if(!ready())return false;measure();if(highest<=world.getBottomY()+2)return false;
-  return MegaRockets.manualSurface(old,pilot,world,gate.body(),x+.5,highest+ApproachRules.CLEARANCE,z+.5);
+  return MegaRockets.manualSurface(old,pilot,world,gate.body(),x+.5,highest+ApproachRules.CLEARANCE,z+.5,entrySpeed);
  }
 }
