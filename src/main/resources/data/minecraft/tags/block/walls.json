@@ -1,6 +1,21 @@
 {
   "replace": false,
   "values": [
-    "megarockets:lunar_brick_wall"
+    "megarockets:titanium_panel_wall",
+    "megarockets:steel_panel_wall",
+    "megarockets:carbon_panel_wall",
+    "megarockets:ceramic_panel_wall",
+    "megarockets:copper_panel_wall",
+    "megarockets:gold_panel_wall",
+    "megarockets:blue_alloy_wall",
+    "megarockets:red_alloy_wall",
+    "megarockets:lunar_polished_wall",
+    "megarockets:lunar_mosaic_wall",
+    "megarockets:martian_bricks_wall",
+    "megarockets:venus_bricks_wall",
+    "megarockets:europa_tiles_wall",
+    "megarockets:titan_bricks_wall",
+    "megarockets:mercury_tiles_wall",
+    "megarockets:obsidian_composite_wall"
   ]
 }

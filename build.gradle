@@ -30,3 +30,15 @@ tasks.register('preparePlanetTextures', Exec) {
     commandLine 'java', 'tools/PlanetTextures.java', planetResources.get().asFile.absolutePath
 }
 tasks.named('processResources') { dependsOn tasks.named('preparePlanetTextures') }
+
+// Build reproducible original architecture assets from the same catalog used at runtime.
+def buildingResources = layout.buildDirectory.dir('generated/buildingResources')
+sourceSets.main.resources.srcDir(buildingResources)
+tasks.register('prepareBuildingResources', Exec) {
+    inputs.file('tools/BuildingResources.java')
+    inputs.file('src/main/resources/megarockets_building_catalog.tsv')
+    inputs.files('src/main/resources/assets/megarockets/blockstates/lunar_brick_stairs.json','src/main/resources/assets/megarockets/blockstates/lunar_brick_wall.json')
+    outputs.dir(buildingResources)
+    commandLine 'java', 'tools/BuildingResources.java', 'src/main/resources', buildingResources.get().asFile.absolutePath
+}
+tasks.named('processResources') { dependsOn tasks.named('prepareBuildingResources') }

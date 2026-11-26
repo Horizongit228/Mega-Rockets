@@ -51,6 +51,7 @@ public final class MegaRockets implements ModInitializer {
 
     @Override public void onInitialize() {
         MoonBlocks.init();
+        BuildingBlocks.init();
         MarsBlocks.init();
         OuterPlanetBlocks.init();
         Registry.register(Registries.CHUNK_GENERATOR,id("outer_planet"),OuterPlanetGenerator.CODEC);

@@ -6,6 +6,7 @@ import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
 
 public final class MegaRocketsClient implements ClientModInitializer {
     @Override public void onInitializeClient() {
+        for(var glass:dev.megarockets.BuildingBlocks.glass())net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap.INSTANCE.putBlock(glass,net.minecraft.client.render.RenderLayer.getTranslucent());
         CockpitControls.init();
         PlanetLoading.init();
         EntityRendererRegistry.register(MegaRockets.TITAN, TitanRenderer::new);

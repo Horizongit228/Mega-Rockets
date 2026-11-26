@@ -1,0 +1,48 @@
+titanium_panel	Titanium panel	Титановая панель	iron_block	panel	b5c5d1	1	solid
+steel_panel	Steel panel	Стальная панель	iron_block	panel	697c8b	1	solid
+carbon_panel	Carbon panel	Карбоновая панель	coal_block	weave	303c49	1	solid
+ceramic_panel	Ceramic panel	Керамическая панель	quartz_block	tile	e6e2d4	1	solid
+copper_panel	Copper panel	Медная панель	copper_block	panel	ba7952	1	solid
+gold_panel	Gold alloy panel	Панель золотого сплава	gold_block	panel	c7a052	1	solid
+blue_alloy	Blue alloy	Синий сплав	iron_block	panel	416e96	1	solid
+red_alloy	Red alloy	Красный сплав	iron_block	panel	a14c47	1	solid
+lunar_polished	Polished lunar stone	Полированный лунный камень	megarockets:lunar_rock	stone	8a98a6	1	solid
+lunar_mosaic	Lunar mosaic	Лунная мозаика	megarockets:lunar_bricks	brick	788a9c	1	solid
+martian_bricks	Martian bricks	Марсианские кирпичи	megarockets:martian_rock	brick	ad6246	1	solid
+venus_bricks	Venusian bricks	Венерианские кирпичи	megarockets:venus_rock	brick	6f6850	1	solid
+europa_tiles	Europa ice tiles	Ледяные плитки Европы	megarockets:europa_rock	tile	a5ccd9	1	solid
+titan_bricks	Titan bricks	Кирпичи Титана	megarockets:titan_rock	brick	80674c	1	solid
+mercury_tiles	Mercury tiles	Плитки Меркурия	megarockets:mercury_rock	tile	89827e	1	solid
+obsidian_composite	Obsidian composite	Обсидиановый композит	obsidian	tile	49435f	1	solid
+vent_panel	Ventilation panel	Вентиляционная панель	iron_block	vent	778995	0	solid
+circuit_panel	Circuit panel	Электронная панель	iron_block	circuit	3d8065	0	solid
+hazard_panel	Hazard panel	Предупреждающая панель	iron_block	hazard	e8b94d	0	solid
+deck_grating	Deck grating	Решётка палубы	iron_block	grate	657888	0	solid
+insulated_panel	Insulated panel	Теплоизоляционная панель	quartz_block	weave	bdc2c0	0	solid
+heat_shield	Heat shield tile	Теплозащитная плитка	obsidian	tile	252c38	0	solid
+solar_cell	Solar cell	Солнечный элемент	blue_stained_glass	solar	355993	0	solid
+habitat_core	Habitat core	Блок жилого модуля	iron_block	circuit	6599a8	0	solid
+white_light	White light	Белый светильник	sea_lantern	lamp	e9f1ef	0	lamp
+gray_light	Gray light	Серый светильник	sea_lantern	lamp	81929f	0	lamp
+black_light	Black light	Чёрный светильник	sea_lantern	lamp	343d49	0	lamp
+red_light	Red light	Красный светильник	sea_lantern	lamp	fa5b51	0	lamp
+orange_light	Orange light	Оранжевый светильник	sea_lantern	lamp	ff9b4b	0	lamp
+yellow_light	Yellow light	Жёлтый светильник	sea_lantern	lamp	ffe278	0	lamp
+lime_light	Lime light	Лаймовый светильник	sea_lantern	lamp	a7ed68	0	lamp
+green_light	Green light	Зелёный светильник	sea_lantern	lamp	4fd79b	0	lamp
+cyan_light	Cyan light	Бирюзовый светильник	sea_lantern	lamp	57dce5	0	lamp
+light_blue_light	Light blue light	Голубой светильник	sea_lantern	lamp	7fcaff	0	lamp
+blue_light	Blue light	Синий светильник	sea_lantern	lamp	5489ff	0	lamp
+purple_light	Purple light	Фиолетовый светильник	sea_lantern	lamp	ac83f9	0	lamp
+magenta_light	Magenta light	Пурпурный светильник	sea_lantern	lamp	e576dc	0	lamp
+pink_light	Pink light	Розовый светильник	sea_lantern	lamp	ffacc5	0	lamp
+brown_light	Brown light	Коричневый светильник	sea_lantern	lamp	c09b78	0	lamp
+light_gray_light	Light gray light	Светло-серый светильник	sea_lantern	lamp	c6d4dc	0	lamp
+white_space_glass	White space glass	Космостекло: белый	glass	glass	e9f1ef	0	glass
+black_space_glass	Black space glass	Космостекло: чёрный	glass	glass	343d49	0	glass
+red_space_glass	Red space glass	Космостекло: красный	glass	glass	fa5b51	0	glass
+yellow_space_glass	Yellow space glass	Космостекло: жёлтый	glass	glass	ffe278	0	glass
+green_space_glass	Green space glass	Космостекло: зелёный	glass	glass	4fd79b	0	glass
+cyan_space_glass	Cyan space glass	Космостекло: бирюзовый	glass	glass	57dce5	0	glass
+blue_space_glass	Blue space glass	Космостекло: синий	glass	glass	5489ff	0	glass
+magenta_space_glass	Magenta space glass	Космостекло: пурпурный	glass	glass	e576dc	0	glass
