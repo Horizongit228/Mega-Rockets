@@ -60,6 +60,7 @@ public final class MegaRockets implements ModInitializer {
         RocketItems.init();
         SpaceSuitItems.init();
         OxygenStation.init();
+        SpaceEnergy.init();
         StationConsole.init();
         OxygenSystem.init();
         LunarVillageResidents.init();

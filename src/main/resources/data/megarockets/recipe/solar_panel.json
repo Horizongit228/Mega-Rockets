@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "redstone",
+  "pattern": [
+    "SSS",
+    "RIR"
+  ],
+  "key": {
+    "S": {
+      "item": "megarockets:solar_cell"
+    },
+    "R": {
+      "item": "minecraft:redstone"
+    },
+    "I": {
+      "item": "minecraft:iron_ingot"
+    }
+  },
+  "result": {
+    "id": "megarockets:solar_panel",
+    "count": 1
+  }
+}

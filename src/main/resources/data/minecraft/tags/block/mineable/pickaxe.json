@@ -121,6 +121,9 @@
     "megarockets:green_space_glass",
     "megarockets:cyan_space_glass",
     "megarockets:blue_space_glass",
-    "megarockets:magenta_space_glass"
+    "megarockets:magenta_space_glass",
+    "megarockets:solar_panel",
+    "megarockets:energy_cable",
+    "megarockets:energy_battery"
   ]
 }

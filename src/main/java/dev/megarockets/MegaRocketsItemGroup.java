@@ -23,6 +23,7 @@ public final class MegaRocketsItemGroup {
                     entries.add(SpaceSuitItems.LEGS);
                     entries.add(SpaceSuitItems.BOOTS);
                     entries.add(OxygenStation.STATION);
+                    entries.add(SpaceEnergy.PANEL);entries.add(SpaceEnergy.CABLE);entries.add(SpaceEnergy.BATTERY);
                     entries.add(MarsBlocks.REGOLITH);
                     entries.add(MarsBlocks.ROCK);
                     entries.add(MarsBlocks.ORE);

@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/cube_bottom_top",
+  "textures": {
+    "top": "megarockets:block/hazard_panel",
+    "side": "megarockets:block/carbon_panel",
+    "bottom": "megarockets:block/steel_panel"
+  }
+}

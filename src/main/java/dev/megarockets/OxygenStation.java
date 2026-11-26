@@ -25,6 +25,9 @@ public final class OxygenStation extends Block {
     }
     @Override protected ActionResult onUse(BlockState state,World world,BlockPos pos,PlayerEntity player,BlockHitResult hit){
         if(world.isClient)return ActionResult.SUCCESS;
+        if(world instanceof net.minecraft.server.world.ServerWorld w&&player instanceof net.minecraft.server.network.ServerPlayerEntity p&&OxygenSystem.vacuum(p)&&!player.isCreative()&&!SpaceEnergy.powered(w,pos)){
+            player.sendMessage(Text.translatable("energy.megarockets.no_power"),true);return ActionResult.CONSUME;
+        }
         ItemStack tank=player.getEquippedStack(EquipmentSlot.CHEST);
         if(!tank.isOf(SpaceSuitItems.CHEST)){
             player.sendMessage(Text.translatable("oxygen.megarockets.station_wear"),true);return ActionResult.CONSUME;

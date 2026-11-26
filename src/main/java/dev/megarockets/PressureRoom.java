@@ -28,7 +28,7 @@ public final class PressureRoom {
    if(Math.abs(pos.getX()-origin.getX())>24||Math.abs(pos.getY()-origin.getY())>24||Math.abs(pos.getZ()-origin.getZ())>24||seen.size()>4096)return false;
    if(pos.getY()<w.getBottomY()||pos.getY()>=w.getTopY()||w.getChunkManager().getWorldChunk(pos.getX()>>4,pos.getZ()>>4)==null)return false;
    var state=w.getBlockState(pos);
-   if(state.isOf(OxygenStation.STATION)){oxygen|=StationConsole.supplies(w,pos);continue;}
+   if(state.isOf(OxygenStation.STATION)){oxygen|=SpaceEnergy.powered(w,pos);continue;}
    if(state.getBlock() instanceof DoorBlock&&!state.get(DoorBlock.OPEN))continue;
    if(state.isFullCube(w,pos))continue;
    for(Direction d:Direction.values()){var next=pos.offset(d);if(seen.add(next))queue.addLast(next);}

@@ -16,7 +16,7 @@ public class LunarVillageCheck{
   if(!oxygen)throw new AssertionError("No oxygen "+h);
  }
  public static void main(String[] args){
-  for(var h:LunarVillageLayout.HOMES){check(h);if(h.kind()!=2&&LunarVillageLayout.material(LunarVillageLayout.markerX(h),1,LunarVillageLayout.markerZ(h))!=LunarVillageLayout.MARKER)throw new AssertionError("Resident marker");}
+  for(var h:LunarVillageLayout.HOMES){check(h);int x=LunarVillageLayout.X+h.x()-h.halfX()+2,z=h.z();if(LunarVillageLayout.material(x,2,z)!=LunarVillageLayout.BATTERY||LunarVillageLayout.material(x,h.height()+1,z)!=LunarVillageLayout.SOLAR)throw new AssertionError("Village power");if(h.kind()!=2&&LunarVillageLayout.material(LunarVillageLayout.markerX(h),1,LunarVillageLayout.markerZ(h))!=LunarVillageLayout.MARKER)throw new AssertionError("Resident marker");}
   for(int x=404;x<=420;x++)for(int z=-8;z<=8;z++){if(LunarVillageLayout.material(x,0,z)<=0)throw new AssertionError("Pad");for(int y=1;y<=64;y++)if(LunarVillageLayout.material(x,y,z)!=0)throw new AssertionError("Pad clearance");}
   for(long seed:new long[]{0,1,42,123456,-19}){int y=LunarVillageLayout.base(new MoonTerrain(seed));if(y<800||y>1400)throw new AssertionError("Deck outside north slice "+y);}
   for(long seed:new long[]{0,1,42,123456,-19}){

@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/cube_bottom_top",
+  "textures": {
+    "top": "megarockets:block/circuit_panel",
+    "side": "megarockets:block/habitat_core",
+    "bottom": "megarockets:block/steel_panel"
+  }
+}

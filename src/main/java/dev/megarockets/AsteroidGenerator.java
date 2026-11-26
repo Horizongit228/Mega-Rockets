@@ -58,7 +58,9 @@ public final class AsteroidGenerator extends ChunkGenerator {
    case StationLayout.MOSS->Blocks.MOSS_BLOCK.getDefaultState();
    case StationLayout.LEAVES->Blocks.AZALEA_LEAVES.getDefaultState().with(net.minecraft.block.LeavesBlock.PERSISTENT,true);
    case StationLayout.SOIL->Blocks.DIRT.getDefaultState();
-   case StationLayout.SOLAR->Blocks.BLUE_STAINED_GLASS.getDefaultState();
+   case StationLayout.SOLAR->SpaceEnergy.PANEL.getDefaultState();
+   case StationLayout.BATTERY->SpaceEnergy.BATTERY.getDefaultState();
+   case StationLayout.CABLE->SpaceEnergy.CABLE.getDefaultState();
    case StationLayout.PAD->Blocks.SMOOTH_STONE.getDefaultState();
    case StationLayout.MARK->Blocks.YELLOW_CONCRETE.getDefaultState();
    default->Blocks.AIR.getDefaultState();

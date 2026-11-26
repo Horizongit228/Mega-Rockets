@@ -83,6 +83,10 @@ jobs:
         run: |
           javac -d mesh-check src/main/java/dev/megarockets/PlanetCaves.java src/main/java/dev/megarockets/MoonTerrain.java src/main/java/dev/megarockets/LunarVillageLayout.java src/main/java/dev/megarockets/LunarSettlements.java checks/LunarVillageCheck.java
           java -cp mesh-check LunarVillageCheck
+      - name: Check solar energy
+        run: |
+          javac -d mesh-check src/main/java/dev/megarockets/EnergyRules.java checks/EnergyCheck.java
+          java -cp mesh-check EnergyCheck
       - name: Build Fabric mod
         run: gradle build --stacktrace
       - uses: actions/upload-artifact@v4

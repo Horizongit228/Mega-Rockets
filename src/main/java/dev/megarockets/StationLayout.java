@@ -5,7 +5,8 @@ public final class StationLayout {
  public static final int Z=-12000,BASE_Y=100,PAD_X=32,TOP_Y=110,PAD_COUNT=3;
  public static final int AIR=0,HULL=1,GLASS=2,LAMP=3,OXYGEN=4,DOOR_LOWER=5,DOOR_UPPER=6,PAD=7,MARK=8,
   BLUE=9,FRAME=10,WORKBENCH=11,BOOKS=12,MOSS=13,LEAVES=14,SOIL=15,CONSOLE=16,SOLAR=17,
-  NORTH_DOOR_LOWER=18,NORTH_DOOR_UPPER=19,INNER_DOOR_LOWER=20,INNER_DOOR_UPPER=21,STATUS=22;
+  NORTH_DOOR_LOWER=18,NORTH_DOOR_UPPER=19,INNER_DOOR_LOWER=20,INNER_DOOR_UPPER=21,STATUS=22,BATTERY=23,CABLE=24;
+ public static final int[][] OXYGEN_POINTS={{11,-1,105},{-5,0,107},{-21,3,108},{5,-17,109},{5,17,109}};
  private StationLayout(){}
  public static int padZ(int index){return Z+(index==1?-36:index==2?36:0);}
  public static boolean nearby(double x,double z){return Math.abs(x-PAD_X)<190&&Math.abs(z-Z)<190;}
@@ -24,6 +25,18 @@ public final class StationLayout {
  public static int material(int x,int y,int z){
   int q=z-Z,a=Math.abs(q);
   if(!column(x,z)||y<98||y>TOP_Y)return AIR;
+  // Independent roof arrays for four modules; workshop draws from the two large wings.
+  for(int[] point:OXYGEN_POINTS){
+   int ox=point[0],oz=point[1],roof=point[2];
+   if(ox==-21){
+    if(x==ox&&q==oz&&y==100)return BATTERY;
+    if(y==99&&(x==-27&&q>=-28&&q<=28||q==oz&&x>=-27&&x<=ox))return CABLE;
+   }else{
+    if(x==ox&&q==oz&&y==102)return BATTERY;
+    if(x==ox&&q==oz&&y>=103&&y<=roof)return CABLE;
+    if(y==roof+1&&q==oz&&Math.abs(x-ox)<=1)return SOLAR;
+   }
+  }
   // Three separate 25x25 landing decks, runway markers and a connecting exterior spine.
   for(int pad=0;pad<PAD_COUNT;pad++)if(padFloor(x,q,pad)){
    int dx=x-PAD_X,dz=q-(padZ(pad)-Z);

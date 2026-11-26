@@ -345,5 +345,12 @@
   "itemGroup.megarockets.glazing": "Mega Rockets: Glazing",
   "entity.megarockets.lunar_resident": "Lunar colonist",
   "message.megarockets.village_location": "Nearest lunar village: X=%s Z=%s. Pad: X=%s Y=%s.",
-  "message.megarockets.no_village": "No suitable settlement found."
+  "message.megarockets.no_village": "No suitable settlement found.",
+  "block.megarockets.solar_panel": "Solar panel",
+  "block.megarockets.energy_cable": "Energy cable",
+  "block.megarockets.energy_battery": "Battery",
+  "energy.megarockets.panel": "Solar output: %s units/s",
+  "energy.megarockets.battery": "Charge: %s / %s | Network generation: %s units/s | Powered oxygen stations: %s",
+  "energy.megarockets.no_power": "No power. Connect a solar panel and battery with cables.",
+  "station.megarockets.energy_status": "Aurora: intact control panels %s/4, powered oxygen stations %s/%s"
 }

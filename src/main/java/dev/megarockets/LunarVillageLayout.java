@@ -5,7 +5,7 @@ public final class LunarVillageLayout {
  public static final int X=320,Z=0,MIN_X=-67,MAX_X=106,MIN_Z=-40,MAX_Z=40;
  public static final int NONE=-1,AIR=0,FOUNDATION=1,WHITE=2,BLUE=3,GLASS=4,LAMP=5,ROAD=6,
  OXYGEN=7,DOOR_LOWER=8,DOOR_UPPER=9,MARKER=10,WORK=11,BOOKS=12,GREEN=13,SOIL=14,
- PAD=15,HAZARD=16,VENT=17,LECTERN=18,LEAVES=19;
+ PAD=15,HAZARD=16,VENT=17,LECTERN=18,LEAVES=19,SOLAR=20,BATTERY=21,CABLE=22;
  public record Home(int x,int z,int kind,int halfX,int halfZ,int height){}
  public static final Home[] HOMES={
   new Home(-32,-21,0,8,7,6),new Home(0,-21,0,8,7,6),new Home(32,-21,0,8,7,6),
@@ -37,6 +37,10 @@ public final class LunarVillageLayout {
    int u=a-h.x(),v=b-h.z(),ax=Math.abs(u),az=Math.abs(v);
    if(ax>h.halfX()||az>h.halfZ())continue;
    int roof=h.height();
+   int ox=-h.halfX()+2;
+   if(u==ox&&v==0&&y==2)return BATTERY;
+   if(u==ox&&v==0&&y>=3&&y<=roof)return CABLE;
+   if(y==roof+1&&v==0&&Math.abs(u-ox)<=1)return SOLAR;
    // Door faces the central avenue. Community buildings use the east/west wall.
    boolean door=h.kind()==0?u==0&&v==(h.z()<0?h.halfZ():-h.halfZ()):v==0&&u==(h.x()<0?h.halfX():-h.halfX());
    if(door&&(y==1||y==2))return y==1?DOOR_LOWER:DOOR_UPPER;

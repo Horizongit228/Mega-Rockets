@@ -345,5 +345,12 @@
   "itemGroup.megarockets.glazing": "Mega Rockets: Остекление",
   "entity.megarockets.lunar_resident": "Лунный колонист",
   "message.megarockets.village_location": "Ближайшая лунная деревня: X=%s Z=%s. Площадка: X=%s Y=%s.",
-  "message.megarockets.no_village": "Подходящее поселение не найдено."
+  "message.megarockets.no_village": "Подходящее поселение не найдено.",
+  "block.megarockets.solar_panel": "Солнечная панель",
+  "block.megarockets.energy_cable": "Энергетический кабель",
+  "block.megarockets.energy_battery": "Аккумулятор",
+  "energy.megarockets.panel": "Выработка панели: %s ед./с",
+  "energy.megarockets.battery": "Заряд: %s / %s | Генерация сети: %s ед./с | Кислородных установок: %s",
+  "energy.megarockets.no_power": "Нет энергии. Подключите панель и аккумулятор кабелем.",
+  "station.megarockets.energy_status": "Аврора: активных контрольных панелей %s/4, кислородных установок %s/%s"
 }

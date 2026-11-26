@@ -28,6 +28,10 @@ public class StationCheck{
   for(int q:new int[]{-28,-19,19,28})if(StationLayout.material(-27,100,z+q)!=StationLayout.SOLAR)throw new AssertionError("Solar");
   for(int x:new int[]{7,10,12,15})if(StationLayout.material(x,101,z+1)!=StationLayout.CONSOLE||StationLayout.consoleSide(x,1,101)==0)throw new AssertionError("Airlock console");
   if(StationLayout.material(8,101,z)!=StationLayout.DOOR_LOWER||StationLayout.material(14,102,z)!=StationLayout.DOOR_UPPER)throw new AssertionError("Airlock doors");
+  for(int[] p:StationLayout.OXYGEN_POINTS){
+   int x=p[0],q=p[1],roof=p[2];if(StationLayout.material(x,x==-21?100:102,z+q)!=StationLayout.BATTERY)throw new AssertionError("Station battery");
+   if(x!=-21&&StationLayout.material(x,roof+1,z+q)!=StationLayout.SOLAR)throw new AssertionError("Roof array");
+  }
   System.out.println("PASS three clear landing pads, five sealed supplied rooms, solar anchors and airlock controls");
  }
 }

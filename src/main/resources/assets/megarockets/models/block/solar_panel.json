@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/cube_bottom_top",
+  "textures": {
+    "top": "megarockets:block/solar_cell",
+    "side": "megarockets:block/steel_panel",
+    "bottom": "megarockets:block/steel_panel"
+  }
+}

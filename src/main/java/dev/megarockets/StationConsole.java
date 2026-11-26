@@ -23,7 +23,7 @@ public final class StationConsole extends Block {
   if(!(world instanceof ServerWorld w)||!world.getRegistryKey().equals(MegaRockets.ORBIT))return ActionResult.CONSUME;
   int side=StationLayout.consoleSide(pos.getX(),pos.getZ()-StationLayout.Z,pos.getY());
   if(side==0){
-   int n=power(w);player.sendMessage(Text.translatable("station.megarockets.power",n*25,n>=2?Text.translatable("station.megarockets.online"):Text.translatable("station.megarockets.offline")),false);return ActionResult.CONSUME;
+   int n=power(w);int online=0;for(int[] p:StationLayout.OXYGEN_POINTS)if(SpaceEnergy.powered(w,new BlockPos(p[0],101,StationLayout.Z+p[1])))online++;player.sendMessage(Text.translatable("station.megarockets.energy_status",n,online,StationLayout.OXYGEN_POINTS.length),false);return ActionResult.CONSUME;
   }
   BlockPos inner=new BlockPos(8,101,StationLayout.Z),outer=new BlockPos(14,101,StationLayout.Z);
   if(!valid(w,inner)||!valid(w,outer)){player.sendMessage(Text.translatable("station.megarockets.damaged"),true);return ActionResult.CONSUME;}
@@ -41,7 +41,7 @@ public final class StationConsole extends Block {
  public static int power(ServerWorld w){
   int n=0;
   for(int q:new int[]{-28,-19,19,28}){BlockPos pos=new BlockPos(-27,100,StationLayout.Z+q);
-   if(w.getChunkManager().getWorldChunk(pos.getX()>>4,pos.getZ()>>4)!=null&&w.getBlockState(pos).isOf(Blocks.BLUE_STAINED_GLASS))n++;
+   if(w.getChunkManager().getWorldChunk(pos.getX()>>4,pos.getZ()>>4)!=null&&w.getBlockState(pos).isOf(SpaceEnergy.PANEL))n++;
   }return n;
  }
  public static boolean supplies(ServerWorld w,BlockPos pos){

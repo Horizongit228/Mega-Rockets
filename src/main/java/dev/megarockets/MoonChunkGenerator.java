@@ -75,6 +75,9 @@ public final class MoonChunkGenerator extends ChunkGenerator {
             case LunarVillageLayout.LAMP->BuildingBlocks.get("white_light").getDefaultState();
             case LunarVillageLayout.ROAD->BuildingBlocks.get("lunar_mosaic").getDefaultState();
             case LunarVillageLayout.OXYGEN->OxygenStation.STATION.getDefaultState();
+            case LunarVillageLayout.SOLAR->SpaceEnergy.PANEL.getDefaultState();
+            case LunarVillageLayout.BATTERY->SpaceEnergy.BATTERY.getDefaultState();
+            case LunarVillageLayout.CABLE->SpaceEnergy.CABLE.getDefaultState();
             case LunarVillageLayout.MARKER->BuildingBlocks.get("habitat_core").getDefaultState();
             case LunarVillageLayout.WORK->Blocks.CRAFTING_TABLE.getDefaultState();
             case LunarVillageLayout.BOOKS->Blocks.BOOKSHELF.getDefaultState();
