@@ -147,7 +147,7 @@
   "message.megarockets.manual_status": "MANUAL | X=%s Y=%s Z=%s | %s blocks/s",
   "message.megarockets.manual_on": "Manual flight: WASD, Space up, Ctrl down, B brake, R target. Terrain loads automatically on approach.",
   "message.megarockets.manual_off": "Manual flight disabled. Rocket holding position.",
-  "message.megarockets.approach_range": "Approach within 2000 blocks of the selected target (coordinates in R) and slow to 20 blocks/s.",
+  "message.megarockets.approach_range": "Approach current target coordinates in R within 2000 blocks and slow to 20 blocks/s.",
   "message.megarockets.manual_orbit": "Orbit reached. Manual flight active.",
   "cockpit.megarockets.tab_nav": "NAV",
   "cockpit.megarockets.tab_eng": "ENG",
@@ -213,5 +213,6 @@
   "loading.megarockets.tip.jupiter": "Gas giant • atmospheric belts",
   "loading.megarockets.tip.saturn": "Gas giant • ring system",
   "loading.megarockets.tip.uranus": "Ice giant • turquoise haze",
-  "loading.megarockets.tip.neptune": "Ice giant • powerful winds"
+  "loading.megarockets.tip.neptune": "Ice giant • powerful winds",
+  "cockpit.megarockets.entry_heat": "ENTRY HEAT: %s%%"
 }

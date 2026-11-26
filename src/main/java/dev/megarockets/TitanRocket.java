@@ -89,7 +89,7 @@ public final class TitanRocket extends Entity {
         pilot.sendMessage(Text.translatable("message.megarockets.destination_current",Text.translatable("destination.megarockets."+destination.key()),(int)(maxSpeed()*20)),false);
         var menu=Text.empty();
         for(Destination d:Destination.values()){
-            menu.append(Text.literal("[ ").append(Text.translatable("destination.megarockets."+d.key())).append(" | "+(int)d.distance+" ] ")
+            menu.append(Text.literal("[ ").append(Text.translatable("destination.megarockets."+d.key())).append(" | "+(int)(getWorld().getRegistryKey().equals(MegaRockets.ORBIT)?SolarDynamics.position(d,getWorld().getTime()).distance(getX(),getZ()):d.distance)+" ] ")
                 .styled(style->style.withColor(d==destination?net.minecraft.util.Formatting.GREEN:net.minecraft.util.Formatting.AQUA)
                     .withClickEvent(new net.minecraft.text.ClickEvent(net.minecraft.text.ClickEvent.Action.RUN_COMMAND,"/rocket destination "+d.key()))));
         }
@@ -140,7 +140,7 @@ public final class TitanRocket extends Entity {
         dataTracker.set(LIFE,!nbt.contains("LifeSupport")||nbt.getBoolean("LifeSupport"));
         dataTracker.set(BEACON,nbt.getBoolean("Beacon"));dataTracker.set(NAV,false);
         dataTracker.set(PRESSURE,nbt.contains("CabinPressure")?CabinSystems.clamp(nbt.getInt("CabinPressure")):100);
-        dataTracker.set(HEAT,CabinSystems.clamp(nbt.getInt("EngineHeat")));
+        dataTracker.set(HEAT,CabinSystems.clamp(nbt.getInt("EngineHeat")));entryHeatTicks=Math.max(0,Math.min(200,nbt.getInt("EntryHeatTicks")));dataTracker.set(ENTRY_HEAT,(entryHeatTicks+1)/2);
         dataTracker.set(THROTTLE,nbt.contains("Throttle")?CabinSystems.throttle(nbt.getInt("Throttle"),0):100);
         landingCandidate=Math.floorMod(nbt.getInt("LandingCandidate"),LandingSurvey.COUNT);
         if(nbt.contains("LandingY"))landingSite=new LandingSurvey.Site(nbt.getInt("LandingX"),nbt.getInt("LandingY"),nbt.getInt("LandingZ"),nbt.getInt("ExitX"),nbt.getInt("ExitY"),nbt.getInt("ExitZ"));
@@ -160,7 +160,7 @@ public final class TitanRocket extends Entity {
         nbt.putBoolean("MoonLanded",moonLanded);nbt.putBoolean("ManualLanded",manualLanded);
         nbt.putBoolean("ManualMode",manualMode());
         nbt.putBoolean("EnginesArmed",armed());nbt.putBoolean("CabinLights",cabinLights());nbt.putBoolean("LifeSupport",lifeSupport());nbt.putBoolean("Beacon",beacon());
-        nbt.putInt("CabinPressure",cabinPressure());nbt.putInt("EngineHeat",engineHeat());nbt.putInt("Throttle",throttle());
+        nbt.putInt("CabinPressure",cabinPressure());nbt.putInt("EngineHeat",engineHeat());nbt.putInt("Throttle",throttle());nbt.putInt("EntryHeatTicks",entryHeatTicks);
         nbt.putInt("LandingCandidate",landingCandidate);
         if(landingSite!=null){
             nbt.putInt("LandingX",landingSite.x());nbt.putInt("LandingY",landingSite.y());nbt.putInt("LandingZ",landingSite.z());

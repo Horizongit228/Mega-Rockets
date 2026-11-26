@@ -147,7 +147,7 @@
   "message.megarockets.manual_status": "РУЧНОЙ | X=%s Y=%s Z=%s | %s бл/с",
   "message.megarockets.manual_on": "Ручной режим: WASD, пробел вверх, Ctrl вниз, B тормоз, R цель. При подлёте поверхность загрузится автоматически.",
   "message.megarockets.manual_off": "Ручное управление выключено. Ракета удерживает позицию.",
-  "message.megarockets.approach_range": "Подойдите к выбранной цели (X — дистанция маршрута, Z — координата из R) ближе 2000 блоков и затормозите до 20 бл/с.",
+  "message.megarockets.approach_range": "Подлетите к текущим координатам цели из R на 2000 блоков и снизьте скорость до 20 бл/с.",
   "message.megarockets.manual_orbit": "Орбита достигнута. Ручное управление активно.",
   "cockpit.megarockets.tab_nav": "НАВ",
   "cockpit.megarockets.tab_eng": "ДВИГ",
@@ -213,5 +213,6 @@
   "loading.megarockets.tip.jupiter": "Газовый гигант • атмосферные полосы",
   "loading.megarockets.tip.saturn": "Газовый гигант • система колец",
   "loading.megarockets.tip.uranus": "Ледяной гигант • бирюзовая дымка",
-  "loading.megarockets.tip.neptune": "Ледяной гигант • сильные ветры"
+  "loading.megarockets.tip.neptune": "Ледяной гигант • сильные ветры",
+  "cockpit.megarockets.entry_heat": "НАГРЕВ ОБШИВКИ: %s%%"
 }

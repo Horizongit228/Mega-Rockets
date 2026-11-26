@@ -71,6 +71,10 @@ jobs:
         run: |
           javac -d mesh-check src/main/java/dev/megarockets/ApproachRules.java checks/ApproachCheck.java
           java -cp mesh-check ApproachCheck
+      - name: Check living solar system
+        run: |
+          javac -d mesh-check src/main/java/dev/megarockets/PlanetCaves.java src/main/java/dev/megarockets/MoonTerrain.java src/main/java/dev/megarockets/MarsTerrain.java src/main/java/dev/megarockets/SolarScale.java src/main/java/dev/megarockets/Destination.java src/main/java/dev/megarockets/SolarDynamics.java src/main/java/dev/megarockets/AsteroidTerrain.java src/main/java/dev/megarockets/ManualFlight.java checks/SolarDynamicsCheck.java
+          java -cp mesh-check SolarDynamicsCheck
       - name: Build Fabric mod
         run: gradle build --stacktrace
       - uses: actions/upload-artifact@v4

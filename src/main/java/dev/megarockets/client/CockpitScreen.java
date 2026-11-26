@@ -124,7 +124,7 @@ public final class CockpitScreen extends Screen {
                 meter(c,tr("velocity"),(int)(100*rocket.cabinSpeed()/(rocket.maxSpeed()*20)),53,accent);
                 meter(c,tr("heat"),rocket.engineHeat(),74,rocket.engineHeat()>80?red:amber);
                 meter(c,tr("manual_throttle"),rocket.throttle(),95,green);
-                line(c,tr("engine_state",on(rocket.enginesRunning())),12,192,rocket.enginesRunning()?green:amber);
+                line(c,rocket.entryHeat()>0?tr("entry_heat",rocket.entryHeat()):tr("engine_state",on(rocket.enginesRunning())),12,192,rocket.entryHeat()>0?red:rocket.enginesRunning()?green:amber);
             }
             case LIFE ->{
                 meter(c,tr("pressure"),rocket.cabinPressure(),54,rocket.cabinBreathable()?green:red);
