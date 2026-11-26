@@ -142,36 +142,36 @@ public final class TitanMesh {
         for(int i=0;i<8;i++)panel(out,3.52f,3.59f,54.36f,54.53f,.28f,i*Math.PI/4,lit);
         return List.copyOf(out);
     }
-    private static void box(List<Quad> out,float x,float y,float z,float X,float Y,float Z,int color){
+    static void box(List<Quad> out,float x,float y,float z,float X,float Y,float Z,int color){
         Point a=new Point(x,y,z),b=new Point(X,y,z),c=new Point(X,Y,z),d=new Point(x,Y,z);
         Point e=new Point(x,y,Z),f=new Point(X,y,Z),g=new Point(X,Y,Z),h=new Point(x,Y,Z);
         quad(out,a,b,c,d,color);quad(out,e,h,g,f,color);quad(out,a,d,h,e,color);
         quad(out,b,f,g,c,color);quad(out,a,e,f,b,color);quad(out,d,c,g,h,color);
     }
-    private static void panel(List<Quad> out,float r0,float r1,float y0,float y1,float w,double a,int color) {
+    static void panel(List<Quad> out,float r0,float r1,float y0,float y1,float w,double a,int color) {
         Point p=rot(r0,y0,-w,a),q=rot(r0,y0,w,a),r=rot(r0,y1,w,a),s=rot(r0,y1,-w,a);
         Point P=rot(r1,y0,-w,a),Q=rot(r1,y0,w,a),R=rot(r1,y1,w,a),S=rot(r1,y1,-w,a);
         quad(out,P,Q,R,S,color); quad(out,p,P,S,s,GRAY); quad(out,Q,q,r,R,GRAY);
         quad(out,p,q,Q,P,DARK); quad(out,s,S,R,r,GRAY);
     }
-    private static Point rot(float x,float y,float z,double a) {
+    static Point rot(float x,float y,float z,double a) {
         return new Point((float)(x*Math.cos(a)-z*Math.sin(a)),y,(float)(x*Math.sin(a)+z*Math.cos(a)));
     }
-    private static Point polar(float x,float z,float y,float r,int i) {
+    static Point polar(float x,float z,float y,float r,int i) {
         double a=i*2*Math.PI/SIDES;
         return new Point(x+r*(float)Math.cos(a),y,z+r*(float)Math.sin(a));
     }
-    private static void ring(List<Quad> out,float x,float z,float y0,float r0,float y1,float r1,int color) {
+    static void ring(List<Quad> out,float x,float z,float y0,float r0,float y1,float r1,int color) {
         for(int i=0;i<SIDES;i++) quad(out,polar(x,z,y0,r0,i),polar(x,z,y1,r1,i),polar(x,z,y1,r1,i+1),polar(x,z,y0,r0,i+1),color);
     }
-    private static void cap(List<Quad> out,float x,float z,float y,float r,boolean up,int color) {
+    static void cap(List<Quad> out,float x,float z,float y,float r,boolean up,int color) {
         Point center=new Point(x,y,z);
         for(int i=0;i<SIDES;i++) {
             Point a=polar(x,z,y,r,i),b=polar(x,z,y,r,i+1);
             if(up) quad(out,center,b,a,a,color); else quad(out,center,a,b,b,color);
         }
     }
-    private static void quad(List<Quad> out,Point a,Point b,Point c,Point d,int color) {
+    static void quad(List<Quad> out,Point a,Point b,Point c,Point d,int color) {
         // Cone tip has repeated vertices; use the other edge when necessary.
         float ux=b.x-a.x,uy=b.y-a.y,uz=b.z-a.z,vx=c.x-a.x,vy=c.y-a.y,vz=c.z-a.z;
         float nx=uy*vz-uz*vy,ny=uz*vx-ux*vz,nz=ux*vy-uy*vx;

@@ -24,8 +24,9 @@ jobs:
           gradle-version: '8.8'
       - name: Check rocket geometry
         run: |
-          javac -d mesh-check src/main/java/dev/megarockets/client/TitanMesh.java checks/MeshCheck.java
+          javac -d mesh-check src/main/java/dev/megarockets/client/TitanMesh.java src/main/java/dev/megarockets/client/RocketModels.java checks/MeshCheck.java checks/RocketModelsCheck.java
           java -cp mesh-check MeshCheck
+          java -cp mesh-check RocketModelsCheck
       - name: Check flight profile
         run: |
           javac -d mesh-check src/main/java/dev/megarockets/FlightProfile.java checks/FlightCheck.java

@@ -36,43 +36,44 @@ public final class TitanRenderer extends EntityRenderer<TitanRocket> {
         VertexConsumer buffer = consumers.getBuffer(RenderLayer.getEntityCutoutNoCull(getTexture(rocket)));
         MatrixStack.Entry matrix = matrices.peek();
         boolean phantom=rocket.getType()==MegaRockets.PHANTOM,hyperion=rocket.getType()==MegaRockets.HYPERION;
-        for (TitanMesh.Quad q : TitanMesh.QUADS) {
+        RocketModels.Model model=RocketModels.get(hyperion?RocketModels.Style.HYPERION:phantom?RocketModels.Style.PHANTOM:RocketModels.Style.TITAN);
+        for (TitanMesh.Quad q : model.hull()) {
             for (int i=0;i<4;i++) {
                 TitanMesh.Point p=q.points()[i];
                 int c=q.argb();
                 if(c==0xffe4e8ee)c=0xffffffff;
                 if(c==0xff286583||c==0xff286083)c=hyperion?0xffd5ae64:phantom?0xffec7252:0xffc5d6e7;
-                float taper=(float)Math.max(0,Math.min(1,Math.min((p.y()-5)/8,(48-p.y())/8)));
-                float profile=1-taper*(phantom?.24f:hyperion?-.10f:0f);
                 int faceLight=c==0xff59e4ff||c==0xffff7962?0xF000F0:light;
                 // Map the shell as a cylindrical texture, not a full repeated bitmap per quad.
                 float u=(float)(Math.atan2(p.z(),p.x())/(Math.PI*2)+.5);
                 float anchor=(float)(Math.atan2(q.points()[0].z(),q.points()[0].x())/(Math.PI*2)+.5);
                 if(u-anchor>.5f)u-=1;else if(anchor-u>.5f)u+=1;
                 float vv=1-p.y()/64f;
-                buffer.vertex(matrix,p.x()*profile,p.y(),p.z()*profile).color(c).texture(u,vv)
+                buffer.vertex(matrix,p.x(),p.y(),p.z()).color(c).texture(u,vv)
                     .overlay(OverlayTexture.DEFAULT_UV).light(faceLight).normal(matrix,q.nx(),q.ny(),q.nz());
             }
         }
         // Interior has independent emergency lighting; glass is genuinely translucent.
         VertexConsumer interior=consumers.getBuffer(RenderLayer.getEntityCutoutNoCull(WHITE));
-        for(TitanMesh.Quad q:TitanMesh.CABIN)emit(interior,matrix,q,0xF000F0);
+        for(TitanMesh.Quad q:model.cabin())emit(interior,matrix,q,0xF000F0);
+        for(TitanMesh.Quad q:model.lamps())emit(interior,matrix,q,0xF000F0);
         VertexConsumer glass=consumers.getBuffer(RenderLayer.getEntityTranslucent(WHITE));
-        for(TitanMesh.Quad q:TitanMesh.GLASS)emit(glass,matrix,q,0xF000F0);
+        for(TitanMesh.Quad q:model.glass())emit(glass,matrix,q,0xF000F0);
         if (rocket.enginesRunning()) {
             // Full-bright geometry, independent of particle distance and settings.
             VertexConsumer exhaust=consumers.getBuffer(RenderLayer.getEntityCutoutNoCull(WHITE));
             float t=rocket.age+tickDelta;
-            for(int i=0;i<7;i++) {
-                double a=i*Math.PI/3;
-                float x=i==6?0:2.8f*(float)Math.cos(a), z=i==6?0:2.8f*(float)Math.sin(a);
+            int i=0;
+            for(RocketModels.Engine engine:model.engines()){
+                float x=engine.x(),z=engine.z(),radius=engine.radius();
+                i++;
                 boolean vacuum=!rocket.getWorld().getRegistryKey().equals(net.minecraft.world.World.OVERWORLD)||rocket.getY()>1000;
                 float length=(hyperion?48f:phantom?38f:28f)+1.1f*(float)Math.sin(t*.7+i*1.3)+.5f*(float)Math.sin(t*1.6+i);
                 float spread=vacuum?1.25f:1f;
-                plume(exhaust,matrix,x,z,-.02f,.70f,-2.8f,.86f,hyperion?0xffe9fbff:0xfffff9e9);
-                plume(exhaust,matrix,x,z,-2.8f,.86f,-7.2f,1.02f*spread,hyperion?0xffa9eaff:0xffffe5a4);
-                plume(exhaust,matrix,x,z,-7.2f,1.02f*spread,-12f,.65f*spread,hyperion?0xff54b8ed:phantom?0xffff7544:0xffffa133);
-                plume(exhaust,matrix,x,z,-12f,.65f*spread,-length,.015f,hyperion?0xff277bd0:phantom?0xffbd332a:0xffe64b16);
+                plume(exhaust,matrix,x,z,-.02f,radius*.62f,-2.8f,radius*.77f,hyperion?0xffe9fbff:0xfffff9e9);
+                plume(exhaust,matrix,x,z,-2.8f,radius*.77f,-7.2f,radius*.91f*spread,hyperion?0xffa9eaff:0xffffe5a4);
+                plume(exhaust,matrix,x,z,-7.2f,radius*.91f*spread,-12f,radius*.58f*spread,hyperion?0xff54b8ed:phantom?0xffff7544:0xffffa133);
+                plume(exhaust,matrix,x,z,-12f,radius*.58f*spread,-length,.015f,hyperion?0xff277bd0:phantom?0xffbd332a:0xffe64b16);
             }
         }
         matrices.pop();
