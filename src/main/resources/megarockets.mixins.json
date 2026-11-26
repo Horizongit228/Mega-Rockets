@@ -6,7 +6,8 @@
     "SpaceGravityMixin",
     "LunarWeatherMixin",
     "LunarSnowMixin",
-    "PlanetTimeMixin"
+    "PlanetTimeMixin",
+    "PlanetFallMixin"
   ],
   "injectors": {
     "defaultRequire": 1

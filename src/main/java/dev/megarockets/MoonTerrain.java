@@ -11,9 +11,12 @@ public final class MoonTerrain {
  public record Tree(int x,int y,int z,int height,TreeKind kind){}
  public record Boulder(int x,int y,int z,int radius,boolean crystal){}
  private final long seed;
+ private final boolean flat;
+ public boolean flat(){return flat;}
  private final PlanetCaves caveNetwork;
  private final double ox,oy,oz;
- public MoonTerrain(long seed){this.seed=seed;this.caveNetwork=new PlanetCaves(seed^0x4d4f4f4eL);ox=10000*hash(seed,0,0,1);oy=10000*hash(seed,0,0,2);oz=10000*hash(seed,0,0,3);}
+ public MoonTerrain(long seed){this(seed,false);}
+ public MoonTerrain(long seed,boolean flat){this.flat=flat;this.seed=seed;this.caveNetwork=new PlanetCaves(seed^0x4d4f4f4eL);ox=10000*hash(seed,0,0,1);oy=10000*hash(seed,0,0,2);oz=10000*hash(seed,0,0,3);}
  private static double clamp(double n,double a,double b){return Math.max(a,Math.min(b,n));}
  private static double smooth(double n){n=clamp(n,0,1);return n*n*(3-2*n);}
  private static double mix(double a,double b,double t){return a+(b-a)*t;}
@@ -27,6 +30,7 @@ public final class MoonTerrain {
       mix(hash(seed,ix,salt,iz+1),hash(seed,ix+1,salt,iz+1),tx),tz)-1;
  }
  public Region region(int x,int z){
+  if(flat){x=PlanetWrap.coordinate(x,PlanetWrap.MOON_PERIOD);z=PlanetWrap.coordinate(z,PlanetWrap.MOON_PERIOD);if(PlanetWrap.seam(x,z,PlanetWrap.MOON_PERIOD))return Region.PLAINS;}
   if(Math.hypot(x,z)<SAFE_RADIUS)return Region.PLAINS;
   double relief=field(x/410.0,z/410.0,51),forest=field(x/270.0,z/270.0,63);
   if(relief>.43)return Region.HIGHLANDS;
@@ -45,9 +49,10 @@ public final class MoonTerrain {
   return sum;
  }
  public Column column(int x,int z){
+  if(flat){x=PlanetWrap.coordinate(x,PlanetWrap.MOON_PERIOD);z=PlanetWrap.coordinate(z,PlanetWrap.MOON_PERIOD);}
   double r=Math.hypot(x,z);Region region=region(x,z);
-  if(r>=RADIUS)return new Column(1,0,1,0,false,0,0,region,seed,caveNetwork.column(x,z));
-  double h=Math.sqrt((double)RADIUS*RADIUS-r*r),taper=smooth((RADIUS-r)/160);
+  if(!flat&&r>=RADIUS)return new Column(1,0,1,0,false,0,0,region,seed,caveNetwork.column(x,z));
+  double h=flat?NORTH_OFFSET+128:Math.sqrt((double)RADIUS*RADIUS-r*r),taper=flat?PlanetWrap.edgeWeight(x,z,PlanetWrap.MOON_PERIOD):smooth((RADIUS-r)/160);
   double macro=field(x/410.0,z/410.0,51),high=smooth((macro-.12)/.65),basin=smooth((-macro-.18)/.5);
   double reliefWeight=.28+.72*Math.max(high,basin);
   double broad=field(x/310.0,z/310.0,71)*23*reliefWeight;
@@ -60,11 +65,15 @@ public final class MoonTerrain {
   int bottom=(int)Math.ceil(-h+35*field(x/250.0,z/250.0,131)*taper),t=(int)Math.floor(top);
   double inner=RADIUS-CRUST;int half=r<inner?(int)Math.floor(Math.sqrt(inner*inner-r*r)):-1;
   int ib=half<0?1:Math.max(bottom+8,-half),it=half<0?0:Math.min(t-24,half);
+  if(flat){bottom=NORTH_OFFSET-64;ib=1;it=0;}
   return new Column(bottom,t,ib,it,false,Math.sin((x+ox)*.078+(z+oz)*.025),Math.cos((z+oz)*.071-(x+ox)*.019),region,seed,caveNetwork.column(x,z));
  }
  public PlanetCaves.Entrance caveEntrance(int gx,int gz){return caveNetwork.entrance(gx,gz);}
  public int material(Column c,int x,int y,int z){
+  if(flat){x=PlanetWrap.coordinate(x,PlanetWrap.MOON_PERIOD);z=PlanetWrap.coordinate(z,PlanetWrap.MOON_PERIOD);}
   if(y<c.bottom()||y>c.top()||(y>=c.innerBottom()&&y<=c.innerTop()))return AIR;
+  if(flat&&y==c.bottom())return ROCK;
+  if(flat&&PlanetWrap.seam(x,z,PlanetWrap.MOON_PERIOD))return y>=c.top()-4?REGOLITH:ROCK;
   int depth=Math.min(c.top()-y,y-c.bottom());
   if(caveNetwork.air(c.caves(),c.top()-y))return AIR;
   if(depth>5){
@@ -87,7 +96,7 @@ public final class MoonTerrain {
  /** One candidate per 12x12 cell, jittered; canopy is reconstructed in every intersecting chunk. */
  public Tree tree(int gx,int gz){
   int x=gx*TREE_CELL+3+(int)(hash(seed,gx,501,gz)*6),z=gz*TREE_CELL+3+(int)(hash(seed,gx,502,gz)*6);
-  if(Math.hypot(x,z)<SAFE_RADIUS+16||Math.hypot(x,z)>RADIUS-64)return null;
+  if(Math.hypot(x,z)<SAFE_RADIUS+16||(!flat&&Math.hypot(x,z)>RADIUS-64||flat&&PlanetWrap.edgeWeight(x,z,PlanetWrap.MOON_PERIOD)<.15))return null;
   Region region=region(x,z);double chance=region==Region.FOREST?.96:region==Region.PLAINS?.20:region==Region.HIGHLANDS?.08:0;
   if(hash(seed,gx,503,gz)>=chance)return null;
   Column c=column(x,z);int y=c.top()+1;
@@ -116,7 +125,7 @@ public final class MoonTerrain {
  // Scattered stone formations with deterministic placement in 32-block cells.
  public Boulder boulder(int gx,int gz){
   int x=gx*32+6+(int)(hash(seed,gx,601,gz)*20),z=gz*32+6+(int)(hash(seed,gx,602,gz)*20);
-  double r=Math.hypot(x,z);if(r<SAFE_RADIUS+24||r>RADIUS-32)return null;
+  double r=Math.hypot(x,z);if(r<SAFE_RADIUS+24||(!flat&&r>RADIUS-32||flat&&PlanetWrap.edgeWeight(x,z,PlanetWrap.MOON_PERIOD)<.15))return null;
   Region type=region(x,z);
   if(hash(seed,gx,603,gz)>(type==Region.CRATERS?.75:type==Region.HIGHLANDS?.5:.20))return null;
   Column c=column(x,z);

@@ -42,7 +42,7 @@ public final class LunarVillageLayout {
    if(u==ox&&v==0&&y>=3&&y<=roof)return CABLE;
    if(y==roof+1&&v==0&&Math.abs(u-ox)<=1)return SOLAR;
    // Door faces the central avenue. Community buildings use the east/west wall.
-   boolean door=h.kind()==0?u==0&&v==(h.z()<0?h.halfZ():-h.halfZ()):v==0&&u==(h.x()<0?h.halfX():-h.halfX());
+   boolean door=h.kind()==0?u==0&&v==(h.z()<0?h.halfZ():-h.halfZ()):v==0&&(u==(h.x()<0?h.halfX():-h.halfX())||h.kind()==2&&u==h.halfX());
    if(door&&(y==1||y==2))return y==1?DOOR_LOWER:DOOR_UPPER;
    if(y==0)return BLUE;
    if(y==roof){
@@ -71,6 +71,15 @@ public final class LunarVillageLayout {
      if(y==2)return (u+v)%3==0?LEAVES:GREEN;
     }
    }
+   return AIR;
+  }
+  // Eastern greenhouse entrance: enclosed vestibule joining the landing apron road.
+  if(a>=67&&a<=72&&Math.abs(b)<=2){
+   if(a==72&&b==0&&(y==1||y==2))return y==1?DOOR_LOWER:DOOR_UPPER;
+   if(y==0)return BLUE;
+   if(y==4)return b==0?LAMP:WHITE;
+   if(y>4)return AIR;
+   if(Math.abs(b)==2||a==72)return y==3?GLASS:WHITE;
    return AIR;
   }
   if(Math.abs(a-92)<=13&&Math.abs(b)<=13){

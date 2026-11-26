@@ -27,7 +27,7 @@ public final class MarsChunkGenerator extends ChunkGenerator {
  private NoiseConfig last;private MarsTerrain cached;
  public MarsChunkGenerator(BiomeSource source){super(source);}
  private synchronized MarsTerrain terrain(NoiseConfig config){
-  if(last!=config||cached==null){last=config;cached=new MarsTerrain(config.getOrCreateRandomDeriver(MegaRockets.id("mars_seed")).split(0,0,0).nextLong());}return cached;
+  if(last!=config||cached==null){last=config;cached=new MarsTerrain(config.getOrCreateRandomDeriver(MegaRockets.id("mars_seed")).split(0,0,0).nextLong(),true);}return cached;
  }
  @Override protected MapCodec<? extends ChunkGenerator> getCodec(){return CODEC;}
  @Override public int getMinimumY(){return MarsTerrain.MIN_Y;}

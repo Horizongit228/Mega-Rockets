@@ -28,7 +28,7 @@ public final class OuterPlanetGenerator extends ChunkGenerator {
  private NoiseConfig last;private OuterPlanetTerrain cached;
  public OuterPlanetGenerator(BiomeSource source,String name){super(source);planet=Destination.read(name);if(planet==Destination.MOON||planet==Destination.MARS||planet.orbitOnly())throw new IllegalArgumentException(name);}
  private synchronized OuterPlanetTerrain terrain(NoiseConfig config){
-  if(last!=config||cached==null){last=config;cached=new OuterPlanetTerrain(planet,config.getOrCreateRandomDeriver(MegaRockets.id(planet.key()+"_seed")).split(0,0,0).nextLong());}return cached;
+  if(last!=config||cached==null){last=config;cached=new OuterPlanetTerrain(planet,config.getOrCreateRandomDeriver(MegaRockets.id(planet.key()+"_seed")).split(0,0,0).nextLong(),true);}return cached;
  }
  @Override protected MapCodec<? extends ChunkGenerator> getCodec(){return CODEC;}
  @Override public int getMinimumY(){return OuterPlanetTerrain.MIN_Y;}

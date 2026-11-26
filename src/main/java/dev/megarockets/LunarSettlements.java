@@ -5,6 +5,9 @@ import java.util.concurrent.ConcurrentHashMap;
 /** Seeded settlement regions, cached independently of chunk generation order. */
 public final class LunarSettlements {
  public static final int SPACING=640;
+ private int limit(){return terrain.flat()?PlanetWrap.MOON_PERIOD/2-256:3000;}
+ private int minCell(){return terrain.flat()?-20:-6;}
+ private int maxCell(){return terrain.flat()?19:5;}
  public record Site(int x,int z,int base){
   public int localX(int x){return x-this.x+LunarVillageLayout.X;}
   public int localZ(int z){return z-this.z+LunarVillageLayout.Z;}
@@ -22,7 +25,7 @@ public final class LunarSettlements {
   Site best=null;int bestRelief=Integer.MAX_VALUE;
   for(int attempt=0;attempt<5;attempt++){
    int x=gx*SPACING+320+(int)Math.floorMod(hash(n+1+attempt*2),321)-160,z=gz*SPACING+320+(int)Math.floorMod(hash(n+2+attempt*2),321)-160;
-   if(Math.hypot(x,z)>3000||Math.hypot(x,z)<190)continue;
+   if((terrain.flat()?Math.max(Math.abs(x),Math.abs(z)):Math.hypot(x,z))>limit()||Math.hypot(x,z)<190)continue;
    int min=Integer.MAX_VALUE,max=Integer.MIN_VALUE;
    for(int dx=LunarVillageLayout.MIN_X;dx<=LunarVillageLayout.MAX_X;dx+=8)for(int dz=LunarVillageLayout.MIN_Z;dz<=LunarVillageLayout.MAX_Z;dz+=8){
     int y=terrain.column(x+dx,z+dz).top()-MoonTerrain.NORTH_OFFSET;min=Math.min(min,y);max=Math.max(max,y);
@@ -35,7 +38,7 @@ public final class LunarSettlements {
   return best;
  }
  public Site cell(int gx,int gz){
-  if(gx<-6||gx>5||gz<-6||gz>5)return null;
+  if(gx<minCell()||gx>maxCell()||gz<minCell()||gz>maxCell())return null;
   long k=((long)gx<<32)^(gz&0xffffffffL);
   return cache.computeIfAbsent(k,v->Optional.ofNullable(choose(gx,gz))).orElse(null);
  }
@@ -46,8 +49,8 @@ public final class LunarSettlements {
  }
  public List<Site> near(double x,double z,int radius){
   var result=new ArrayList<Site>();
-  for(int gx=Math.max(-6,Math.floorDiv((int)Math.floor(x-radius),SPACING));gx<=Math.min(5,Math.floorDiv((int)Math.floor(x+radius),SPACING));gx++)
-   for(int gz=Math.max(-6,Math.floorDiv((int)Math.floor(z-radius),SPACING));gz<=Math.min(5,Math.floorDiv((int)Math.floor(z+radius),SPACING));gz++){
+  for(int gx=Math.max(minCell(),Math.floorDiv((int)Math.floor(x-radius),SPACING));gx<=Math.min(maxCell(),Math.floorDiv((int)Math.floor(x+radius),SPACING));gx++)
+   for(int gz=Math.max(minCell(),Math.floorDiv((int)Math.floor(z-radius),SPACING));gz<=Math.min(maxCell(),Math.floorDiv((int)Math.floor(z+radius),SPACING));gz++){
     var s=cell(gx,gz);if(s!=null&&Math.hypot(s.x-x,s.z-z)<=radius)result.add(s);
    }
   result.sort(Comparator.comparingDouble(s->Math.hypot(s.x-x,s.z-z)));return result;

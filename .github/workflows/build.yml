@@ -37,15 +37,15 @@ jobs:
           java -cp mesh-check LunarFlightCheck
       - name: Check Moon terrain
         run: |
-          javac -d mesh-check src/main/java/dev/megarockets/PlanetCaves.java src/main/java/dev/megarockets/MoonTerrain.java checks/MoonTerrainCheck.java
+          javac src/main/java/dev/megarockets/PlanetWrap.java -d mesh-check src/main/java/dev/megarockets/PlanetCaves.java src/main/java/dev/megarockets/MoonTerrain.java checks/MoonTerrainCheck.java
           java -cp mesh-check MoonTerrainCheck
       - name: Check interplanetary missions
         run: |
-          javac -d mesh-check src/main/java/dev/megarockets/LunarFlight.java src/main/java/dev/megarockets/FlightProfile.java src/main/java/dev/megarockets/PlanetCaves.java src/main/java/dev/megarockets/MarsTerrain.java checks/InterplanetaryCheck.java
+          javac src/main/java/dev/megarockets/PlanetWrap.java -d mesh-check src/main/java/dev/megarockets/LunarFlight.java src/main/java/dev/megarockets/FlightProfile.java src/main/java/dev/megarockets/PlanetCaves.java src/main/java/dev/megarockets/MarsTerrain.java checks/InterplanetaryCheck.java
           java -cp mesh-check InterplanetaryCheck
       - name: Check caves and Martian mountains
         run: |
-          javac -d mesh-check src/main/java/dev/megarockets/PlanetCaves.java src/main/java/dev/megarockets/MoonTerrain.java src/main/java/dev/megarockets/MarsTerrain.java checks/PlanetGeologyCheck.java
+          javac src/main/java/dev/megarockets/PlanetWrap.java -d mesh-check src/main/java/dev/megarockets/PlanetCaves.java src/main/java/dev/megarockets/MoonTerrain.java src/main/java/dev/megarockets/MarsTerrain.java checks/PlanetGeologyCheck.java
           java -cp mesh-check PlanetGeologyCheck
       - name: Check oxygen rules
         run: |
@@ -53,11 +53,11 @@ jobs:
           java -cp mesh-check OxygenCheck
       - name: Check natural landing survey
         run: |
-          javac -d mesh-check src/main/java/dev/megarockets/PlanetCaves.java src/main/java/dev/megarockets/MoonTerrain.java src/main/java/dev/megarockets/MarsTerrain.java src/main/java/dev/megarockets/LandingSurvey.java checks/LandingSurveyCheck.java
+          javac src/main/java/dev/megarockets/PlanetWrap.java -d mesh-check src/main/java/dev/megarockets/PlanetCaves.java src/main/java/dev/megarockets/MoonTerrain.java src/main/java/dev/megarockets/MarsTerrain.java src/main/java/dev/megarockets/LandingSurvey.java checks/LandingSurveyCheck.java
           java -cp mesh-check LandingSurveyCheck
       - name: Check expanded solar system
         run: |
-          javac -d mesh-check src/main/java/dev/megarockets/PlanetCaves.java src/main/java/dev/megarockets/MoonTerrain.java src/main/java/dev/megarockets/MarsTerrain.java src/main/java/dev/megarockets/SolarScale.java src/main/java/dev/megarockets/Destination.java src/main/java/dev/megarockets/OuterPlanetTerrain.java src/main/java/dev/megarockets/LunarFlight.java src/main/java/dev/megarockets/LandingSurvey.java checks/UniverseCheck.java
+          javac src/main/java/dev/megarockets/PlanetWrap.java -d mesh-check src/main/java/dev/megarockets/PlanetCaves.java src/main/java/dev/megarockets/MoonTerrain.java src/main/java/dev/megarockets/MarsTerrain.java src/main/java/dev/megarockets/SolarScale.java src/main/java/dev/megarockets/Destination.java src/main/java/dev/megarockets/OuterPlanetTerrain.java src/main/java/dev/megarockets/LunarFlight.java src/main/java/dev/megarockets/LandingSurvey.java checks/UniverseCheck.java
           java -cp mesh-check UniverseCheck
       - name: Check manual rocket controls
         run: |
@@ -73,7 +73,7 @@ jobs:
           java -cp mesh-check ApproachCheck
       - name: Check living solar system
         run: |
-          javac -d mesh-check src/main/java/dev/megarockets/PlanetCaves.java src/main/java/dev/megarockets/MoonTerrain.java src/main/java/dev/megarockets/MarsTerrain.java src/main/java/dev/megarockets/SolarScale.java src/main/java/dev/megarockets/Destination.java src/main/java/dev/megarockets/SolarDynamics.java src/main/java/dev/megarockets/AsteroidTerrain.java src/main/java/dev/megarockets/ManualFlight.java checks/SolarDynamicsCheck.java
+          javac src/main/java/dev/megarockets/PlanetWrap.java -d mesh-check src/main/java/dev/megarockets/PlanetCaves.java src/main/java/dev/megarockets/MoonTerrain.java src/main/java/dev/megarockets/MarsTerrain.java src/main/java/dev/megarockets/SolarScale.java src/main/java/dev/megarockets/Destination.java src/main/java/dev/megarockets/SolarDynamics.java src/main/java/dev/megarockets/AsteroidTerrain.java src/main/java/dev/megarockets/ManualFlight.java checks/SolarDynamicsCheck.java
           java -cp mesh-check SolarDynamicsCheck
       - name: Check orbital station
         run: |
@@ -81,12 +81,16 @@ jobs:
           java -cp mesh-check StationCheck
       - name: Check lunar village
         run: |
-          javac -d mesh-check src/main/java/dev/megarockets/PlanetCaves.java src/main/java/dev/megarockets/MoonTerrain.java src/main/java/dev/megarockets/LunarVillageLayout.java src/main/java/dev/megarockets/LunarSettlements.java checks/LunarVillageCheck.java
+          javac src/main/java/dev/megarockets/PlanetWrap.java -d mesh-check src/main/java/dev/megarockets/PlanetCaves.java src/main/java/dev/megarockets/MoonTerrain.java src/main/java/dev/megarockets/LunarVillageLayout.java src/main/java/dev/megarockets/LunarSettlements.java checks/LunarVillageCheck.java
           java -cp mesh-check LunarVillageCheck
       - name: Check solar energy
         run: |
           javac -d mesh-check src/main/java/dev/megarockets/EnergyRules.java checks/EnergyCheck.java
           java -cp mesh-check EnergyCheck
+      - name: Check flat periodic surfaces
+        run: |
+          javac -d mesh-check src/main/java/dev/megarockets/PlanetWrap.java src/main/java/dev/megarockets/PlanetCaves.java src/main/java/dev/megarockets/MoonTerrain.java src/main/java/dev/megarockets/MarsTerrain.java src/main/java/dev/megarockets/SolarScale.java src/main/java/dev/megarockets/Destination.java src/main/java/dev/megarockets/OuterPlanetTerrain.java src/main/java/dev/megarockets/LunarVillageLayout.java checks/PlanetWrapCheck.java
+          java -cp mesh-check PlanetWrapCheck
       - name: Build Fabric mod
         run: gradle build --stacktrace
       - uses: actions/upload-artifact@v4

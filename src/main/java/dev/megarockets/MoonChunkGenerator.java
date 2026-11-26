@@ -34,7 +34,7 @@ public final class MoonChunkGenerator extends ChunkGenerator {
     private synchronized MoonTerrain terrain(NoiseConfig config){
         if(lastConfig!=config||cachedTerrain==null){
             long seed=config.getOrCreateRandomDeriver(MegaRockets.id("lunar_world_seed")).split(0,0,0).nextLong();
-            cachedTerrain=new MoonTerrain(seed);settlements=new LunarSettlements(seed,cachedTerrain);lastConfig=config;
+            cachedTerrain=new MoonTerrain(seed,true);settlements=new LunarSettlements(seed,cachedTerrain);lastConfig=config;
             if(getBiomeSource() instanceof MoonBiomeSource lunar)lunar.setTerrain(cachedTerrain);
         }
         return cachedTerrain;
@@ -49,11 +49,11 @@ public final class MoonChunkGenerator extends ChunkGenerator {
     @Override public int getMinimumY(){return MoonTerrain.MIN_Y;}
     @Override public int getWorldHeight(){return MoonTerrain.HEIGHT;}
     @Override public int getSeaLevel(){return MoonTerrain.MIN_Y;}
-    @Override public int getSpawnHeight(HeightLimitView world){return yOffset==MoonTerrain.NORTH_OFFSET?MoonTerrain.PAD_Y:0;}
+    @Override public int getSpawnHeight(HeightLimitView world){return 128;}
     @Override public void buildSurface(ChunkRegion region,StructureAccessor structures,NoiseConfig config,Chunk chunk){}
     @Override public void carve(ChunkRegion region,long seed,NoiseConfig config,BiomeAccess biomes,StructureAccessor structures,Chunk chunk,GenerationStep.Carver step){}
     @Override public void populateEntities(ChunkRegion region){}
-    @Override public void getDebugHudText(List<String> lines,NoiseConfig config,BlockPos pos){lines.add("Mega Rockets: spherical Moon");}
+    @Override public void getDebugHudText(List<String> lines,NoiseConfig config,BlockPos pos){lines.add("Mega Rockets: flat repeating Moon | circumference "+PlanetWrap.MOON_PERIOD);}
     private static BlockState state(int material){
         return switch(material){
             case MoonTerrain.ROCK -> MoonBlocks.ROCK.getDefaultState();
@@ -89,11 +89,11 @@ public final class MoonChunkGenerator extends ChunkGenerator {
             case LunarVillageLayout.VENT->BuildingBlocks.get("vent_panel").getDefaultState();
             case LunarVillageLayout.LECTERN->Blocks.LECTERN.getDefaultState();
             case LunarVillageLayout.DOOR_LOWER,LunarVillageLayout.DOOR_UPPER->{
-                var direction=net.minecraft.util.math.Direction.NORTH;
+                var direction=x==LunarVillageLayout.X+72&&z==LunarVillageLayout.Z?net.minecraft.util.math.Direction.EAST:net.minecraft.util.math.Direction.NORTH;
                 for(var h:LunarVillageLayout.HOMES){
                     int dx=x-LunarVillageLayout.X-h.x(),dz=z-LunarVillageLayout.Z-h.z();
                     if(Math.abs(dx)<=h.halfX()&&Math.abs(dz)<=h.halfZ()){
-                        direction=h.kind()==0?(h.z()<0?net.minecraft.util.math.Direction.SOUTH:net.minecraft.util.math.Direction.NORTH):(h.x()<0?net.minecraft.util.math.Direction.EAST:net.minecraft.util.math.Direction.WEST);break;
+                        direction=h.kind()==0?(h.z()<0?net.minecraft.util.math.Direction.SOUTH:net.minecraft.util.math.Direction.NORTH):(dx>0?net.minecraft.util.math.Direction.EAST:net.minecraft.util.math.Direction.WEST);break;
                     }
                 }
                 yield Blocks.OAK_DOOR.getDefaultState().with(net.minecraft.block.DoorBlock.FACING,direction)
@@ -105,16 +105,18 @@ public final class MoonChunkGenerator extends ChunkGenerator {
     private LunarSettlements.Site village(int x,int z){return yOffset==MoonTerrain.NORTH_OFFSET?settlements.at(x,z):null;}
     @Override public CompletableFuture<Chunk> populateNoise(Blender blender,NoiseConfig config,StructureAccessor structures,Chunk chunk){
         MoonTerrain terrain=terrain(config);
-        int x0=chunk.getPos().getStartX(),z0=chunk.getPos().getStartZ();
+        int realX=chunk.getPos().getStartX(),realZ=chunk.getPos().getStartZ();
+        int x0=PlanetWrap.coordinate(realX,PlanetWrap.MOON_PERIOD),z0=PlanetWrap.coordinate(realZ,PlanetWrap.MOON_PERIOD);
+        int dx=realX-x0,dz=realZ-z0;
         BlockPos.Mutable pos=new BlockPos.Mutable();
         for(int x=x0;x<x0+16;x++)for(int z=z0;z<z0+16;z++){
             var col=terrain.column(x,z);
-            int lo=Math.max(chunk.getBottomY(),col.bottom()-yOffset),hi=Math.min(chunk.getTopY()-1,col.top()-yOffset);
+            int lo=Math.max(chunk.getBottomY(),col.bottom()-MoonTerrain.NORTH_OFFSET),hi=Math.min(chunk.getTopY()-1,col.top()-MoonTerrain.NORTH_OFFSET);
             for(int y=lo;y<=hi;y++){
-                int global=y+yOffset;
-                if(global>=col.innerBottom()&&global<=col.innerTop()){y=col.innerTop()-yOffset;continue;}
+                int global=y+MoonTerrain.NORTH_OFFSET;
+                if(global>=col.innerBottom()&&global<=col.innerTop()){y=col.innerTop()-MoonTerrain.NORTH_OFFSET;continue;}
                 int type=terrain.material(col,x,global,z);
-                if(type!=MoonTerrain.AIR)chunk.setBlockState(pos.set(x,y,z),state(type),false);
+                if(type!=MoonTerrain.AIR)chunk.setBlockState(pos.set(x+dx,y,z+dz),y==-64?Blocks.BEDROCK.getDefaultState():state(type),false);
             }
         }
         for(int gx=Math.floorDiv(x0-4,32);gx<=Math.floorDiv(x0+19,32);gx++)
@@ -124,9 +126,9 @@ public final class MoonChunkGenerator extends ChunkGenerator {
             for(int x=Math.max(x0,rock.x()-r);x<=Math.min(x0+15,rock.x()+r);x++)
             for(int z=Math.max(z0,rock.z()-r);z<=Math.min(z0+15,rock.z()+r);z++)
             for(int global=rock.y()-2;global<=rock.y()+r;global++){
-                int y=global-yOffset;if(y<chunk.getBottomY()||y>=chunk.getTopY())continue;
+                int y=global-MoonTerrain.NORTH_OFFSET;if(y<chunk.getBottomY()||y>=chunk.getTopY())continue;
                 int mat=terrain.boulderBlock(rock,x,global,z);
-                if(mat!=MoonTerrain.AIR&&chunk.getBlockState(pos.set(x,y,z)).isAir())
+                if(mat!=MoonTerrain.AIR&&chunk.getBlockState(pos.set(x+dx,y,z+dz)).isAir())
                     chunk.setBlockState(pos,state(mat),false);
             }
         }
@@ -137,9 +139,9 @@ public final class MoonChunkGenerator extends ChunkGenerator {
             for(int x=Math.max(x0,tree.x()-5);x<=Math.min(x0+15,tree.x()+5);x++)
             for(int z=Math.max(z0,tree.z()-5);z<=Math.min(z0+15,tree.z()+5);z++)
             for(int global=tree.y();global<=tree.y()+tree.height()+2;global++){
-                int y=global-yOffset;if(y<chunk.getBottomY()||y>=chunk.getTopY())continue;
+                int y=global-MoonTerrain.NORTH_OFFSET;if(y<chunk.getBottomY()||y>=chunk.getTopY())continue;
                 int mat=terrain.treeBlock(tree,x,global,z);
-                if(mat!=MoonTerrain.AIR&&chunk.getBlockState(pos.set(x,y,z)).isAir())
+                if(mat!=MoonTerrain.AIR&&chunk.getBlockState(pos.set(x+dx,y,z+dz)).isAir())
                     chunk.setBlockState(pos,state(mat),false);
             }
         }
@@ -147,12 +149,12 @@ public final class MoonChunkGenerator extends ChunkGenerator {
         if(yOffset==MoonTerrain.NORTH_OFFSET)for(int x=x0;x<x0+16;x++)for(int z=z0;z<z0+16;z++){
             var site=village(x,z);if(site==null)continue;
             int villageBase=site.base();
-            int ground=terrain.column(x,z).top()-yOffset;
+            int ground=terrain.column(x,z).top()-MoonTerrain.NORTH_OFFSET;
             int low=Math.max(chunk.getBottomY(),Math.min(ground-3,villageBase-4));
             int high=Math.min(chunk.getTopY()-1,Math.max(villageBase+16,ground+24));
             for(int y=low;y<=high;y++){
                 var state=villageState(site.material(x,y,z),site.localX(x),site.localZ(z));
-                chunk.setBlockState(pos.set(x,y,z),state,false);
+                chunk.setBlockState(pos.set(x+dx,y,z+dz),state,false);
                 if(state.isOf(SpaceEnergy.BATTERY))chunk.setBlockEntity(new SpaceEnergy.Battery(pos.toImmutable(),state));
             }
         }
@@ -161,22 +163,24 @@ public final class MoonChunkGenerator extends ChunkGenerator {
     }
     @Override public int getHeight(int x,int z,Heightmap.Type type,HeightLimitView world,NoiseConfig config){
         MoonTerrain terrain=terrain(config);
+        x=PlanetWrap.coordinate(x,PlanetWrap.MOON_PERIOD);z=PlanetWrap.coordinate(z,PlanetWrap.MOON_PERIOD);
         var site=village(x,z);if(site!=null)return site.base()+LunarVillageLayout.top(site.localX(x),site.localZ(z))+1;
         var col=terrain.column(x,z);
-        int hi=Math.min(world.getTopY()-1,col.top()-yOffset),lo=Math.max(world.getBottomY(),col.bottom()-yOffset);
-        for(int y=hi;y>=lo;y--){int global=y+yOffset;if(global>=col.innerBottom()&&global<=col.innerTop()){y=col.innerBottom()-yOffset;continue;}if(terrain.material(col,x,global,z)!=MoonTerrain.AIR)return y+1;}
+        int hi=Math.min(world.getTopY()-1,col.top()-MoonTerrain.NORTH_OFFSET),lo=Math.max(world.getBottomY(),col.bottom()-MoonTerrain.NORTH_OFFSET);
+        for(int y=hi;y>=lo;y--){int global=y+MoonTerrain.NORTH_OFFSET;if(global>=col.innerBottom()&&global<=col.innerTop()){y=col.innerBottom()-MoonTerrain.NORTH_OFFSET;continue;}if(terrain.material(col,x,global,z)!=MoonTerrain.AIR)return y+1;}
         return world.getBottomY();
     }
     @Override public VerticalBlockSample getColumnSample(int x,int z,HeightLimitView world,NoiseConfig config){
         MoonTerrain terrain=terrain(config);
+        x=PlanetWrap.coordinate(x,PlanetWrap.MOON_PERIOD);z=PlanetWrap.coordinate(z,PlanetWrap.MOON_PERIOD);
         BlockState[] result=new BlockState[world.getHeight()];
         var col=terrain.column(x,z);
         var site=village(x,z);
         for(int i=0;i<result.length;i++){
             int y=world.getBottomY()+i;
-            result[i]=site!=null&&y>=Math.min(col.top()-yOffset-3,site.base()-4)
+            result[i]=site!=null&&y>=Math.min(col.top()-MoonTerrain.NORTH_OFFSET-3,site.base()-4)
                 ?villageState(site.material(x,y,z),site.localX(x),site.localZ(z))
-                :state(terrain.material(col,x,y+yOffset,z));
+                :y==-64?Blocks.BEDROCK.getDefaultState():state(terrain.material(col,x,y+MoonTerrain.NORTH_OFFSET,z));
         }
         return new VerticalBlockSample(world.getBottomY(),result);
     }
