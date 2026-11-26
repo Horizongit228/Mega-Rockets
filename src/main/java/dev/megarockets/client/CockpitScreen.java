@@ -62,7 +62,7 @@ public final class CockpitScreen extends Screen {
             case SYS ->{
                 control(Control.LIGHTS,"lights",8,105,half);control(Control.BEACON,"beacon",10+half,105,half);
                 control(Control.HOLD,"hold",8,131,w-16);
-                control(Control.RETURN_EARTH,"return_earth",8,154,w-16);
+                control(Control.RETURN_EARTH,"return_earth",8,154,half);control(Control.STATION_NAV,"station_nav",10+half,154,half);
             }
             case VIEW ->{
                 camera("view_first",Perspective.FIRST_PERSON,96);
@@ -91,6 +91,7 @@ public final class CockpitScreen extends Screen {
         state(Control.MANUAL,true,"manual_state",on(manual&&!rocket.autoNavigation()));
         state(Control.AUTO_NAV,orbit&&armed,"auto_nav");
         state(Control.RETURN_EARTH,orbit&&armed,"return_earth");
+        state(Control.STATION_NAV,orbit&&armed,"station_nav");
         state(Control.APPROACH,orbit&&manual&&armed,"approach");
         state(Control.HOLD,true,"hold");
         state(Control.ARM,true,"arm_state",on(armed));

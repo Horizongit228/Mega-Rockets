@@ -16,6 +16,6 @@ public abstract class SpaceGravityMixin {
         var planet=MegaRockets.planet(self.getWorld());
         if(planet!=null)cir.setReturnValue(cir.getReturnValue()*planet.gravity);
         else if(self.getWorld().getRegistryKey().equals(MegaRockets.ORBIT))
-            cir.setReturnValue(0.0);
+            cir.setReturnValue(dev.megarockets.StationLayout.gravity(self.getX(),self.getY(),self.getZ())?cir.getReturnValue():0.0);
     }
 }

@@ -33,7 +33,7 @@ public final class OxygenSystem {
         ServerPlayConnectionEvents.DISCONNECT.register((handler,server)->remove(handler.player.getUuid()));
         net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents.SERVER_STOPPED.register(server->{
             for(Display display:BARS.values())display.bar().clearPlayers();
-            BARS.clear();
+            BARS.clear();PressureRoom.clear();
         });
     }
     public static boolean vacuum(ServerPlayerEntity p){
@@ -58,7 +58,7 @@ public final class OxygenSystem {
         NbtComponent.set(DataComponentTypes.CUSTOM_DATA,tank,nbt->nbt.putInt(TANK,OxygenRules.clamp(units)));
     }
     private static void remove(UUID id){
-        Display old=BARS.remove(id);if(old!=null)old.bar().clearPlayers();
+        PressureRoom.remove(id);Display old=BARS.remove(id);if(old!=null)old.bar().clearPlayers();
     }
     private static ServerBossBar display(ServerPlayerEntity p){
         Display current=BARS.get(p.getUuid());
@@ -70,7 +70,8 @@ public final class OxygenSystem {
     private static void tick(ServerPlayerEntity p){
         if(p.interactionManager.getGameMode()!=GameMode.SURVIVAL||!p.isAlive()){remove(p.getUuid());return;}
         boolean cabin=p.getVehicle() instanceof TitanRocket rocket&&rocket.cabinBreathable();
-        boolean vacuum=vacuum(p)&&!cabin,sealed=sealed(p);
+        boolean exposed=vacuum(p),room=exposed&&!cabin&&PressureRoom.breathable(p);
+        boolean vacuum=exposed&&!cabin&&!room,sealed=sealed(p);
         ItemStack tank=p.getEquippedStack(EquipmentSlot.CHEST);
         boolean equipped=tank.isOf(SpaceSuitItems.CHEST);
         int units=equipped?oxygen(tank):0;
@@ -92,10 +93,10 @@ public final class OxygenSystem {
             bar.setColor(percent<=15?BossBar.Color.RED:percent<=30?BossBar.Color.YELLOW:BossBar.Color.BLUE);
             bar.setPercent(units/(float)OxygenRules.CAPACITY);
             String clock=String.format(java.util.Locale.ROOT,"%02d:%02d",units/60,units%60);
-            bar.setName(Text.translatable(vacuum?"oxygen.megarockets.remaining":cabin?"oxygen.megarockets.cabin_refill":"oxygen.megarockets.refilling",percent,clock));
+            bar.setName(Text.translatable(vacuum?"oxygen.megarockets.remaining":cabin?"oxygen.megarockets.cabin_refill":room?"oxygen.megarockets.room_refill":"oxygen.megarockets.refilling",percent,clock));
         }else{
             bar.setColor(BossBar.Color.BLUE);bar.setPercent(1);
-            bar.setName(Text.translatable(cabin?"oxygen.megarockets.cabin_safe":"oxygen.megarockets.atmosphere"));
+            bar.setName(Text.translatable(cabin?"oxygen.megarockets.cabin_safe":room?"oxygen.megarockets.room_safe":"oxygen.megarockets.atmosphere"));
         }
     }
 }

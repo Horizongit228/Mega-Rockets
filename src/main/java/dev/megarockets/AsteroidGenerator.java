@@ -38,6 +38,20 @@ public final class AsteroidGenerator extends ChunkGenerator {
  @Override public void carve(ChunkRegion region,long seed,NoiseConfig config,BiomeAccess biomes,StructureAccessor structures,Chunk chunk,GenerationStep.Carver step){}
  @Override public void populateEntities(ChunkRegion region){}
  @Override public void getDebugHudText(List<String> lines,NoiseConfig config,BlockPos pos){lines.add("Mega Rockets: asteroid belt 2.1–3.3 AU");}
+ private BlockState stationState(int type){
+  return switch(type){
+   case StationLayout.HULL->Blocks.IRON_BLOCK.getDefaultState();
+   case StationLayout.GLASS->Blocks.GLASS.getDefaultState();
+   case StationLayout.LAMP->Blocks.SEA_LANTERN.getDefaultState();
+   case StationLayout.OXYGEN->OxygenStation.STATION.getDefaultState();
+   case StationLayout.DOOR_LOWER,StationLayout.DOOR_UPPER->Blocks.OAK_DOOR.getDefaultState()
+     .with(net.minecraft.block.DoorBlock.FACING,net.minecraft.util.math.Direction.EAST)
+     .with(net.minecraft.block.DoorBlock.HALF,type==StationLayout.DOOR_LOWER?net.minecraft.block.enums.DoubleBlockHalf.LOWER:net.minecraft.block.enums.DoubleBlockHalf.UPPER);
+   case StationLayout.PAD->Blocks.SMOOTH_STONE.getDefaultState();
+   case StationLayout.MARK->Blocks.YELLOW_CONCRETE.getDefaultState();
+   default->Blocks.AIR.getDefaultState();
+  };
+ }
  private BlockState state(int type){return switch(type){
   case 1->Blocks.STONE.getDefaultState();case 2->Blocks.IRON_ORE.getDefaultState();case 3->Blocks.BASALT.getDefaultState();default->Blocks.AIR.getDefaultState();
  };}
@@ -45,6 +59,10 @@ public final class AsteroidGenerator extends ChunkGenerator {
   AsteroidTerrain t=terrain(config);BlockPos.Mutable pos=new BlockPos.Mutable();
   int x0=chunk.getPos().getStartX(),z0=chunk.getPos().getStartZ();
   for(int x=x0;x<x0+16;x++)for(int z=z0;z<z0+16;z++){
+   if(StationLayout.column(x,z)){
+    for(int y=100;y<=107;y++){int type=StationLayout.material(x,y,z);if(type!=0)chunk.setBlockState(pos.set(x,y,z),stationState(type),false);}
+    continue;
+   }
    var rock=t.at(x,z);if(rock==null||Math.abs(x-rock.x())>rock.rx()+3||Math.abs(z-rock.z())>rock.rz()+3)continue;
    for(int y=rock.y()-rock.ry()-3;y<=rock.y()+rock.ry()+3;y++){
     int type=t.material(rock,x,y,z);if(type!=0)chunk.setBlockState(pos.set(x,y,z),state(type),false);
@@ -54,12 +72,13 @@ public final class AsteroidGenerator extends ChunkGenerator {
   return CompletableFuture.completedFuture(chunk);
  }
  @Override public int getHeight(int x,int z,Heightmap.Type type,HeightLimitView world,NoiseConfig config){
+  if(StationLayout.column(x,z))return StationLayout.height(x,z);
   var t=terrain(config);var rock=t.at(x,z);if(rock==null)return world.getBottomY();
   for(int y=rock.y()+rock.ry()+3;y>=rock.y()-rock.ry()-3;y--)if(t.material(rock,x,y,z)!=0)return y+1;return world.getBottomY();
  }
  @Override public VerticalBlockSample getColumnSample(int x,int z,HeightLimitView world,NoiseConfig config){
   var t=terrain(config);var rock=t.at(x,z);BlockState[] states=new BlockState[world.getHeight()];
-  for(int i=0;i<states.length;i++)states[i]=state(t.material(rock,x,world.getBottomY()+i,z));
+  for(int i=0;i<states.length;i++)states[i]=StationLayout.column(x,z)?stationState(StationLayout.material(x,world.getBottomY()+i,z)):state(t.material(rock,x,world.getBottomY()+i,z));
   return new VerticalBlockSample(world.getBottomY(),states);
  }
 }
