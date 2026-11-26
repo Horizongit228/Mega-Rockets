@@ -28,6 +28,9 @@ public class LunarVillageCheck{
     for(var t:sites)if(!s.equals(t)&&Math.hypot(s.x()-t.x(),s.z()-t.z())<300)throw new AssertionError("Village overlap");
    }
   }
+  var flat=new LunarSettlements(42,new MoonTerrain(42,true));
+  var flatSites=flat.near(0,0,9000);if(flatSites.size()<10)throw new AssertionError("Flat settlements");
+  for(var site:flatSites)if(site.base()<0||site.base()>350||!site.equals(flat.at(site.x(),site.z())))throw new AssertionError("Flat village coordinates");
   System.out.println("PASS distributed seeded villages, room seals and pads");
  }
 }
